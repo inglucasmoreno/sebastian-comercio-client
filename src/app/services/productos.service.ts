@@ -41,7 +41,8 @@ export class ProductosService {
         desde: parametros?.desde || 0,
         registerpp: parametros?.registerpp || 10,
         activo: parametros?.activo || '',
-        parametro: parametros?.parametro || ''   
+        parametro: parametros?.parametro || '',
+        alerta_stock: parametros?.alerta_stock || false   
       },
       headers: this.getToken
     });

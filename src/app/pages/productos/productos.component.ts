@@ -34,11 +34,13 @@ public unidades: any[] = [];
 
 // Formulario producto
 public productoForm: any = {
+  codigo: '',
   descripcion: '',
   unidad_medida: '',
-  codigo: '',
+  cantidad: null,
+  cantidad_minima: null,
+  stock_minimo_alerta: 'false',
   precio: null,
-  moneda: 'Pesos'
 }
 
 // Paginacion
@@ -49,6 +51,7 @@ public desde: number = 0;
 
 // Filtrado
 public filtro = {
+  alerta_stock: false,
   parametro: '',
   activo: 'true',
 }
@@ -127,13 +130,24 @@ constructor(private productosService: ProductosService,
     this.productoSeleccionado = producto;
     this.productosService.getProducto(producto._id).subscribe({
       next: ({producto}) => {
-        const { descripcion, unidad_medida, codigo, precio, moneda } = producto;
-        this.productoForm = {
+        
+        const { descripcion, 
+                unidad_medida, 
+                codigo, 
+                precio, 
+                stock_minimo_alerta, 
+                cantidad, 
+                cantidad_minima 
+          } = producto;
+        
+          this.productoForm = {
           descripcion,
           unidad_medida: unidad_medida._id,
           codigo,
+          stock_minimo_alerta: stock_minimo_alerta ? 'true' : 'false',
+          cantidad,
+          cantidad_minima,
           precio,
-          moneda
         }
         this.alertService.close();
         this.showModalProducto = true;
@@ -151,7 +165,8 @@ constructor(private productosService: ProductosService,
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
       activo: this.filtro.activo,
-      parametro: this.filtro.parametro      
+      parametro: this.filtro.parametro,
+      alerta_stock: this.filtro.alerta_stock      
     } 
     ).subscribe({
       next: ({productos, totalItems}) => {
@@ -168,10 +183,11 @@ constructor(private productosService: ProductosService,
 
   verificacion(): boolean {
     
-    const { descripcion, unidad_medida, precio } = this.productoForm;
+    const { descripcion, unidad_medida, precio, cantidad_minima, stock_minimo_alerta } = this.productoForm;
 
     const condicion = descripcion.trim() === '' ||
                       unidad_medida.trim() === '' ||
+                      stock_minimo_alerta === 'true' && !cantidad_minima ||
                       precio === 0 || precio === null
     
     if(condicion) return true
@@ -182,8 +198,6 @@ constructor(private productosService: ProductosService,
   // Nuevo producto
   nuevoProducto(): void {
 
-    const { descripcion, codigo, precio, unidad_medida, moneda } = this.productoForm;
-
     // Verificacion
     if(this.verificacion()){
       this.alertService.info('Formulario inválido');
@@ -193,14 +207,14 @@ constructor(private productosService: ProductosService,
     this.alertService.loading();
 
     const data = {
-      descripcion,
-      unidad_medida,
-      codigo,
-      precio,
-      moneda,
+      ...this.productoForm,
       creatorUser: this.authService.usuario.userId,
-      updatorUser: this.authService.usuario.userId,
+      updatorUser: this.authService.usuario.userId,     
     }
+
+    // Adaptando valores
+    data.cantidad = this.productoForm.cantidad ? this.productoForm.cantida : 0;
+    data.cantidad_minima = this.productoForm.stock_minimo_alerta === 'true' ? this.productoForm.cantidad_minima : 0; 
 
     this.productosService.nuevoProducto(data).subscribe({
       next: () => {
@@ -216,8 +230,6 @@ constructor(private productosService: ProductosService,
   // Actualizar producto
   actualizarProducto(): void {
 
-    const { descripcion, codigo, unidad_medida, precio, moneda } = this.productoForm;
-
     // Verificacion
     if(this.verificacion()){
       this.alertService.info('Formulario inválido');
@@ -227,14 +239,16 @@ constructor(private productosService: ProductosService,
     this.alertService.loading();
 
     const data = {
-      descripcion,
-      unidad_medida,
-      codigo,
-      precio,
-      moneda,
+      ...this.productoForm,
       creatorUser: this.authService.usuario.userId,
-      updatorUser: this.authService.usuario.userId,
+      updatorUser: this.authService.usuario.userId,      
     }
+
+    // Adaptando valores
+    data.cantidad = this.productoForm.cantidad ? this.productoForm.cantidad : 0;
+    data.cantidad_minima = this.productoForm.stock_minimo_alerta === 'true' ? this.productoForm.cantidad_minima : 0; 
+
+    console.log(data);
 
     this.productosService.actualizarProducto(this.idProducto, data).subscribe({
       next: () => {
@@ -272,16 +286,24 @@ constructor(private productosService: ProductosService,
 
   }
 
+  // Listar - Alerta stock minimo
+  alertaStockMinimo(): void {
+    this.filtro.alerta_stock = !this.filtro.alerta_stock;
+    this.listarProductos(); 
+  }
+
   // Reiniciando formulario
   reiniciarFormulario(): void {
     this.idProducto = '';
     this.codigoTMP = '';
     this.productoForm = {
+      codigo: '',
       descripcion: '',
       unidad_medida: '',
-      codigo: '',
+      cantidad: null,
+      cantidad_minima: null,
+      stock_minimo_alerta: 'false',
       precio: null,
-      moneda: 'Pesos'
     }
   }
 

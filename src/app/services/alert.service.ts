@@ -6,6 +6,8 @@ import Swal from 'sweetalert2';
 })
 export class AlertService {
 
+  public colorButton: string = '#273689';
+
   constructor() { }
   
   // Alerta - Pregunta
@@ -17,7 +19,7 @@ export class AlertService {
       showCancelButton: true,
       confirmButtonText: buttonText,
       cancelButtonText: 'Cancelar', 
-      confirmButtonColor: '#A31D1E'
+      confirmButtonColor: this.colorButton
     });
   }
 
@@ -39,7 +41,7 @@ export class AlertService {
       title: 'Información',
       text: msg,
       confirmButtonText: 'Entendido',
-      confirmButtonColor: '#A31D1E'
+      confirmButtonColor: this.colorButton
     });  
   }
 
@@ -50,7 +52,7 @@ export class AlertService {
         title: 'Información',
         text: 'Formulario Inválido',
         confirmButtonText: 'Entendido',
-        confirmButtonColor: '#A31D1E'
+        confirmButtonColor: this.colorButton
       });    
   }   
 
@@ -61,7 +63,7 @@ export class AlertService {
       title: 'Error',
       text: msg,
       confirmButtonText: 'Entendido',
-      confirmButtonColor: '#A31D1E'
+      confirmButtonColor: this.colorButton
     });    
   }
 
