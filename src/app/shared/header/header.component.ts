@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from 'src/app/services/data.service';
 import { AuthService } from '../../services/auth.service';
 import { items } from './items';
+import { itemsProductos } from './items-productos';
+import { itemsPresupuestos } from './items-presupuestos';
 
 @Component({
   selector: 'app-header',
@@ -13,9 +15,13 @@ export class HeaderComponent implements OnInit {
 
   // Items
   public items: any[];
+  public itemsPresupuestos: any[];
+  public itemsProductos: any[];
  
   // Flags - Navegacion
   public administrador = false;
+  public showProductos = false;
+  public showPresupuestos = false;
 
   // Permisos para navegacion
   public permiso_usuarios = true;
@@ -24,14 +30,13 @@ export class HeaderComponent implements OnInit {
                public dataService: DataService ) { }
 
   ngOnInit(): void {
-    // console.log(this.authService.usuario);
     this.items = items;
+    this.itemsProductos = itemsProductos;
+    this.itemsPresupuestos = itemsPresupuestos;
   }
   
   // Habilitacion de navegacion
-  habilitacionNavegacion(): void {
-
-  }
+  habilitacionNavegacion(): void {}
 
   // Metodo: Cerrar sesion
   logout(): void{ this.authService.logout(); }

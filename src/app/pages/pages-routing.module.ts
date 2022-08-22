@@ -15,6 +15,9 @@ import { EditarPasswordComponent } from './usuarios/editar/editar-password.compo
 import { PerfilComponent } from './perfil/perfil.component';
 import { UnidadMedidaComponent } from './unidad-medida/unidad-medida.component';
 import { ProductosComponent } from './productos/productos.component';
+import { ClientesComponent } from './clientes/clientes.component';
+import { PresupuestosComponent } from './presupuestos/presupuestos.component';
+import { NuevoPresupuestoComponent } from './presupuestos/nuevo-presupuesto.component';
 
 const routes: Routes = [
     {
@@ -35,12 +38,18 @@ const routes: Routes = [
             { path: 'usuarios/editar/:id', data: { permisos: 'USUARIOS_NAV' }, canActivate: [PermisosGuard], component: EditarUsuarioComponent },
             { path: 'usuarios/password/:id', data: { permisos: 'USUARIOS_NAV' }, canActivate: [PermisosGuard], component: EditarPasswordComponent },
 
+            // Clientes
+            { path: 'clientes', data: { permisos: 'CLIENTES_NAV' }, canActivate: [PermisosGuard], component: ClientesComponent },
+            
             // Unidad medida
             { path: 'unidad-medida', data: { permisos: 'UNIDAD_MEDIDA_NAV' }, canActivate: [PermisosGuard], component: UnidadMedidaComponent },
 
             // Productos
             { path: 'productos', data: { permisos: 'PRODUCTOS_NAV' }, canActivate: [PermisosGuard], component: ProductosComponent },
 
+            // Presupuestos
+            { path: 'presupuestos', data: { permisos: 'PRESUPUESTOS_NAV' }, canActivate: [PermisosGuard], component: PresupuestosComponent },
+            { path: 'nuevo-presupuesto', data: { permisos: 'PRESUPUESTOS_NAV' }, canActivate: [PermisosGuard], component: NuevoPresupuestoComponent },
             
         ]
     }

@@ -1,59 +1,89 @@
 
-<!-- Modal: Crear / Editar unidad -->
-<app-modal [showModal]="showModalUnidad">
-  <div (keyup.enter)="estadoFormulario === 'crear' ? nuevaUnidad() : actualizarUnidad()">
+<!-- Modal: Crear / Editar cliente -->
+<app-modal [showModal]="showModalCliente">
+  <div (keyup.enter)="estadoFormulario === 'crear' ? nuevoCliente() : actualizarCliente()">
       <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
-          <h1 class=" text-white px-2 py-1 rounded-t text-lg"> {{ estadoFormulario == 'crear' ? 'Creando unidad' : 'Editando unidad' }} </h1>
-          <svg (click)="showModalUnidad = false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <h1 class=" text-white px-2 py-1 rounded-t text-lg"> {{ estadoFormulario == 'crear' ? 'Creando cliente' : 'Editando cliente' }} </h1>
+          <svg (click)="showModalCliente = false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </div>
       <div class="p-4 text-sm">
-          <p class="font-semibold"> <span class="text-red-500"> * </span> Descripción </p>
-          <input [(ngModel)]="descripcion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Kilogramo" type="text">
-          <div *ngIf="unidadSeleccionada && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
+          <div>
+            <p class="font-semibold"> <span class="text-red-500"> * </span> Descripción </p>
+            <input [(ngModel)]="clientesForm.descripcion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Equinoccio Technology" type="text">
+          </div>
+          <div class="md:flex md:items-center mt-4">
+            <div class="md:w-1/2">
+              <p class="font-semibold"> <span class="text-red-500"> * </span> Tipo de identificación </p>
+              <select [(ngModel)]="clientesForm.tipo_identificacion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+                <option value="DNI"> DNI </option>
+                <option value="CUIL"> CUIL </option>
+                <option value="CUIT"> CUIT </option>
+              </select>
+            </div>
+            <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+              <p class="font-semibold"> <span class="text-red-500"> * </span> Identificación </p>
+              <input [(ngModel)]="clientesForm.identificacion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 34060398" type="text">
+            </div>
+          </div>
+          <div class="md:flex md:items-center mt-4">
+            <div class="md:w-1/2">
+              <p class="font-semibold"> Teléfono </p>
+              <input [(ngModel)]="clientesForm.telefono" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 2664869642" type="text">
+            </div>
+            <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+              <p class="font-semibold"> Correo electrónico </p>
+              <input [(ngModel)]="clientesForm.correo_electronico" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. equinocciotech@gmail.com" type="text">
+            </div>
+          </div>
+          <div class="mt-4">
+            <p class="font-semibold"> Dirección </p>
+            <input [(ngModel)]="clientesForm.direccion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Portugal 1030" type="text">
+          </div>
+          <div *ngIf="clienteSeleccionado && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
             <div class="xl:w-1/2">
                 <p class="font-semibold text-sm"> Fecha de alta </p>
                 <div class="border text-sm mt-2 border-gray-300 rounded p-2 bg-gray-100">
-                    {{ unidadSeleccionada.createdAt | fecha }}
+                    {{ clienteSeleccionado.createdAt | fecha }}
                 </div>
             </div>
             <div class="xl:ml-4 xl:w-1/2 mt-4 xl:mt-0">
                 <p class="font-semibold text-sm"> Usuario creador </p>
                 <div class="border text-sm capitalize mt-2 border-gray-300 rounded p-2 bg-gray-100">
-                    {{ unidadSeleccionada.creatorUser.apellido.toLowerCase() }} {{ unidadSeleccionada.creatorUser.nombre.toLowerCase() }}
+                    {{ clienteSeleccionado.creatorUser.apellido.toLowerCase() }} {{ clienteSeleccionado.creatorUser.nombre.toLowerCase() }}
                 </div>
             </div>
         </div> 
-        <div *ngIf="unidadSeleccionada && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
+        <div *ngIf="clienteSeleccionado && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
             <div class="xl:w-1/2">
                 <p class="font-semibold text-sm"> Ultima actualización </p>
                 <div class="border text-sm mt-2 border-gray-300 rounded p-2 bg-gray-100">
-                    {{ unidadSeleccionada.updatedAt | fecha }}
+                    {{ clienteSeleccionado.updatedAt | fecha }}
                 </div>
             </div>
             <div class="xl:ml-4 xl:w-1/2 mt-4 xl:mt-0">
                 <p class="font-semibold text-sm"> Usuario ultima actualización </p>
                 <div class="border text-sm capitalize mt-2 border-gray-300 rounded p-2 bg-gray-100">
-                    {{ unidadSeleccionada.updatorUser.apellido.toLowerCase() }} {{ unidadSeleccionada.updatorUser.nombre.toLowerCase() }}
+                    {{ clienteSeleccionado.updatorUser.apellido.toLowerCase() }} {{ clienteSeleccionado.updatorUser.nombre.toLowerCase() }}
                 </div>
             </div>
         </div>   
-          <button *ngIf="estadoFormulario == 'crear'" (click)="nuevaUnidad()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Crear unidad </button>
-          <button *ngIf="estadoFormulario == 'editar'" (click)="actualizarUnidad()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Actualizar unidad </button>
+          <button *ngIf="estadoFormulario == 'crear'" (click)="nuevoCliente()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Crear cliente </button>
+          <button *ngIf="estadoFormulario == 'editar'" (click)="actualizarCliente()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Actualizar cliente </button>
       </div>
   </div>
 </app-modal>
 
-<!-- Listado de unidades -->
-<div class="md:max-w-5xl mx-auto">
+<!-- Listado de clientes -->
+<div class="md:max-w-7xl mx-auto">
     <app-tarjeta-lista>
       <div class="container mx-auto">
           <div>
               <div class="flex items-center justify-between bg-primary-800 px-4 py-3 rounded-t">
                   <div class="ml-2 text-white">
                       <h2 class="text-2xl leading-tight">
-                          Listado de unidades
+                          Listado de clientes
                       </h2>
-                      <p> Total de unidades: {{ unidades.length }} </p>
+                      <p> Total de clientes: {{ clientes.length }} </p>
                   </div>
                   <div *ngIf="permisos.all">
                     <button title="Nueva unidad" (click)="abrirModal('crear')" class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
@@ -114,17 +144,29 @@
                                       </div>
                                   </th>
                                   <th class="px-5 border-b-2 border-gray-200 bg-gray-100 text-sm font-semibold text-gray-900 tracking-wider">
-                                      <div (click)="ordenarPorColumna('createdAt')" class="cursor-pointer w-max flex items-center justify-center focus:outline-none">
+                                      <div (click)="ordenarPorColumna('tipo_identificacion')" class="cursor-pointer w-max flex items-center justify-center focus:outline-none">
                                           <span>
-                                              Fecha de creación                                                
+                                              Tipo de identificación                                               
                                           </span>
                                           <span class="ml-2">
-                                              <svg *ngIf="ordenar.columna == 'createdAt' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                                   
-                                              <svg *ngIf="ordenar.columna == 'createdAt' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>
-                                              <svg *ngIf="ordenar.columna != 'createdAt'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                              <svg *ngIf="ordenar.columna == 'tipo_identificacion' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                                   
+                                              <svg *ngIf="ordenar.columna == 'tipo_identificacion' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                              <svg *ngIf="ordenar.columna != 'tipo_identificacion'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                           </span>
                                       </div>
                                   </th>
+                                  <th class="px-5 border-b-2 border-gray-200 bg-gray-100 text-sm font-semibold text-gray-900 tracking-wider">
+                                    <div (click)="ordenarPorColumna('identificacion')" class="cursor-pointer w-max flex items-center justify-center focus:outline-none">
+                                        <span>
+                                            Identificación                                             
+                                        </span>
+                                        <span class="ml-2">
+                                            <svg *ngIf="ordenar.columna == 'identificacion' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                                   
+                                            <svg *ngIf="ordenar.columna == 'identificacion' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                            <svg *ngIf="ordenar.columna != 'identificacion'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                        </span>
+                                    </div>
+                                </th>
                                   <th class="px-5 border-b-2 border-gray-200 bg-gray-100 text-center text-sm font-semibold text-gray-900 tracking-wider">
                                       <div (click)="ordenarPorColumna('activo')" class="cursor-pointer flex items-center focus:outline-none">
                                           <span>
@@ -142,27 +184,29 @@
                                   </th>
                               </tr>
                           </thead>
-                          <tbody *ngIf="unidades">
-                              <tr class="animate__animated animate__fadeIn" *ngFor="let unidad of unidades | filtroUnidadMedida:filtro.parametro:filtro.activo | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual}">
+                          <tbody *ngIf="clientes">
+                              <tr class="animate__animated animate__fadeIn" *ngFor="let cliente of clientes | filtroClientes:filtro.parametro:filtro.activo | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual}">
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
                                       <p class="text-gray-900 w-max whitespace-no-wrap">
-                                          {{ unidad.descripcion }}
+                                          {{ cliente.descripcion }}
                                       </p>
                                   </td>
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
-                                      <p class="text-gray-900 whitespace-no-wrap">
-                                          {{ unidad.createdAt | fecha }}
-                                      </p>
+                                    <p class="text-gray-900 w-max whitespace-no-wrap">
+                                        {{ cliente.tipo_identificacion }}
+                                    </p>
                                   </td>
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
-                                      <app-pastilla-estado [activo]=unidad.activo (click)="actualizarEstado(unidad)"></app-pastilla-estado>
+                                    <p class="text-gray-900 w-max whitespace-no-wrap">
+                                        {{ cliente.identificacion }}
+                                    </p>
+                                  </td>
+                                  <td class="px-5 py-2 border-b border-gray-200 text-xs">
+                                      <app-pastilla-estado [activo]=cliente.activo (click)="actualizarEstado(cliente)"></app-pastilla-estado>
                                   </td>
                                   <td *ngIf="permisos.all" class="px-5 py-2 border-b border-gray-200 text-xs text-center">
                                         <span class="flex items-center justify-center text-gray-900 whitespace-no-wrap">
-                                            <div>
-                                                <div class="p-4"></div>  
-                                            </div>
-                                            <app-boton-tabla (click)="abrirModal('editar', unidad)" title="Editar unidad">
+                                            <app-boton-tabla (click)="abrirModal('editar', cliente)" title="Editar cliente">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                                 </svg>
@@ -175,7 +219,7 @@
                   </div>
               </div>
           </div>
-          <div *ngIf="unidades.length > cantidadItems" class="px-5 text-sm py-5 mt-4 bg-white border-t flex shadow flex-col xs:flex-row items-center xs:justify-between">
+          <div *ngIf="clientes.length > cantidadItems" class="px-5 text-sm py-5 mt-4 bg-white border-t flex shadow flex-col xs:flex-row items-center xs:justify-between">
               <pagination-controls nextLabel="Siguiente" previousLabel="Anterior" (pageChange)="paginaActual = $event"></pagination-controls>
           </div>
       </div>
