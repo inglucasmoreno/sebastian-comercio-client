@@ -18,6 +18,7 @@ import { ProductosComponent } from './productos/productos.component';
 import { ClientesComponent } from './clientes/clientes.component';
 import { PresupuestosComponent } from './presupuestos/presupuestos.component';
 import { NuevoPresupuestoComponent } from './presupuestos/nuevo-presupuesto.component';
+import { FamiliaProductosComponent } from './familia-productos/familia-productos.component';
 
 const routes: Routes = [
     {
@@ -43,14 +44,18 @@ const routes: Routes = [
             
             // Unidad medida
             { path: 'unidad-medida', data: { permisos: 'UNIDAD_MEDIDA_NAV' }, canActivate: [PermisosGuard], component: UnidadMedidaComponent },
+            
+            // Familia de productos
+            { path: 'familia-productos', data: { permisos: 'FAMILIA_PRODUCTOS_NAV' }, canActivate: [PermisosGuard], component: FamiliaProductosComponent },
 
             // Productos
             { path: 'productos', data: { permisos: 'PRODUCTOS_NAV' }, canActivate: [PermisosGuard], component: ProductosComponent },
-
+            
             // Presupuestos
             { path: 'presupuestos', data: { permisos: 'PRESUPUESTOS_NAV' }, canActivate: [PermisosGuard], component: PresupuestosComponent },
             { path: 'nuevo-presupuesto', data: { permisos: 'PRESUPUESTOS_NAV' }, canActivate: [PermisosGuard], component: NuevoPresupuestoComponent },
             
+
         ]
     }
 ];
