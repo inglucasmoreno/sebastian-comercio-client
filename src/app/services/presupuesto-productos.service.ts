@@ -37,7 +37,8 @@ export class PresupuestoProductosService {
     return this.http.get(`${base_url}/presupuesto-productos`, {
       params: {
         direccion: parametros?.direccion || 1,
-        columna: parametros?.columna || 'descripcion'
+        columna: parametros?.columna || 'descripcion',
+        presupuesto: parametros?.presupuesto || ''
       },
       headers: this.getToken
     });

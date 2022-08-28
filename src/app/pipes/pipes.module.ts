@@ -7,6 +7,8 @@ import { FiltroUsuariosPipe } from './filtro-usuarios.pipe';
 import { FiltroUnidadMedidaPipe } from './filtro-unidad-medida.pipe';
 import { FiltroClientesPipe } from './filtro-clientes.pipe';
 import { FiltroFamiliaProductosPipe } from './filtro-familia-productos.pipe';
+import { FiltroPresupuestosPipe } from './filtro-presupuestos.pipe';
+import { FiltroProductosPipe } from './filtro-productos.pipe';
 
 @NgModule({
   declarations: [
@@ -17,6 +19,8 @@ import { FiltroFamiliaProductosPipe } from './filtro-familia-productos.pipe';
     FiltroUnidadMedidaPipe,
     FiltroClientesPipe,
     FiltroFamiliaProductosPipe,
+    FiltroPresupuestosPipe,
+    FiltroProductosPipe,
   ],
   imports: [
     CommonModule
@@ -28,7 +32,9 @@ import { FiltroFamiliaProductosPipe } from './filtro-familia-productos.pipe';
     FiltroUsuariosPipe,
     FiltroUnidadMedidaPipe,
     FiltroClientesPipe,
-    FiltroFamiliaProductosPipe
+    FiltroFamiliaProductosPipe,
+    FiltroPresupuestosPipe,
+    FiltroProductosPipe
   ]
 })
 export class PipesModule { }

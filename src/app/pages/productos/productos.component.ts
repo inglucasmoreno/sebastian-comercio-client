@@ -32,8 +32,12 @@ public codigoTMP: string = '';
 // Unidades de medida
 public unidades: any[] = [];
 
+// Famila de productos
+public familias: any[] = [];
+
 // Formulario producto
 public productoForm: any = {
+  familia: '',
   codigo: '',
   descripcion: '',
   unidad_medida: '',
@@ -63,7 +67,6 @@ public ordenar = {
 }
 
 constructor(private productosService: ProductosService,
-            private unidadMedidaService: UnidadMedidaService,
             private authService: AuthService,
             private alertService: AlertService,
             private dataService: DataService) { }
@@ -85,20 +88,12 @@ constructor(private productosService: ProductosService,
       activo: this.filtro.activo,
       parametro: this.filtro.parametro      
     }).subscribe({
-      next: ({ productos, totalItems }) => {
+      next: ({ productos, totalItems, familias, unidades_medida }) => {
+        this.familias = familias;
+        this.unidades = unidades_medida;
         this.productos = productos;
         this.totalItems = totalItems;
-
-        // Listado de unidades de medida
-        this.unidadMedidaService.listarUnidades().subscribe({
-          next:({unidades}) => {
-            this.unidades = unidades.filter(unidad => (unidad.activo));
-            this.alertService.close();
-          },
-          error: ({error}) => {
-            this.alertService.errorApi(error.message);
-          }
-        })
+        this.alertService.close();
       },
       error: ({error}) => {
         this.alertService.errorApi(error.message);
@@ -129,18 +124,22 @@ constructor(private productosService: ProductosService,
     this.idProducto = producto._id;
     this.productoSeleccionado = producto;
     this.productosService.getProducto(producto._id).subscribe({
-      next: ({producto}) => {
+      next: ({ producto }) => {
         
+        console.log(producto.familia);
+
         const { descripcion, 
+                familia,
                 unidad_medida, 
                 codigo, 
-                precio, 
+                precio,
                 stock_minimo_alerta, 
                 cantidad, 
                 cantidad_minima 
           } = producto;
         
-          this.productoForm = {
+        this.productoForm = {
+          familia: familia._id,
           descripcion,
           unidad_medida: unidad_medida._id,
           codigo,
@@ -149,8 +148,10 @@ constructor(private productosService: ProductosService,
           cantidad_minima,
           precio,
         }
+
         this.alertService.close();
         this.showModalProducto = true;
+      
       },
       error: ({error}) => {
         this.alertService.errorApi(error.message);
@@ -183,12 +184,22 @@ constructor(private productosService: ProductosService,
 
   verificacion(): boolean {
     
-    const { descripcion, unidad_medida, precio, cantidad_minima, stock_minimo_alerta } = this.productoForm;
+    const { 
+      descripcion, 
+      unidad_medida, 
+      codigo, 
+      cantidad_minima, 
+      familia, 
+      stock_minimo_alerta 
+    } = this.productoForm;
+
+    console.log(this.productoForm);
 
     const condicion = descripcion.trim() === '' ||
+                      codigo.trim() === '' ||
+                      familia.trim() === '' ||
                       unidad_medida.trim() === '' ||
-                      stock_minimo_alerta === 'true' && !cantidad_minima ||
-                      precio === 0 || precio === null
+                      stock_minimo_alerta === 'true' && !cantidad_minima
     
     if(condicion) return true
     else return false
@@ -297,6 +308,7 @@ constructor(private productosService: ProductosService,
     this.idProducto = '';
     this.codigoTMP = '';
     this.productoForm = {
+      familia: '',
       codigo: '',
       descripcion: '',
       unidad_medida: '',

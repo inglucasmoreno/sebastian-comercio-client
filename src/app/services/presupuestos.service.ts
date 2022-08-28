@@ -25,6 +25,13 @@ export class PresupuestosService {
     });
   };
 
+  // Generar PDF
+  generarPDF(data: any): Observable<any> {
+    return this.http.post(`${base_url}/presupuestos/generarPDF`, data, {
+      headers: this.getToken
+    });
+  };
+
   // Presupuesto por ID
   getPresupuesto(id: string): Observable<any> {
     return this.http.get(`${base_url}/presupuestos/${ id }`,{ 
@@ -44,7 +51,7 @@ export class PresupuestosService {
   }
 
   // Actualizar presupuestos
-  actualizarPresupuestos(id:string, data: any): Observable<any> {
+  actualizarPresupuesto(id:string, data: any): Observable<any> {
     return this.http.put(`${base_url}/presupuestos/${id}`, data, {
       headers: this.getToken
     });

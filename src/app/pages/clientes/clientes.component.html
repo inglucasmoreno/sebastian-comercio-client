@@ -83,7 +83,7 @@
                       <h2 class="text-2xl leading-tight">
                           Listado de clientes
                       </h2>
-                      <p> Total de clientes: {{ clientes.length }} </p>
+                      <p> Total de clientes: {{ clientes?.length }} </p>
                   </div>
                   <div *ngIf="permisos.all">
                     <button title="Nueva unidad" (click)="abrirModal('crear')" class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
@@ -219,7 +219,7 @@
                   </div>
               </div>
           </div>
-          <div *ngIf="clientes.length > cantidadItems" class="px-5 text-sm py-5 mt-4 bg-white border-t flex shadow flex-col xs:flex-row items-center xs:justify-between">
+          <div *ngIf="clientes?.length > cantidadItems" class="px-5 text-sm py-5 mt-4 bg-white border-t flex shadow flex-col xs:flex-row items-center xs:justify-between">
               <pagination-controls nextLabel="Siguiente" previousLabel="Anterior" (pageChange)="paginaActual = $event"></pagination-controls>
           </div>
       </div>

@@ -51,8 +51,6 @@ export class UsuariosService {
 
   // Actualizar usuario
   actualizarUsuario(id: string, data: any): Observable<any>{
-    console.log(id);
-    console.log(data);
     return this.http.put(`${base_url}/usuarios/${id}`, data, {
       headers: {
         'Authorization': localStorage.getItem('token')
