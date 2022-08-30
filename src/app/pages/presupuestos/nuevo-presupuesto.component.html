@@ -200,7 +200,7 @@
         </svg>      
       </button>
     </div>
-    <div class="p-4 text-sm">
+    <div (keyup.enter)="seleccionarClientePresupuesto()" class="p-4 text-sm">
       <div>
         <p class="font-semibold"> <span class="text-red-500"> * </span> Descripción </p>
         <div *ngIf="clienteSeleccionado" class="flex items-center mt-1">

@@ -12,7 +12,7 @@ export class ItemsComponent implements OnInit {
 
   @Input() item: string;
   @Input() route: string;
-  @Input() routerLinkActive: string = 'bg-primaryColor font-semibold text-primary-800 rounded';
+  @Input() routerLinkActive: string = 'bg-secondaryColor text-white font-semibold rounded';
   @Input() svg: string;
 
   ngOnInit(): void {
