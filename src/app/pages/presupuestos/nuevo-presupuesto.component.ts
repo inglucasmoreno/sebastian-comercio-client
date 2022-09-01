@@ -7,6 +7,7 @@ import { ProductosService } from 'src/app/services/productos.service';
 import gsap from 'gsap';
 import { PresupuestosService } from 'src/app/services/presupuestos.service';
 import { environment } from 'src/environments/environment';
+import { ProveedoresService } from '../../services/proveedores.service';
 
 const base_url = environment.base_url;
 
@@ -28,6 +29,9 @@ export class NuevoPresupuestoComponent implements OnInit {
   // Clientes
   public clientes: any[] = [];
   public clienteSeleccionado: any = null;
+
+  // Proveedores
+  public proveedores: any[] = [];
 
   // Tipo de presupuesto
   public tipo_presupuesto = 'consumidor_final';
@@ -81,6 +85,7 @@ export class NuevoPresupuestoComponent implements OnInit {
 
   constructor(private clientesService: ClientesService,
               private authService: AuthService,
+              private proveedoresService: ProveedoresService,
               private presupuestosService: PresupuestosService,
               private productosService: ProductosService,
               private alertService: AlertService,
@@ -90,6 +95,14 @@ export class NuevoPresupuestoComponent implements OnInit {
     gsap.from('.gsap-contenido', { y:100, opacity: 0, duration: .2 });
     this.dataService.ubicacionActual = 'Dashboard - Nuevo presupuesto';
     this.recuperarLocalStorage();
+    this.alertService.loading();
+    this.proveedoresService.listarProveedores().subscribe({
+      next: ({ proveedores }) => {
+        this.proveedores = proveedores;
+        this.alertService.close();
+      },
+      error: ({error}) => this.alertService.errorApi(error.message)
+    });
   }
 
   // Listar clientes

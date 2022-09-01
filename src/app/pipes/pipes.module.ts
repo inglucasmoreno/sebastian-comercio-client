@@ -9,6 +9,7 @@ import { FiltroClientesPipe } from './filtro-clientes.pipe';
 import { FiltroFamiliaProductosPipe } from './filtro-familia-productos.pipe';
 import { FiltroPresupuestosPipe } from './filtro-presupuestos.pipe';
 import { FiltroProductosPipe } from './filtro-productos.pipe';
+import { FiltroProveedoresPipe } from './filtro-proveedores.pipe';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { FiltroProductosPipe } from './filtro-productos.pipe';
     FiltroFamiliaProductosPipe,
     FiltroPresupuestosPipe,
     FiltroProductosPipe,
+    FiltroProveedoresPipe,
   ],
   imports: [
     CommonModule
@@ -34,7 +36,8 @@ import { FiltroProductosPipe } from './filtro-productos.pipe';
     FiltroClientesPipe,
     FiltroFamiliaProductosPipe,
     FiltroPresupuestosPipe,
-    FiltroProductosPipe
+    FiltroProductosPipe,
+    FiltroProveedoresPipe
   ]
 })
 export class PipesModule { }

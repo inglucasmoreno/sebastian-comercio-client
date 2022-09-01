@@ -280,6 +280,13 @@
         Buscar productos
       </button>
       <div class="mt-2" *ngIf="productosPresupuesto.length !== 0">
+        <div class="px-2 flex items-center">
+            <p class="font-semibold"> Despacha: </p> 
+            <select class="border p-1 border-gray-400 ml-2 text-sm focus:outline-none mt-2 mb-1 rounded">
+              <option value="000000000000000000000000"> Sin especificar </option>
+              <option [value]="proveedor._id" *ngFor="let proveedor of proveedores"> {{ proveedor.descripcion }} </option>
+            </select>
+        </div>
         <div class="md:flex md:items-center justify-between p-2">
           <div *ngIf="tipo_presupuesto === 'consumidor_final'"> 
             <span class="font-semibold"> Cliente: </span>

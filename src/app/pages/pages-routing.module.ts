@@ -19,6 +19,7 @@ import { ClientesComponent } from './clientes/clientes.component';
 import { PresupuestosComponent } from './presupuestos/presupuestos.component';
 import { NuevoPresupuestoComponent } from './presupuestos/nuevo-presupuesto.component';
 import { FamiliaProductosComponent } from './familia-productos/familia-productos.component';
+import { ProveedoresComponent } from './proveedores/proveedores.component';
 
 const routes: Routes = [
     {
@@ -41,7 +42,10 @@ const routes: Routes = [
 
             // Clientes
             { path: 'clientes', data: { permisos: 'CLIENTES_NAV' }, canActivate: [PermisosGuard], component: ClientesComponent },
-            
+    
+            // Proveedores
+            { path: 'proveedores', data: { permisos: 'PROVEEDORES_NAV' }, canActivate: [PermisosGuard], component: ProveedoresComponent },
+
             // Unidad medida
             { path: 'unidad-medida', data: { permisos: 'UNIDAD_MEDIDA_NAV' }, canActivate: [PermisosGuard], component: UnidadMedidaComponent },
             
@@ -50,7 +54,7 @@ const routes: Routes = [
 
             // Productos
             { path: 'productos', data: { permisos: 'PRODUCTOS_NAV' }, canActivate: [PermisosGuard], component: ProductosComponent },
-            
+
             // Presupuestos
             { path: 'presupuestos', data: { permisos: 'PRESUPUESTOS_NAV' }, canActivate: [PermisosGuard], component: PresupuestosComponent },
             { path: 'nuevo-presupuesto', data: { permisos: 'PRESUPUESTOS_NAV' }, canActivate: [PermisosGuard], component: NuevoPresupuestoComponent },

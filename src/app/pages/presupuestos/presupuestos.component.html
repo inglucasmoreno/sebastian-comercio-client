@@ -15,7 +15,7 @@
           <p> <span class="font-semibold"> Número de presupuesto: </span> {{ presupuestoSeleccionado?.nro }} </p>
           <p class="mt-2 md:mt-0"> <span class="font-semibold"> Precio total: </span> ${{ presupuestoSeleccionado?.precio_total | moneda }} </p>
         </div>
-        <p class="mt-2"> <span class="font-semibold"> Descripción: </span> {{ presupuestoSeleccionado?.descripcion }} </p>
+        <p class="mt-2"> <span class="font-semibold"> Cliente: </span> {{ presupuestoSeleccionado?.descripcion }} </p>
       </div>
 
       <div class="mt-2">
@@ -122,7 +122,7 @@
                                   <th class="px-5 border-b-2 border-gray-200 bg-gray-100 text-center text-sm font-semibold text-gray-900 tracking-wider">
                                       <div (click)="ordenarPorColumna('descripcion')" class="cursor-pointer flex items-center focus:outline-none">
                                           <span>
-                                              Descripción                                               
+                                              Cliente                                              
                                           </span>
                                           <span class="ml-2">
                                               <svg *ngIf="ordenar.columna == 'descripcion' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                                   
