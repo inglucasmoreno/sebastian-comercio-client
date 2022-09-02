@@ -8,7 +8,7 @@
         </div>
         <div class="p-4 text-sm">
             <div>
-              <p class="font-semibold"> <span class="text-red-500"> * </span> Descripción </p>
+              <p class="font-semibold"> <span class="text-red-500"> * </span> Razón social </p>
               <input [(ngModel)]="proveedoresForm.descripcion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Equinoccio Technology" type="text">
             </div>
             <div class="md:flex md:items-center mt-4">
@@ -35,10 +35,31 @@
                 <input [(ngModel)]="proveedoresForm.correo_electronico" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. equinocciotech@gmail.com" type="text">
               </div>
             </div>
-            <div class="mt-4">
-              <p class="font-semibold"> Dirección </p>
-              <input [(ngModel)]="proveedoresForm.direccion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Portugal 1030" type="text">
-            </div>
+            <div class="md:flex md:items-center mt-4">
+                <div class="md:w-1/2">
+                    <p class="font-semibold"> Dirección </p>
+                    <input [(ngModel)]="proveedoresForm.direccion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Portugal 1030" type="text">              
+                </div>
+                <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+                    <p class="font-semibold"> Condición frente al IVA </p>
+                    <select [(ngModel)]="proveedoresForm.condicion_iva" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+                        <option value="Consumidor Final"> Consumidor Final </option>
+                        <option value="IVA Responsable Inscripto"> IVA Responsable Inscripto </option>
+                        <option value="IVA Responsable no Inscripto"> IVA Responsable no Inscripto </option>
+                        <option value="IVA no Responsable"> IVA no Responsable </option>
+                        <option value="IVA Sujeto Exento"> IVA Sujeto Exento </option>
+                        <option value="Responsable Monotributo"> Responsable Monotributo </option>
+                        <option value="Sujeto no Categorizado"> Sujeto no Categorizado </option>
+                        <option value="Proveedor del Exterior"> Proveedor del Exterior </option>
+                        <option value="Cliente del Exterior"> Cliente del Exterior </option>
+                        <option value="IVA Liberado"> IVA Liberado </option>
+                        <option value="IVA Responsable Inscripto – Agente de Percepción"> IVA Responsable Inscripto – Agente de Percepción </option>
+                        <option value="Pequeño Contribuyente Eventual"> Pequeño Contribuyente Eventual </option>
+                        <option value="Monotributista Social"> Monotributista Social </option>
+                        <option value="Pequeño Contribuyente Eventual Social"> Pequeño Contribuyente Eventual Social </option>                    
+                    </select>
+                </div>
+              </div>
             <div *ngIf="proveedorSeleccionado && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
               <div class="xl:w-1/2">
                   <p class="font-semibold text-sm"> Fecha de alta </p>
@@ -135,7 +156,7 @@
                                 <tr class="border">
                                     <th class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-900 tracking-wider">
                                         <div (click)="ordenarPorColumna('descripcion')" class="cursor-pointer flex items-center focus:outline-none">
-                                            <span> Descripción </span>
+                                            <span> Razón social </span>
                                             <span class="ml-2 text-gray-600">    
                                                 <svg *ngIf="ordenar.columna == 'descripcion' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                                   
                                                 <svg *ngIf="ordenar.columna == 'descripcion' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>

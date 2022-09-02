@@ -47,7 +47,8 @@ export class NuevoPresupuestoComponent implements OnInit {
     identificacion: '',
     direccion: '',
     telefono: '',
-    correo_electronico: ''
+    correo_electronico: '',
+    condicion_iva: 'Consumidor Final'
   }
 
   // Presupuesto
@@ -249,7 +250,8 @@ export class NuevoPresupuestoComponent implements OnInit {
       identificacion: '',
       direccion: '',
       telefono: '',
-      correo_electronico: ''
+      correo_electronico: '',
+      condicion_iva: 'Consumidor Final'
     }
     this.almacenamientoLocalStorage();
   }
@@ -337,6 +339,7 @@ export class NuevoPresupuestoComponent implements OnInit {
           direccion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.direccion : '',
           telefono: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.telefono : '',
           correo_electronico: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.correo_electronico : '',
+          condicion_iva: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.condicion_iva : 'Consumidor Final',
           precio_total: this.precio_total,
           productos: this.productosPresupuesto,
           creatorUser: this.authService.usuario.userId,
@@ -376,7 +379,8 @@ export class NuevoPresupuestoComponent implements OnInit {
       identificacion: '',
       direccion: '',
       telefono: '',
-      correo_electronico: ''
+      correo_electronico: '',
+      condicion_iva: 'Consumidor Final'
     }
 
     // Presupuesto
@@ -448,7 +452,8 @@ export class NuevoPresupuestoComponent implements OnInit {
       identificacion: '',
       direccion: '',
       telefono: '',
-      correo_electronico: ''     
+      correo_electronico: '',
+      condicion_iva: 'Consumidor Final'
     };
     this.productosPresupuesto = localStorage.getItem('productosPresupuesto') ? JSON.parse(localStorage.getItem('productosPresupuesto')) : [];
     this.precio_total = localStorage.getItem('precio_total') ? JSON.parse(localStorage.getItem('precio_total')) : [];

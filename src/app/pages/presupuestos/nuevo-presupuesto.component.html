@@ -112,7 +112,7 @@
                         <tr class="border">
                             <th class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-900 tracking-wider">
                                 <div (click)="ordenarPorColumna('descripcion')" class="cursor-pointer flex items-center focus:outline-none">
-                                    <span> Descripción </span>
+                                    <span> Razón social </span>
                                     <span class="ml-2 text-gray-600">    
                                         <svg *ngIf="ordenar.columna == 'descripcion' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                                   
                                         <svg *ngIf="ordenar.columna == 'descripcion' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>
@@ -202,7 +202,7 @@
     </div>
     <div (keyup.enter)="seleccionarClientePresupuesto()" class="p-4 text-sm">
       <div>
-        <p class="font-semibold"> <span class="text-red-500"> * </span> Descripción </p>
+        <p class="font-semibold"> <span class="text-red-500"> * </span> Razón social </p>
         <div *ngIf="clienteSeleccionado" class="flex items-center mt-1">
           <div class="w-max text-xs text-secondaryColor font-semibold p-2 rounded"> {{ clienteSeleccionado?.descripcion }} </div>
           <button (click)="eliminarClienteSeleccionado()" class="bg-red-50 focus:outline-none text-red-700 rounded p-1 border border-red-300">
@@ -216,7 +216,7 @@
       <div class="md:flex md:items-center mt-4">
         <div class="md:w-1/2">
           <p class="font-semibold"> <span class="text-red-500"> * </span> Tipo de identificación </p>
-          <div *ngIf="clienteSeleccionado" class="text-xs w-max font-semibold text-secondaryColor py-2 px-3 mt-1 rounded"> {{ clienteSeleccionado?.tipo_identificacion }} </div>
+          <div *ngIf="clienteSeleccionado" class="text-xs w-max font-semibold text-secondaryColor py-2 px-1 mt-1 rounded"> {{ clienteSeleccionado?.tipo_identificacion }} </div>
           <select *ngIf="!clienteSeleccionado" [(ngModel)]="clientesForm.tipo_identificacion"  class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
             <option value="DNI"> DNI </option>
             <option value="CUIL"> CUIL </option>
@@ -225,7 +225,7 @@
         </div>
         <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
           <p class="font-semibold"> <span class="text-red-500"> * </span> Identificación </p>
-          <div *ngIf="clienteSeleccionado" class="text-xs w-max font-semibold text-secondaryColor py-2 px-3 mt-1 rounded"> {{ clienteSeleccionado?.identificacion }} </div>
+          <div *ngIf="clienteSeleccionado" class="text-xs w-max font-semibold text-secondaryColor py-2 px-1 mt-1 rounded"> {{ clienteSeleccionado?.identificacion }} </div>
           <input *ngIf="!clienteSeleccionado" [(ngModel)]="clientesForm.identificacion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 34060398" type="text">
         </div>
       </div>
@@ -239,9 +239,31 @@
           <input  [(ngModel)]="clientesForm.correo_electronico" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. equinocciotech@gmail.com" type="text">
         </div>
       </div>
-      <div class="mt-4">
-        <p class="font-semibold"> Direccion </p>
-        <input [(ngModel)]="clientesForm.direccion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Portugal 1030" type="text">
+      <div class="md:flex md:items-center mt-4">
+        <div class="md:w-1/2">
+            <p class="font-semibold"> Dirección </p>
+            <input [(ngModel)]="clientesForm.direccion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Portugal 1030" type="text">              
+        </div>
+        <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+            <p class="font-semibold"> Condición frente al IVA </p>
+            <div *ngIf="clienteSeleccionado" class="text-xs w-max font-semibold text-secondaryColor py-2 px-1 mt-1 rounded"> {{ clienteSeleccionado?.condicion_iva }} </div>
+            <select *ngIf="!clienteSeleccionado" [(ngModel)]="clientesForm.condicion_iva" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+                <option value="Consumidor Final"> Consumidor Final </option>
+                <option value="IVA Responsable Inscripto"> IVA Responsable Inscripto </option>
+                <option value="IVA Responsable no Inscripto"> IVA Responsable no Inscripto </option>
+                <option value="IVA no Responsable"> IVA no Responsable </option>
+                <option value="IVA Sujeto Exento"> IVA Sujeto Exento </option>
+                <option value="Responsable Monotributo"> Responsable Monotributo </option>
+                <option value="Sujeto no Categorizado"> Sujeto no Categorizado </option>
+                <option value="Proveedor del Exterior"> Proveedor del Exterior </option>
+                <option value="Cliente del Exterior"> Cliente del Exterior </option>
+                <option value="IVA Liberado"> IVA Liberado </option>
+                <option value="IVA Responsable Inscripto – Agente de Percepción"> IVA Responsable Inscripto – Agente de Percepción </option>
+                <option value="Pequeño Contribuyente Eventual"> Pequeño Contribuyente Eventual </option>
+                <option value="Monotributista Social"> Monotributista Social </option>
+                <option value="Pequeño Contribuyente Eventual Social"> Pequeño Contribuyente Eventual Social </option>                    
+            </select>
+        </div>
       </div>
     </div>
     <div class="flex items-center p-2">

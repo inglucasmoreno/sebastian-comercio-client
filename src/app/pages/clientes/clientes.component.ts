@@ -33,7 +33,7 @@ public clientesForm: any = {
   telefono: '',
   direccion: '',
   correo_electronico: '',
-  precio_total: null
+  condicion_iva: 'Consumidor Final'
 }
 
 // Paginacion
@@ -209,6 +209,7 @@ constructor(private clientesService: ClientesService,
       telefono: '',
       direccion: '',
       correo_electronico: '',
+      condicion_iva: 'Consumidor Final'
     }    
   }
 
