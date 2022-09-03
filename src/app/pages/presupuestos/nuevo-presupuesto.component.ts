@@ -53,6 +53,7 @@ export class NuevoPresupuestoComponent implements OnInit {
 
   // Presupuesto
   public precio_total = 0;
+  public observacion:string = '';
 
   // Productos
   public productos: any[] = [];
@@ -334,6 +335,7 @@ export class NuevoPresupuestoComponent implements OnInit {
           cliente: dataCliente,
           tipo_presupuesto: this.tipo_presupuesto,
           descripcion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.descripcion : 'CONSUMIDOR FINAL',
+          observacion: this.observacion,
           tipo_identificacion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.tipo_identificacion : 'DNI',
           identificacion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.identificacion : '',
           direccion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.direccion : '',
@@ -385,6 +387,7 @@ export class NuevoPresupuestoComponent implements OnInit {
 
     // Presupuesto
     this.precio_total = 0;
+    this.observacion = '';
 
     // Productos
     this.productos = [];
@@ -438,6 +441,7 @@ export class NuevoPresupuestoComponent implements OnInit {
     localStorage.setItem('clientesForm', JSON.stringify(this.clientesForm));
     localStorage.setItem('productosPresupuesto', JSON.stringify(this.productosPresupuesto));
     localStorage.setItem('precio_total', JSON.stringify(this.precio_total));
+    localStorage.setItem('observacion', JSON.stringify(this.observacion));
   }
 
   // recupearar localstorage
@@ -457,6 +461,7 @@ export class NuevoPresupuestoComponent implements OnInit {
     };
     this.productosPresupuesto = localStorage.getItem('productosPresupuesto') ? JSON.parse(localStorage.getItem('productosPresupuesto')) : [];
     this.precio_total = localStorage.getItem('precio_total') ? JSON.parse(localStorage.getItem('precio_total')) : [];
+    this.observacion = localStorage.getItem('observacion') ? JSON.parse(localStorage.getItem('observacion')) : '';
   }
 
   // Paginacion - Cambiar pagina

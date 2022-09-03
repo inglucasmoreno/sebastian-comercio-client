@@ -12,7 +12,7 @@
       
       <div class="text-sm">
         <div class="md:flex md:items-center md:justify-between">
-          <p> <span class="font-semibold"> Número de presupuesto: </span> {{ presupuestoSeleccionado?.nro }} </p>
+          <p> <span class="font-semibold"> Número de presupuesto: </span> {{ presupuestoSeleccionado?.nro | codigoPresupuesto }} </p>
           <p class="mt-2 md:mt-0"> <span class="font-semibold"> Precio total: </span> ${{ presupuestoSeleccionado?.precio_total | moneda }} </p>
         </div>
         <p class="mt-2"> <span class="font-semibold"> Cliente: </span> {{ presupuestoSeleccionado?.descripcion }} </p>
@@ -152,7 +152,7 @@
                               <tr class="animate__animated animate__fadeIn" *ngFor="let presupuesto of presupuestos | filtroPresupuestos:filtro.parametro:filtro.activo | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual}">
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
                                     <p class="text-gray-900 whitespace-no-wrap">
-                                        {{ presupuesto.nro }}
+                                        {{ presupuesto.nro | codigoPresupuesto }}
                                     </p>
                                   </td>
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
