@@ -176,12 +176,15 @@ export class PresupuestosComponent implements OnInit {
       presupuesto: presupuesto._id
     }
 
+    this.alertService.loading();
+
     this.presupuestoProductosService.listarProductos(parametros).subscribe({
       next: ({productos}) => {
         this.productos = productos;
         window.scroll(0,0);
         this.presupuestoSeleccionado = presupuesto;
         this.showModalPresupuesto = true;
+        this.alertService.close();
       },
       error: ({error}) => this.alertService.errorApi(error.message)
     })

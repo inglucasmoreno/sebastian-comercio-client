@@ -1,4 +1,22 @@
 
+<!-- Modal: Importar medicamentos -->
+<app-modal [showModal]="showModalImportarProductos">
+    <div class="bg-primary-800 px-3 py-2 rounded-t flex items-center justify-between">
+        <h1 class="text-white text-xl"> Importando productos </h1>
+        <button (click)="showModalImportarProductos = false" class="text-white focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>            
+        </button>    
+    </div>
+    <div class="p-2">
+        <p class="text-sm text-gray-500"> <span class="text-red-500"> * </span> El archivo seleccionado debe ser un excel </p>
+        <input [(ngModel)]="file" (change)="capturarArchivo($event)" type="file" class="mt-2 text-sm">
+        <button (click)="importarProductos()" class="bg-secondaryColor focus:outline-none text-sm mt-3 text-white p-2 rounded w-full shadow">
+            Importar productos
+        </button>
+    </div>
+</app-modal>
 
 <!-- Modal: Crear / Editar producto -->
 <app-modal [showModal]="showModalProducto">
@@ -115,6 +133,11 @@
                       <p> Total de productos: {{ totalItems }} </p>
                   </div>
                   <div *ngIf="permisos.all">
+                    <button *ngIf="authService.usuario.role === 'ADMIN_ROLE'" title="Importar productos" (click)="abrirImportarProductos()" class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                    </button>
                     <button title="Nuevo producto" (click)="abrirModal('crear')" class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
