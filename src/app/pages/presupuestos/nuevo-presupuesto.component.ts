@@ -126,7 +126,11 @@ export class NuevoPresupuestoComponent implements OnInit {
   // Listar productos
   listarProductos(): void {
     this.alertService.loading();
-    this.productosService.listarProductos({ parametro: this.filtro.parametroProductos, activo: true }).subscribe({
+    this.productosService.listarProductos({ 
+      desde: this.desde,
+      cantidadItems: this.cantidadItems,
+      parametro: this.filtro.parametroProductos, 
+      activo: true }).subscribe({
       next: ({ productos, totalItems }) => {
         this.totalItems = totalItems;
         this.productos = productos;
@@ -467,7 +471,7 @@ export class NuevoPresupuestoComponent implements OnInit {
   // Paginacion - Cambiar pagina
   cambiarPagina(nroPagina): void {
     this.paginaActualProductos = nroPagina;
-    this.desde = (this.paginaActualProductos - 1) * this.cantidadItems;
+    this.desde = (this.paginaActualProductos - 1) * this.cantidadItemsProductos;
     this.alertService.loading();
     this.listarProductos();
   }

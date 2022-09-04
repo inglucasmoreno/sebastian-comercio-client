@@ -28,14 +28,14 @@
       </div>  
       
       <div class="mt-4 text-sm">
-        <div (click)="seleccionarProducto(producto)" class="border shadow hover:border-secondaryColor cursor-pointer border-gray-400 p-2 w-full my-2" *ngFor="let producto of productos | paginate: {itemsPerPage: cantidadItemsProductos, currentPage: paginaActualProductos, totalItems: totalItems}">
+        <div (click)="seleccionarProducto(producto)" class="border shadow hover:border-secondaryColor cursor-pointer border-gray-400 p-2 w-full my-2" *ngFor="let producto of productos | paginate: {itemsPerPage: cantidadItemsProductos, currentPage: paginaActualProductos, totalItems: totalItems, id: 'productos'}">
           <p class="font-semibold"> {{ producto.descripcion }} </p>  
           <p class="text-gray-600 text-xs"> {{ producto.unidad_medida.descripcion }} </p>
         </div>
       </div>
     
-      <div class="p-2 text-sm mt-4 bg-white flex flex-col xs:flex-row items-center xs:justify-between">
-        <pagination-controls nextLabel="Siguiente" previousLabel="Anterior" (pageChange)="cambiarPagina($event)"></pagination-controls>
+      <div class="p-2 text-xs md:text-sm mt-4 bg-white flex flex-col xs:flex-row items-center xs:justify-between">
+        <pagination-controls id="productos" nextLabel="Siguiente" previousLabel="Anterior" (pageChange)="cambiarPagina($event)"></pagination-controls>
       </div>
     
     </div>
@@ -147,7 +147,7 @@
                         </tr>
                     </thead>
                     <tbody *ngIf="clientes">
-                        <tr (click)="seleccionarCliente(cliente)" class="animate__animated animate__fadeIn hover:bg-blue-50 cursor-pointer" *ngFor="let cliente of clientes | filtroClientes:filtro.parametro:filtro.activo | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual}">
+                        <tr (click)="seleccionarCliente(cliente)" class="animate__animated animate__fadeIn hover:bg-blue-50 cursor-pointer" *ngFor="let cliente of clientes | filtroClientes:filtro.parametro:filtro.activo | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual, id: 'clientes'}">
                             <td class="px-5 py-3 border-b border-gray-200 text-xs">
                                 <p class="text-gray-900 w-max whitespace-no-wrap">
                                     {{ cliente.descripcion }}
@@ -170,7 +170,7 @@
         </div>
     </div>
     <div *ngIf="clientes.length > cantidadItems" class="px-5 text-sm py-5 mt-4 bg-white border-t flex shadow flex-col xs:flex-row items-center xs:justify-between">
-        <pagination-controls nextLabel="Siguiente" previousLabel="Anterior" (pageChange)="paginaActual = $event"></pagination-controls>
+        <pagination-controls id="clientes" nextLabel="Siguiente" previousLabel="Anterior" (pageChange)="paginaActual = $event"></pagination-controls>
     </div>
 </div>
 </app-modal-medium>

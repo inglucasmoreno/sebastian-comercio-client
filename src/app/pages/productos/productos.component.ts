@@ -96,6 +96,8 @@ constructor(private productosService: ProductosService,
     this.productosService.listarProductos({
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
+      desde: this.desde,
+      cantidadItems: this.cantidadItems,
       activo: this.filtro.activo,
       parametro: this.filtro.parametro      
     }).subscribe({
@@ -176,6 +178,8 @@ constructor(private productosService: ProductosService,
     this.productosService.listarProductos({
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
+      desde: this.desde,
+      cantidadItems: this.cantidadItems,
       activo: this.filtro.activo,
       parametro: this.filtro.parametro,
       alerta_stock: this.filtro.alerta_stock      
