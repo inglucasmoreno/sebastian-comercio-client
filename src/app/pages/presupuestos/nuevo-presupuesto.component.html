@@ -1,3 +1,37 @@
+<!-- Editar producto -->
+<app-modal [showModal]="showEditarProducto">
+    <div class="text-white rounded-t p-2 bg-primary-800 flex items-center justify-between">
+      <h1> Actualizando producto </h1>
+      <button class="focus:outline-none" (click)="showEditarProducto = false">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div> 
+    <div *ngIf="productoSeleccionado" class="p-4">
+      <p class="font-semibold"> {{ productoSeleccionado?.descripcion }} </p>  
+      <p class="text-gray-600 text-xs"> {{ productoSeleccionado?.unidad_medida.descripcion }} </p>
+      <div class="flex mt-2">
+        <div class="w-1/2">
+          <p class="text-sm font-semibold"> Cantidad </p>  
+          <input (keyup.enter)="actualizarProducto()" [(ngModel)]="cantidad" type="number" min="0" class="border w-full mt-1 focus:outline-none text-sm border-gray-400 p-2 rounded" placeholder="Ej. 3">
+        </div>
+        <div class="ml-2 w-1/2">
+          <p class="text-sm font-semibold"> Precio </p>
+          <input (keyup.enter)="actualizarProducto()" [disabled]="productoCargado" [(ngModel)]="precio" type="number" min="0" class="border w-full mt-1 focus:outline-none text-sm border-gray-400 p-2 rounded" placeholder="Ej. 1200">
+        </div>
+      </div>
+      <div class="flex items-center text-sm mt-3">
+        <button (click)="actualizarProducto()" class="border w-1/2 shadow h-max p-2 rounded bg-green-700 text-white focus:outline-none">
+          Actualizar
+        </button>
+        <button (click)="eliminarProductoDePresupuesto()" class="border w-1/2 shadow p-2 rounded ml-2 bg-red-700 text-white focus:outline-none">
+          Eliminar
+        </button>    
+      </div>  
+    </div>
+</app-modal>
+
 <!-- Listado de productos -->
 <app-modal [showModal]="showProductos">
   <div>
@@ -319,7 +353,7 @@
             <span class="font-semibold"> Precio total: </span> ${{ precio_total | moneda }} 
           </div>
         </div>
-        <div (click)="eliminarProductoDePresupuesto(producto)" class="border border-gray-400 p-2 hover:border-red-700 cursor-pointer flex items-center justify-between shadow m-2" *ngFor="let producto of productosPresupuesto">
+        <div (click)="abrirEditarProducto(producto)" class="border border-gray-400 p-2 hover:border-red-700 cursor-pointer flex items-center justify-between shadow m-2" *ngFor="let producto of productosPresupuesto">
           <div>
             <p class="font-semibold"> {{ producto.descripcion }} </p>
             <p class="text-xs"> ${{ producto.precio_unitario | moneda }} x {{ producto.unidad_medida }} </p>

@@ -25,6 +25,7 @@ export class NuevoPresupuestoComponent implements OnInit {
   // Modal
   public showClientes = false;
   public showProductos = false;
+  public showEditarProducto = false;
 
   // Clientes
   public clientes: any[] = [];
@@ -200,7 +201,6 @@ export class NuevoPresupuestoComponent implements OnInit {
     this.productosPresupuesto.map( producto => {
       if(producto.producto === this.productoSeleccionado._id){
         producto.cantidad = this.dataService.redondear(producto.cantidad + this.cantidad, 2);
-        console.log(this.cantidad, this.precio);
         producto.precio_total = this.dataService.redondear(producto.cantidad * this.precio, 2);
         repetido = true;  
       }
@@ -235,12 +235,41 @@ export class NuevoPresupuestoComponent implements OnInit {
   
   }
 
-  // Eliminar producto de presupuesto
-  eliminarProductoDePresupuesto(producto: any): void {
+  // Actualizar producto
+  actualizarProducto(): void {
+
+    const { descripcion, unidad_medida } = this.productoSeleccionado;
+
+    if(this.cantidad <= 0){
+      this.alertService.info('Debes colocar una cantidad');
+      return;
+    }
+
+    if(this.precio <= 0){
+      this.alertService.info('Debes colocar un precio');
+      return;
+    }
+
+    this.productosPresupuesto.map((producto)=>{
+      if(producto._id === this.productoSeleccionado._id){
+        producto.cantidad = this.cantidad;
+        producto.precio_unitario = this.precio;
+        producto.precio_total = this.dataService.redondear(this.cantidad * this.precio, 2);
+      }
+    });
+
+    this.showEditarProducto = false;
+    this.calcularPrecio();
+  
+  }
+
+  // Eliminar producto de presupuestoh
+  eliminarProductoDePresupuesto(): void {
     this.alertService.question({ msg: '¿Quieres eliminar el producto?', buttonText: 'Eliminar' })
     .then(({isConfirmed}) => {  
       if (isConfirmed) {
-        this.productosPresupuesto = this.productosPresupuesto.filter( elemento => elemento.producto !== producto.producto);
+        this.productosPresupuesto = this.productosPresupuesto.filter( elemento => elemento.producto !== this.productoSeleccionado.producto);
+        this.showEditarProducto = false;
         this.calcularPrecio();
       }
     });
@@ -363,6 +392,14 @@ export class NuevoPresupuestoComponent implements OnInit {
 
       }
     });    
+  }
+
+  // Editar producto
+  abrirEditarProducto(producto): void {
+    this.productoSeleccionado = producto;
+    this.showEditarProducto = true;
+    this.cantidad = producto.cantidad;
+    this.precio = producto.precio_unitario;
   }
 
   reiniciarValores(): void {
