@@ -1,39 +1,46 @@
-<app-modal [showModal]="showModalPresupuesto">
-  <div>
-    <div class="bg-primary-800 text-white p-2 flex items-center justify-between">
-      <h1> Detalles de presupuesto </h1>
-      <button (click)="showModalPresupuesto = false" class="text-white focus:outline-none">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+<!-- Editar presupuesto -->
+<app-modal [showModal]="showModalEditarPresupuesto">
+  <div class="bg-primary-900 text-white flex items-center justify-between p-2 rounded-t">
+    <h1> Detalles del presupuesto </h1>
+    <button (click)="showModalEditarPresupuesto = false" class="text-white focus:outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>      
+    </button>
+  </div>
+  <div class="p-2 text-sm">
+    <div class="w-full flex items-center justify-between">
+      <p> <span class="font-semibold"> Número de presupuesto: </span> {{ presupuestoSeleccionado?.nro | codigoPresupuesto }} </p>
+      <p> <span class="font-semibold"> Fecha: </span>  {{ presupuestoSeleccionado?.createdAt | fecha }} </p>
     </div>
-    <div class="bg-white p-2">
-      
-      <div class="text-sm">
-        <div class="md:flex md:items-center md:justify-between">
-          <p> <span class="font-semibold"> Número de presupuesto: </span> {{ presupuestoSeleccionado?.nro | codigoPresupuesto }} </p>
-          <p class="mt-2 md:mt-0"> <span class="font-semibold"> Precio total: </span> ${{ presupuestoSeleccionado?.precio_total | moneda }} </p>
-        </div>
-        <p class="mt-2"> <span class="font-semibold"> Cliente: </span> {{ presupuestoSeleccionado?.descripcion }} </p>
+    <p class="mt-2"> <span class="font-semibold"> Precio total: </span>  ${{ presupuestoSeleccionado?.precio_total | moneda }} </p>
+    <p class="mt-2"> <span class="font-semibold"> Cliente: </span> {{ presupuestoSeleccionado?.descripcion }} </p>
+    <div class="mt-2 border-t pt-2">
+      <p class="font-semibold"> Observacion personalizada </p>
+      <div class="flex items-center">
+        <input type="text" class="border mt-1 focus:outline-none border-gray-300 p-2 rounded w-full" placeholder="Colocar aquí la observación">
+        <button title="Actualizar observación" class="border focus:outline-none bg-gray-100 border-gray-300 rounded p-2 ml-1 mt-1 hover:text-secondaryColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>         
+        </button>
       </div>
-
-      <div class="mt-2">
-        <h2 class="font-semibold"> Listado de productos </h2>
-        <input [(ngModel)]="filtro.parametroProductos" type="text" class="p-2 my-2 border focus:outline-none text-sm border-gray-400 rounded" placeholder="Buscar">
-        <div class="max-h-64 overflow-y-auto">
-          <div class="text-sm border border-gray-400 mt-2 p-2" *ngFor="let producto of productos | filtroProductos:filtro.parametroProductos:''">
-            <h1 class="font-semibold"> {{ producto.descripcion }} </h1>
-            <p class="text-xs text-gray-500"> ${{ producto.precio_unitario | moneda }} x {{ producto.unidad_medida }} </p>
-            <p class="text-xs"> Cantidad: {{ producto.cantidad }} </p>
-            <p class="text-xs font-semibold"> Precio: ${{ producto.precio_total | moneda }} </p>
-          </div>
+    </div> 
+    <div class="pt-2 mt-3 border-t">
+      <h2 class="font-semibold"> Listado de productos </h2>
+      <input [(ngModel)]="filtro.parametroProductos" type="text" class="p-2 my-2 border focus:outline-none text-sm border-gray-400 rounded" placeholder="Buscar">
+      <div class="max-h-64 overflow-y-auto">
+        <div class="text-sm border border-gray-400 mt-2 p-2" *ngFor="let producto of productos | filtroProductos:filtro.parametroProductos:''">
+          <h1 class="font-semibold"> {{ producto.descripcion }} </h1>
+          <p class="text-xs text-gray-500"> ${{ producto.precio_unitario | moneda }} x {{ producto.unidad_medida }} </p>
+          <p class="text-xs"> Cantidad: {{ producto.cantidad }} </p>
+          <p class="text-xs font-semibold"> Precio: ${{ producto.precio_total | moneda }} </p>
         </div>
       </div>
-      
     </div>
   </div>
 </app-modal>
+
 
 <!-- Listado de presupuestos -->
 <div class="md:max-w-7xl mx-auto">
@@ -172,7 +179,7 @@
                                 </td>
                                   <td *ngIf="permisos.all" class="px-5 py-2 border-b border-gray-200 text-xs text-center">
                                     <span class="flex items-center justify-center text-gray-900 whitespace-no-wrap">
-                                      <app-boton-tabla (click)="obtenerPresupuesto(presupuesto)" title="Ver detalles">
+                                      <app-boton-tabla (click)="abrirEditarPresupuesto(presupuesto)"  title="Ver detalles">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                           <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                                         </svg>

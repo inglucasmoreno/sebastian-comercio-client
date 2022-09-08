@@ -21,6 +21,7 @@ export class PresupuestosComponent implements OnInit {
 
  // Modal
  public showModalPresupuesto = false;
+ public showModalEditarPresupuesto = false;
 
  // Presupuesto
  public idPresupuesto: string = '';
@@ -142,6 +143,7 @@ export class PresupuestosComponent implements OnInit {
      },({error})=>{
        this.alertService.errorApi(error.message);
      });
+
    }
 
    // Actualizar estado Activo/Inactivo
@@ -188,6 +190,7 @@ export class PresupuestosComponent implements OnInit {
       },
       error: ({error}) => this.alertService.errorApi(error.message)
     })
+
    }
 
    // Generar PDF
@@ -200,6 +203,32 @@ export class PresupuestosComponent implements OnInit {
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
     })
+   }
+
+   // Abrir editar presupuesto
+   abrirEditarPresupuesto(presupuesto: any): void {
+
+    this.presupuestoSeleccionado = presupuesto;
+
+    const parametros = {
+      direccion: this.ordenar.direccion,
+      columna: this.ordenar.columna,
+      presupuesto: presupuesto._id
+    }
+
+    this.alertService.loading();
+
+    this.presupuestoProductosService.listarProductos(parametros).subscribe({
+      next: ({productos}) => {
+        this.productos = productos;
+        window.scroll(0,0);
+        this.presupuestoSeleccionado = presupuesto;
+        this.showModalEditarPresupuesto = true;
+        this.alertService.close();
+      },
+      error: ({error}) => this.alertService.errorApi(error.message)
+    })
+
    }
 
    // Reiniciando formulario
