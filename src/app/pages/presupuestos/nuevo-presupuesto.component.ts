@@ -251,7 +251,7 @@ export class NuevoPresupuestoComponent implements OnInit {
     }
 
     this.productosPresupuesto.map((producto)=>{
-      if(producto._id === this.productoSeleccionado._id){
+      if(producto.producto  === this.productoSeleccionado.producto){
         producto.cantidad = this.cantidad;
         producto.precio_unitario = this.precio;
         producto.precio_total = this.dataService.redondear(this.cantidad * this.precio, 2);
@@ -398,6 +398,7 @@ export class NuevoPresupuestoComponent implements OnInit {
   abrirEditarProducto(producto): void {
     this.productoSeleccionado = producto;
     this.showEditarProducto = true;
+    this.productoCargado = false;
     this.cantidad = producto.cantidad;
     this.precio = producto.precio_unitario;
   }
