@@ -7,8 +7,6 @@ export class FiltroProductosPipe implements PipeTransform {
 
   transform(valores: any[], parametro: string, activo: string): any {
     
-    console.log(valores);
-
     // Trabajando con activo boolean
     let boolActivo: boolean;
     let filtrados: any[];

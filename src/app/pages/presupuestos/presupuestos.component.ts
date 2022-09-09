@@ -25,16 +25,24 @@ export class PresupuestosComponent implements OnInit {
 
  // Presupuesto
  public idPresupuesto: string = '';
+ public observacion: string = '';
  public presupuestos: any = [];
  public presupuestoSeleccionado: any;
  public descripcion: string = '';
  
  // Productos
  public productos: any[];
+ public productoSeleccionado: any;
+ public cantidad = null;
+ public precio_unitario = null;
+ public precio_total = null;
 
  // Paginacion
  public paginaActual: number = 1;
  public cantidadItems: number = 10;
+
+ // Estado login
+ public observacionActualizadaFlag: boolean = false;
 
  // Filtrado
  public filtro = {
@@ -91,7 +99,11 @@ export class PresupuestosComponent implements OnInit {
      .subscribe( ({ presupuestos }) => {
        this.presupuestos = presupuestos;
        this.showModalPresupuesto = false;
-       this.alertService.close();
+       this.productoSeleccionado = null;
+       if(this.observacionActualizadaFlag){
+         this.alertService.success('Observación actualizada');
+         this.observacionActualizadaFlag = false;
+       }else this.alertService.close();
      }, (({error}) => {
        this.alertService.errorApi(error.msg);
      }));
@@ -210,6 +222,8 @@ export class PresupuestosComponent implements OnInit {
 
     this.presupuestoSeleccionado = presupuesto;
 
+    this.observacion = presupuesto.observacion;
+
     const parametros = {
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
@@ -230,6 +244,67 @@ export class PresupuestosComponent implements OnInit {
     })
 
    }
+
+   // Actualizar observacion
+   actualizarObservacion(): void {
+    this.alertService.loading();
+    const data = {
+      observacion: this.observacion,
+      updatorUser: this.authService.usuario.userId
+    };
+    this.presupuestosService.actualizarPresupuesto(this.presupuestoSeleccionado._id, data).subscribe(() => {
+      this.observacionActualizadaFlag = true;
+      this.listarPresupuestos();
+    });
+   }
+
+   // Seleccionar producto - Para actualizar
+   seleccionarProducto(producto): void {
+    this.productoSeleccionado = producto;
+    this.cantidad = producto.cantidad;
+    this.precio_unitario = producto.precio_unitario;
+   }
+
+   // Actualizar producto
+   actualizarProducto(): void {
+
+    if(!this.cantidad || this.cantidad < 0){
+      this.alertService.info('Debe colocar una cantidad válida');
+      return;
+    }
+
+    if(!this.precio_unitario || this.precio_unitario < 0){
+      this.alertService.info('Debe colocar un precio válido');
+      return;
+    }
+
+    const data = {
+      cantidad: this.cantidad,
+      precio_unitario: this.precio_unitario,
+      precio_total: this.dataService.redondear(this.cantidad * this.precio_unitario, 2),
+      updatorUser: this.authService.usuario.userId
+    };
+    this.alertService.loading();
+    this.presupuestoProductosService.actualizarProducto(this.productoSeleccionado._id, data).subscribe({
+      next: () => {
+        let precio_total_presupuesto = 0;
+        this.productos.map( producto => {
+          if(this.productoSeleccionado._id === producto._id){
+            producto.cantidad = data.cantidad;
+            producto.precio_unitario = data.precio_unitario;
+            producto.precio_total = data.precio_total
+          }
+          precio_total_presupuesto += producto.precio_total;
+        })
+        this.presupuestoSeleccionado.precio_total = precio_total_presupuesto;
+        this.listarPresupuestos();
+      },
+      error: ({error}) => this.alertService.errorApi(error.message)
+    })
+   }
+
+
+   // Eliminar producto
 
    // Reiniciando formulario
    reiniciarFormulario(): void {
