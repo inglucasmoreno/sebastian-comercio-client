@@ -8,7 +8,7 @@ const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
 })
-export class PresupuestoProductosService {
+export class VentasProductosService {
 
   get getToken(): any {
     return {
@@ -20,25 +20,25 @@ export class PresupuestoProductosService {
 
   // Nuevo producto
   nuevoProducto(data: any): Observable<any> {
-    return this.http.post(`${base_url}/presupuesto-productos`, data, {
+    return this.http.post(`${base_url}/ventas-productos`, data, {
       headers: this.getToken
     });
   };
 
   // Producto por ID
   getProducto(id: string): Observable<any> {
-    return this.http.get(`${base_url}/presupuesto-productos/${ id }`,{ 
+    return this.http.get(`${base_url}/ventas-productos/${ id }`,{ 
       headers: this.getToken
     });
   };
 
   // Listar productos
   listarProductos(parametros?: any): Observable<any> {
-    return this.http.get(`${base_url}/presupuesto-productos`, {
+    return this.http.get(`${base_url}/ventas-productos`, {
       params: {
         direccion: parametros?.direccion || 1,
         columna: parametros?.columna || 'descripcion',
-        presupuesto: parametros?.presupuesto || ''
+        venta: parametros?.venta || ''
       },
       headers: this.getToken
     });
@@ -46,14 +46,14 @@ export class PresupuestoProductosService {
 
   // Actualizar producto
   actualizarProducto(id:string, data: any): Observable<any> {
-    return this.http.put(`${base_url}/presupuesto-productos/${id}`, data, {
+    return this.http.put(`${base_url}/ventas-productos/${id}`, data, {
       headers: this.getToken
     });
   } 
   
   // Eliminar producto
   eliminarProducto(id:string): Observable<any> {
-    return this.http.delete(`${base_url}/presupuesto-productos/${id}`, {
+    return this.http.delete(`${base_url}/ventas-productos/${id}`, {
       headers: this.getToken
     });
   } 

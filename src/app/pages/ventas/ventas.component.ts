@@ -2,33 +2,35 @@ import { Component, OnInit } from '@angular/core';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
-import { PresupuestoProductosService } from 'src/app/services/presupuesto-productos.service';
-import { PresupuestosService } from 'src/app/services/presupuestos.service';
 import { ProductosService } from 'src/app/services/productos.service';
+import { VentasProductosService } from 'src/app/services/ventas-productos.service';
+import { VentasService } from 'src/app/services/ventas.service';
 import { environment } from 'src/environments/environment';
 
 const base_url = environment.base_url;
 
 @Component({
-  selector: 'app-presupuestos',
-  templateUrl: './presupuestos.component.html',
+  selector: 'app-ventas',
+  templateUrl: './ventas.component.html',
   styles: [
   ]
 })
-export class PresupuestosComponent implements OnInit {
+export class VentasComponent implements OnInit {
 
-  // Permisos de usuarios login
+// Permisos de usuarios login
   public permisos = { all: false };
 
   // Modal
-  public showModalPresupuesto = false;
-  public showModalEditarPresupuesto = false;
+  public showModalVenta = false;
+  public showModalEditarVenta = false;
 
-  // Presupuesto
-  public idPresupuesto: string = '';
+  // Venta
+  public idVenta: string = '';
   public observacion: string = '';
-  public presupuestos: any[] = [];
-  public presupuestoSeleccionado: any;
+  public nro_factura: string = '';
+  public proveedor: string = '';
+  public ventas: any[] = [];
+  public ventaSeleccionada: any;
   public descripcion: string = '';
   
   // Productos
@@ -70,49 +72,50 @@ export class PresupuestosComponent implements OnInit {
   public paginaActualProductos: number = 1;
   public cantidadItemsProductos: number = 10;
 
-  constructor(private presupuestosService: PresupuestosService,
+  constructor(private ventasService: VentasService,
               private productosService: ProductosService,
-              private presupuestoProductosService: PresupuestoProductosService,
+              private ventasProductosService: VentasProductosService,
               private authService: AuthService,
               private alertService: AlertService,
               private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.ubicacionActual = 'Dashboard - Listado de presupuestos'; 
+    this.dataService.ubicacionActual = 'Dashboard - Listado de ventas'; 
     this.permisos.all = this.permisosUsuarioLogin();
     this.alertService.loading();
-    this.listarPresupuestos(); 
+    this.listarVentas(); 
   }
 
   // Asignar permisos de usuario login
   permisosUsuarioLogin(): boolean {
-    return this.authService.usuario.permisos.includes('PRESUPUESTOS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
+    return this.authService.usuario.permisos.includes('VENTAS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
   }
 
-  // Traer datos de presupuesto
-  getPresupuesto(presupuesto: any): void {
+  // Traer datos de ventas
+  getVenta(venta: any): void {
     this.alertService.loading();
-    this.idPresupuesto = presupuesto._id;
-    this.presupuestoSeleccionado = presupuesto;
-    this.presupuestosService.getPresupuesto(presupuesto._id).subscribe(({presupuesto}) => {
-      this.descripcion = presupuesto.descripcion;
+    this.idVenta = venta._id;
+    this.ventaSeleccionada = venta;
+    this.ventasService.getVenta(venta._id).subscribe(({venta}) => {
+      this.descripcion = venta.descripcion;
       this.alertService.close();
-      this.showModalPresupuesto = true;
+      this.showModalVenta = true;
     },({error})=>{
       this.alertService.errorApi(error);
     });
   }
 
-  // Listar presupuestos
-  listarPresupuestos(): void {
+  // Listar ventas
+  listarVentas(): void {
     const parametros = {
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna
     }
-    this.presupuestosService.listarPresupuestos(parametros)
-    .subscribe( ({ presupuestos }) => {
-      this.presupuestos = presupuestos;
-      this.showModalPresupuesto = false;
+    this.ventasService.listarVentas(parametros)
+    .subscribe( ({ ventas }) => {
+      
+      this.ventas = ventas;
+      this.showModalVenta = false;
       this.productoSeleccionado = null;
       
       // Cuando viene de actualizacion de observacion
@@ -129,8 +132,8 @@ export class PresupuestosComponent implements OnInit {
     }));
   }
 
-  // Nuevo presupuesto
-  nuevoPresupuesto(): void {
+  // Nueva venta
+  nuevaVenta(): void {
 
     // Verificacion: Descripción vacia
     if(this.descripcion.trim() === ""){
@@ -146,16 +149,16 @@ export class PresupuestosComponent implements OnInit {
       updatorUser: this.authService.usuario.userId,
     }
 
-    this.presupuestosService.nuevoPresupuesto(data).subscribe(() => {
-      this.listarPresupuestos();
+    this.ventasService.nuevaVenta(data).subscribe(() => {
+      this.listarVentas();
     },({error})=>{
       this.alertService.errorApi(error.message);  
     });
     
   }
 
-  // Actualizar presupuesto
-  actualizarPresupuesto(): void {
+  // Actualizar venta
+  actualizarVenta(): void {
 
     // Verificacion: Descripción vacia
     if(this.descripcion.trim() === ""){
@@ -170,8 +173,8 @@ export class PresupuestosComponent implements OnInit {
       updatorUser: this.authService.usuario.userId,
     }
 
-    this.presupuestosService.actualizarPresupuesto(this.idPresupuesto, data).subscribe(() => {
-      this.listarPresupuestos();
+    this.ventasService.actualizarVenta(this.idVenta, data).subscribe(() => {
+      this.listarVentas();
     },({error})=>{
       this.alertService.errorApi(error.message);
     });
@@ -179,9 +182,9 @@ export class PresupuestosComponent implements OnInit {
   }
 
   // Actualizar estado Activo/Inactivo
-  actualizarEstado(presupuesto: any): void {
+  actualizarEstado(venta: any): void {
     
-    const { _id, activo } = presupuesto;
+    const { _id, activo } = venta;
     
     if(!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
 
@@ -189,9 +192,9 @@ export class PresupuestosComponent implements OnInit {
         .then(({isConfirmed}) => {  
           if (isConfirmed) {
             this.alertService.loading();
-            this.presupuestosService.actualizarPresupuesto(_id, {activo: !activo}).subscribe(() => {
+            this.ventasService.actualizarVenta(_id, {activo: !activo}).subscribe(() => {
               this.alertService.loading();
-              this.listarPresupuestos();
+              this.listarVentas();
             }, ({error}) => {
               this.alertService.close();
               this.alertService.errorApi(error.message);
@@ -201,23 +204,23 @@ export class PresupuestosComponent implements OnInit {
 
   }
 
-  // Obtener datos de presupuesto
-  obtenerPresupuesto(presupuesto: any): void {
+  // Obtener datos de venta
+  obtenerVenta(venta: any): void {
 
     const parametros = {
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
-      presupuesto: presupuesto._id
+      venta: venta._id
     }
 
     this.alertService.loading();
 
-    this.presupuestoProductosService.listarProductos(parametros).subscribe({
+    this.ventasProductosService.listarProductos(parametros).subscribe({
       next: ({productos}) => {
         this.productos = productos;
         window.scroll(0,0);
-        this.presupuestoSeleccionado = presupuesto;
-        this.showModalPresupuesto = true;
+        this.ventaSeleccionada = venta;
+        this.showModalVenta = true;
         this.alertService.close();
       },
       error: ({error}) => this.alertService.errorApi(error.message)
@@ -226,38 +229,39 @@ export class PresupuestosComponent implements OnInit {
   }
 
   // Generar PDF
-  generarPDF(presupuesto: any): void {
+  generarPDF(venta: any): void {
     this.alertService.loading();
-    this.presupuestosService.generarPDF({ presupuesto: presupuesto._id }).subscribe({
+    this.ventasService.generarPDF({ venta: venta._id }).subscribe({
       next: () => {
-        window.open(`${base_url}/pdf/presupuesto.pdf`, '_blank');
+        window.open(`${base_url}/pdf/venta.pdf`, '_blank');
         this.alertService.close();
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 
-  // Abrir editar presupuesto
-  abrirEditarPresupuesto(presupuesto: any): void {
+  // Abrir editar venta
+  abrirEditarVenta(venta: any): void {
 
-    this.presupuestoSeleccionado = presupuesto;
-    this.productoSeleccionado = null;
-    this.observacion = presupuesto.observacion;
+    this.ventaSeleccionada = venta;
+    this.ventaSeleccionada = null;
+    this.observacion = venta.observacion;
+    this.nro_factura = venta.nro_factura;
 
     const parametros = {
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
-      presupuesto: presupuesto._id
+      venta: venta._id
     }
 
     this.alertService.loading();
 
-    this.presupuestoProductosService.listarProductos(parametros).subscribe({
+    this.ventasProductosService.listarProductos(parametros).subscribe({
       next: ({productos}) => {
         this.productos = productos;
         window.scroll(0,0);
-        this.presupuestoSeleccionado = presupuesto;
-        this.showModalEditarPresupuesto = true;
+        this.ventaSeleccionada = venta;
+        this.showModalEditarVenta = true;
         this.alertService.close();
       },
       error: ({error}) => this.alertService.errorApi(error.message)
@@ -272,9 +276,22 @@ export class PresupuestosComponent implements OnInit {
       observacion: this.observacion,
       updatorUser: this.authService.usuario.userId
     };
-    this.presupuestosService.actualizarPresupuesto(this.presupuestoSeleccionado._id, data).subscribe(() => {
+    this.ventasService.actualizarVenta(this.ventaSeleccionada._id, data).subscribe(() => {
       this.observacionActualizadaFlag = true;
-      this.listarPresupuestos();
+      this.listarVentas();
+    });
+  }
+
+  // Actualizar numero de factura
+  actualizarNroFactura(): void {
+    this.alertService.loading();
+    const data = {
+      nro_factura: this.nro_factura,
+      updatorUser: this.authService.usuario.userId
+    };
+    this.ventasService.actualizarVenta(this.ventaSeleccionada._id, data).subscribe(() => {
+      this.observacionActualizadaFlag = true;
+      this.listarVentas();
     });
   }
 
@@ -308,22 +325,26 @@ export class PresupuestosComponent implements OnInit {
     this.alertService.loading();
     
     // Se actualiza el producto
-    this.presupuestoProductosService.actualizarProducto(this.productoSeleccionado._id, data).subscribe({
+    this.ventasProductosService.actualizarProducto(this.productoSeleccionado._id, data).subscribe({
       next: () => {
-        let precio_total_presupuesto = 0;
+        let precio_total_venta = 0;
         this.productos.map( producto => {
           if(this.productoSeleccionado._id === producto._id){
             producto.cantidad = data.cantidad;
             producto.precio_unitario = data.precio_unitario;
             producto.precio_total = data.precio_total
           }
-          precio_total_presupuesto += producto.precio_total;
+          precio_total_venta += producto.precio_total;
         })
-        this.presupuestoSeleccionado.precio_total = precio_total_presupuesto;
+        this.ventaSeleccionada.precio_total = precio_total_venta;
 
-        // Se actualiza el precio total del presupuesto
-        this.presupuestosService.actualizarPresupuesto(this.presupuestoSeleccionado._id, { precio_total: precio_total_presupuesto }).subscribe({
-          next: () => this.listarPresupuestos(),
+        console.log(this.ventaSeleccionada.precio_total);
+
+        console.log(precio_total_venta);
+
+        // Se actualiza el precio total de la venta
+        this.ventasService.actualizarVenta(this.ventaSeleccionada._id, { precio_total: precio_total_venta }).subscribe({
+          next: () => this.listarVentas(),
           error: ({error}) => this.alertService.errorApi(error.message)
         })
       },
@@ -337,20 +358,20 @@ export class PresupuestosComponent implements OnInit {
     .then(({isConfirmed}) => {  
       if (isConfirmed) {
         this.alertService.loading();
-        this.presupuestoProductosService.eliminarProducto(this.productoSeleccionado._id).subscribe({
+        this.ventasProductosService.eliminarProducto(this.productoSeleccionado._id).subscribe({
           next: () => {
     
             // Se filtra el producto
             this.productos = this.productos.filter( producto => producto._id !== this.productoSeleccionado._id);
     
             // Se calcula el precio total
-            let precio_total_presupuesto = 0;
-            this.productos.map( producto => precio_total_presupuesto += producto.precio_total ); 
-            this.presupuestoSeleccionado.precio_total = precio_total_presupuesto;
+            let precio_total_venta = 0;
+            this.productos.map( producto => precio_total_venta += producto.precio_total ); 
+            this.ventaSeleccionada.precio_total = precio_total_venta;
     
-            // Se actualiza el precio total del presupuesto
-            this.presupuestosService.actualizarPresupuesto(this.presupuestoSeleccionado._id, { precio_total: precio_total_presupuesto }).subscribe({
-              next: () => this.listarPresupuestos(),
+            // Se actualiza el precio total de la venta
+            this.ventasService.actualizarVenta(this.ventaSeleccionada._id, { precio_total: precio_total_venta }).subscribe({
+              next: () => this.listarVentas(),
               error: ({error}) => this.alertService.errorApi(error.message)
             })
     
@@ -359,7 +380,6 @@ export class PresupuestosComponent implements OnInit {
         })
       }
     });
-
 
   }
 
@@ -375,7 +395,7 @@ export class PresupuestosComponent implements OnInit {
         this.totalItems = totalItems;
         this.todosProductos = productos;
         this.alertService.close();
-        this.showModalEditarPresupuesto = false;
+        this.showModalEditarVenta = false;
         this.showProductos = true;
       },
       error: ({error}) => this.alertService.errorApi(error.message)
@@ -414,27 +434,27 @@ export class PresupuestosComponent implements OnInit {
     if(repetido){
 
       const data = {
-        presupuesto: this.presupuestoSeleccionado,
+        venta: this.ventaSeleccionada,
         cantidad: this.cantidad,
         precio_unitario: this.precio_unitario,
         precio_total: this.dataService.redondear(this.precio_unitario * this.cantidad, 2),
       }
 
-      this.presupuestoProductosService.actualizarProducto(idRepetido, data).subscribe({
+      this.ventasProductosService.actualizarProducto(idRepetido, data).subscribe({
         next: ({productos}) => {
 
           this.productos = productos;
 
           // Se calcula el precio total
-          let precio_total_presupuesto = 0;
-          this.productos.map( producto => precio_total_presupuesto += producto.precio_total ); 
-          this.presupuestoSeleccionado.precio_total = precio_total_presupuesto;
+          let precio_total_venta = 0;
+          this.productos.map( producto => precio_total_venta += producto.precio_total ); 
+          this.ventaSeleccionada.precio_total = precio_total_venta;
 
-          // Se actualiza el precio total del presupuesto
-          this.presupuestosService.actualizarPresupuesto(this.presupuestoSeleccionado._id, { precio_total: precio_total_presupuesto }).subscribe({
+          // Se actualiza el precio total de la venta
+          this.ventasService.actualizarVenta(this.ventaSeleccionada._id, { precio_total: precio_total_venta }).subscribe({
             next: () => {
               this.productoAgregadoFlag = true;
-              this.listarPresupuestos();
+              this.listarVentas();
             },
             error: ({error}) => this.alertService.errorApi(error.message)
           })
@@ -446,7 +466,7 @@ export class PresupuestosComponent implements OnInit {
     }else{
 
       const data = {
-        presupuesto: this.presupuestoSeleccionado._id,
+        venta: this.ventaSeleccionada._id,
         producto: this.productoSeleccionado._id,
         descripcion: this.productoSeleccionado.descripcion,
         familia: this.productoSeleccionado.familia.descripcion,
@@ -458,22 +478,22 @@ export class PresupuestosComponent implements OnInit {
         updatorUser: this.authService.usuario.userId,  
       }
 
-      this.presupuestoProductosService.nuevoProducto(data).subscribe({
+      this.ventasProductosService.nuevoProducto(data).subscribe({
         
         next: ({productos}) => {
           // this.filtro.parametroProductos = '';
           this.productos = productos;
 
           // Se calcula el precio total
-          let precio_total_presupuesto = 0;
-          this.productos.map( producto => precio_total_presupuesto += producto.precio_total ); 
-          this.presupuestoSeleccionado.precio_total = precio_total_presupuesto;
+          let precio_total_venta = 0;
+          this.productos.map( producto => precio_total_venta += producto.precio_total ); 
+          this.ventaSeleccionada.precio_total = precio_total_venta;
 
-          // Se actualiza el precio total del presupuesto
-          this.presupuestosService.actualizarPresupuesto(this.presupuestoSeleccionado._id, { precio_total: precio_total_presupuesto }).subscribe({
+          // Se actualiza el precio total de la venta
+          this.ventasService.actualizarVenta(this.ventaSeleccionada._id, { precio_total: precio_total_venta }).subscribe({
             next: () => {
               this.productoAgregadoFlag = true;
-              this.listarPresupuestos();
+              this.listarVentas();
             },
             error: ({error}) => this.alertService.errorApi(error.message)
           })
@@ -512,7 +532,7 @@ export class PresupuestosComponent implements OnInit {
   volverEditar(): void {
     this.productoSeleccionado = null;
     this.showProductos = false;
-    this.showModalEditarPresupuesto = true;
+    this.showModalEditarVenta = true;
   }
   
   buscarProductos(): void {
@@ -545,7 +565,7 @@ export class PresupuestosComponent implements OnInit {
     this.ordenar.columna = columna;
     this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1; 
     this.alertService.loading();
-    this.listarPresupuestos();
+    this.listarVentas();
   }
 
   // Paginacion - Cambiar pagina
