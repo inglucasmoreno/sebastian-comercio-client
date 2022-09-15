@@ -2,5 +2,5 @@
 
 export const itemsVentas = [
   { svg: '', route: 'nueva-venta', item: 'Nueva venta', permiso:['VENTAS_NAV'] },
-  { svg: '', route: 'ventas', item: 'Listado de ventas', permiso:['VENTAS_NAV'] },
+  { svg: '', route: 'ventas', item: 'Ventas directas', permiso:['VENTAS_NAV'] },
 ];

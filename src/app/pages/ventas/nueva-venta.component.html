@@ -229,7 +229,7 @@
         </select>
     </div>
     <button (click)="seleccionarTipoCliente()" class="mt-4 ml-2 bg-primary-800 focus:outline-none text-white hover:bg-secondaryColor transform duration-300 rounded py-2 px-4"> Comenzar </button>    
-    <img class="mx-auto w-1/2 mt-10" src="assets/presupuestos.svg">
+    <img class="mx-auto w-2/3 mt-5" src="assets/venta_generar.svg">
   </div>
 
   <!-- Etapa - Cliente -->
@@ -345,7 +345,7 @@
       </button>
       <div class="mt-2" *ngIf="productosVenta.length !== 0">
         <div class="p-2 w-1/2">
-          <p class="font-semibold"> Proveedores </p> 
+          <p class="font-semibold"> <span class="text-red-700"> * </span> Proveedores </p> 
           <select [(ngModel)]="proveedor" class="mt-2 border focus:outline-none border-gray-400 p-2 rounded w-full">
             <option value=""> Seleccionar proveedor </option>
             <option *ngFor="let proveedor of proveedores" [value]="proveedor._id"> {{ proveedor.descripcion }} </option>
@@ -353,7 +353,7 @@
         </div>
         <div class="px-2 flex items-center mt-2">
           <div class="w-1/2">
-            <p class="font-semibold"> Nro de factura </p> 
+            <p class="font-semibold"> <span class="text-red-700"> * </span> Nro de factura </p> 
             <input type="text" [(ngModel)]="nro_factura" placeholder="Número de factura" class="border p-2 w-full border-gray-400 text-sm focus:outline-none mt-2 mb-1 rounded">
           </div>
           <div class="ml-2 w-1/2">

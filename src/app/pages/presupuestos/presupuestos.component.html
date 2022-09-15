@@ -1,3 +1,55 @@
+<!-- Generar venta -->
+<app-modal [showModal]="showModalVenta">
+  <div>
+    <div class="bg-primary-800 text-white flex justify-between p-2 rounded-t">
+      <h1> Creando venta </h1>
+      <button (click)="showModalVenta = false" class="text-white focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>              
+      </button>      
+    </div> 
+    <div class="text-sm p-4">
+      <div>
+        <div class="flex items-center justify-between">
+          <p> <span class="font-semibold"> Código de presupuesto: </span> <span> {{ presupuestoSeleccionado?.nro | codigoPresupuesto }} </span> </p>
+          <p> <span class="font-semibold"> Fecha: </span> <span> {{ presupuestoSeleccionado?.createdAt | fecha }} </span> </p>
+        </div>
+        <p class="mt-2"> <span class="font-semibold"> Cliente: </span> <span> {{ presupuestoSeleccionado?.cliente.descripcion }} </span> </p>
+        <p class="mt-2"> <span class="font-semibold"> Precio total: </span> <span> ${{ presupuestoSeleccionado?.precio_total | moneda }} </span> </p>
+      </div>
+    </div>
+    <div class="px-4 text-sm pb-4">
+      <div class="md:flex md:items-center">
+        <div class="md:w-1/2">
+          <p class="font-semibold"> Tipo de venta </p>
+          <select [(ngModel)]="venta_tipo" class="p-2 border border-gray-400 rounded w-full mt-2 focus:outline-none">
+            <option value="Directa"> Directa </option>
+          </select>
+        </div>
+        <div class="md:w-1/2 md:ml-2 mt-2 md:mt-0">
+          <p class="font-semibold"> <span class="text-red-700"> * </span> Nro de factura </p>
+          <input [(ngModel)]="venta_nro_factura" type="text" placeholder="Colocar nro de factura" class="p-2 border border-gray-400 rounded w-full mt-2 focus:outline-none">
+        </div>      
+      </div>
+      <div class="mt-2">
+        <p class="font-semibold"> <span class="text-red-700"> * </span> Proveedores </p>
+        <select [(ngModel)]="venta_proveedor" class="p-2 border border-gray-400 rounded w-full mt-2 focus:outline-none">
+          <option value=""> Seleccionar proveedor </option>
+          <option *ngFor="let proveedor of proveedores" [value]="proveedor._id"> {{ proveedor.descripcion }} </option>
+        </select>
+      </div>      
+      <div class="mt-2">
+        <p class="font-semibold"> Observaciones </p>
+        <input [(ngModel)]="venta_observacion" type="text" placeholder="Colocar observaciones" class="p-2 border border-gray-400 rounded w-full mt-2 focus:outline-none">
+      </div>
+    </div>
+    <div class="px-4 pb-2 text-sm">
+      <button (click)="generarVenta()" class="bg-primary-800 text-white p-2 focus:outline-none rounded shadow w-full"> Generar venta </button> 
+    </div>
+  </div>
+</app-modal>
+
 <!-- Listado de productos -->
 <app-modal [showModal]="showProductos">
   <div>
@@ -109,6 +161,11 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
           </svg>      
+        </button>
+        <button title="Generar venta" (click)="abrirGenerarVenta(presupuestoSeleccionado)" class="border bg-gray-100 border-gray-400 hover:text-secondaryColor focus:outline-none ml-2 rounded p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>   
         </button>
       </div> 
       <div class="max-h-64 overflow-y-auto">
@@ -301,7 +358,7 @@
                                           <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                                         </svg>
                                       </app-boton-tabla>
-                                      <app-boton-tabla class="ml-2" title="Generar venta">
+                                      <app-boton-tabla (click)="abrirGenerarVenta(presupuesto)" class="ml-2" title="Generar venta">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                           <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                         </svg>

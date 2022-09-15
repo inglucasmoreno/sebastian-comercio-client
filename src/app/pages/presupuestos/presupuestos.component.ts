@@ -5,6 +5,8 @@ import { DataService } from 'src/app/services/data.service';
 import { PresupuestoProductosService } from 'src/app/services/presupuesto-productos.service';
 import { PresupuestosService } from 'src/app/services/presupuestos.service';
 import { ProductosService } from 'src/app/services/productos.service';
+import { ProveedoresService } from 'src/app/services/proveedores.service';
+import { VentasService } from 'src/app/services/ventas.service';
 import { environment } from 'src/environments/environment';
 
 const base_url = environment.base_url;
@@ -20,8 +22,12 @@ export class PresupuestosComponent implements OnInit {
   // Permisos de usuarios login
   public permisos = { all: false };
 
+  // Proveedores
+  public proveedores: any[];
+
   // Modal
   public showModalPresupuesto = false;
+  public showModalVenta = false;
   public showModalEditarPresupuesto = false;
 
   // Presupuesto
@@ -51,6 +57,13 @@ export class PresupuestosComponent implements OnInit {
   public observacionActualizadaFlag: boolean = false;
   public productoAgregadoFlag: boolean = false;
 
+  // Venta
+  public venta_tipo = 'Directa';
+  public venta_proveedor = '';
+  public venta_observacion = '';
+  public venta_precio_total = 0;
+  public venta_nro_factura = '';
+
   // Filtrado
   public filtro = {
     activo: 'true',
@@ -72,6 +85,8 @@ export class PresupuestosComponent implements OnInit {
 
   constructor(private presupuestosService: PresupuestosService,
               private productosService: ProductosService,
+              private ventasService: VentasService,
+              private proveedoresService: ProveedoresService,
               private presupuestoProductosService: PresupuestoProductosService,
               private authService: AuthService,
               private alertService: AlertService,
@@ -81,7 +96,19 @@ export class PresupuestosComponent implements OnInit {
     this.dataService.ubicacionActual = 'Dashboard - Listado de presupuestos'; 
     this.permisos.all = this.permisosUsuarioLogin();
     this.alertService.loading();
-    this.listarPresupuestos(); 
+    this.cargaInicial();
+  }
+
+  cargaInicial(): void {
+    // Cargar proveedores
+    this.proveedoresService.listarProveedores().subscribe({
+      next: ({proveedores}) => {
+        this.proveedores = proveedores;
+        this.listarPresupuestos();        
+      },
+      error: ({error}) => this.alertService.errorApi(error.message)
+      
+    });
   }
 
   // Asignar permisos de usuario login
@@ -484,6 +511,83 @@ export class PresupuestosComponent implements OnInit {
     
     }
     
+  }
+
+  // Abrir generar venta
+  abrirGenerarVenta(presupuesto: any): void {
+    
+    this.venta_nro_factura = '';
+    this.venta_tipo = 'Directa';
+    this.venta_proveedor = '';
+    this.venta_observacion = '';
+
+    this.presupuestoSeleccionado = presupuesto;
+    this.showModalVenta = true;
+    this.showModalEditarPresupuesto = false;
+
+  }
+
+  generarVenta(): void {
+
+    // Verificacion
+
+    if(this.venta_nro_factura === ''){
+      this.alertService.info('Debe colocar un número de factura');
+      return;
+    }
+
+    if(this.venta_proveedor === ''){
+      this.alertService.info('Debe seleccionar un proveedor');
+      return;
+    }
+
+    const { cliente, 
+            precio_total 
+          } = this.presupuestoSeleccionado;
+
+    const parametros = {
+      direccion: 1,
+      columna: 'descripcion',
+      presupuesto: this.presupuestoSeleccionado._id
+    }
+
+    this.alertService.loading();
+
+    this.presupuestoProductosService.listarProductos(parametros).subscribe({
+      next: ({productos}) => {
+        
+        this.productos = productos;
+
+        const data = {
+          nro_factura: this.venta_nro_factura,
+          tipo_venta: this.venta_tipo,
+          cliente: cliente._id,
+          cliente_descripcion: cliente.descripcion,
+          cliente_identificacion: cliente.identificacion,
+          cliente_tipo_identificacion: cliente.tipo_identificacion,
+          cliente_correo_electronico: cliente.correo_electronico,
+          cliente_condicion_iva: cliente.condicion_iva,
+          proveedor: this.venta_proveedor,
+          observacion: this.venta_observacion,
+          precio_total,
+          productos,
+          creatorUser: this.authService.usuario.userId,
+          updatorUser: this.authService.usuario.userId,
+        }
+
+        this.ventasService.nuevaVenta(data).subscribe({
+          next: () => {
+            this.showModalVenta = false;
+            window.open(`${base_url}/pdf/venta.pdf`, '_blank');
+            this.alertService.close();
+          },
+          error: ({error}) => this.alertService.errorApi(error.message)
+        })
+
+      },
+      error: ({error}) => this.alertService.errorApi(error.message)
+    })
+
   }
 
   // Seleccionar producto

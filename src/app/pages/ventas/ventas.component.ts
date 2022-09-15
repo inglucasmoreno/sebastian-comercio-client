@@ -80,10 +80,10 @@ export class VentasComponent implements OnInit {
               private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.ubicacionActual = 'Dashboard - Listado de ventas'; 
+    this.dataService.ubicacionActual = 'Dashboard - Ventas directas'; 
     this.permisos.all = this.permisosUsuarioLogin();
     this.alertService.loading();
-    this.listarVentas(); 
+    this.listarVentas();
   }
 
   // Asignar permisos de usuario login
@@ -243,7 +243,6 @@ export class VentasComponent implements OnInit {
   // Abrir editar venta
   abrirEditarVenta(venta: any): void {
 
-    this.ventaSeleccionada = venta;
     this.ventaSeleccionada = null;
     this.observacion = venta.observacion;
     this.nro_factura = venta.nro_factura;
@@ -284,6 +283,12 @@ export class VentasComponent implements OnInit {
 
   // Actualizar numero de factura
   actualizarNroFactura(): void {
+
+    if(this.nro_factura === ''){
+      this.alertService.info('Debe colocar un número de factura');
+      return;
+    }
+
     this.alertService.loading();
     const data = {
       nro_factura: this.nro_factura,

@@ -80,7 +80,7 @@
   </div>
   <div class="p-2 text-sm">
     <div class="w-full flex items-center justify-between">
-      <p> <span class="font-semibold"> Número de venta: </span> {{ ventaSeleccionada?.nro | codigoVentas }} </p>
+      <p> <span class="font-semibold"> Código de venta: </span> {{ ventaSeleccionada?.nro | codigoVentas }} </p>
       <p> <span class="font-semibold"> Fecha: </span>  {{ ventaSeleccionada?.createdAt | fecha }} </p>
     </div>
     <p class="mt-2"> <span class="font-semibold"> Precio total: </span>  ${{ ventaSeleccionada?.precio_total | moneda }} </p>
@@ -88,10 +88,10 @@
     <p class="mt-2"> <span class="font-semibold"> Proveedor: </span> {{ ventaSeleccionada?.proveedor.descripcion }} </p>
     <div class="mt-2 border-t pt-2">
       <div>
-        <p class="font-semibold"> Nro de factura </p>
+        <p class="font-semibold"> <span class="text-red-700"> * </span> Nro de factura </p>
         <div class="flex items-center">
           <input (keyup.enter)="actualizarNroFactura()"  [(ngModel)]="nro_factura" type="text" class="border mt-1 focus:outline-none border-gray-400 p-2 rounded w-full" placeholder="Colocar aquí el número de factura">
-          <button (click)="actualizarObservacion()" title="Actualizar número de factura" class="border focus:outline-none bg-gray-100 border-gray-400 rounded p-2 ml-1 mt-1 hover:text-secondaryColor">
+          <button (click)="actualizarNroFactura()" title="Actualizar número de factura" class="border focus:outline-none bg-gray-100 border-gray-400 rounded p-2 ml-1 mt-1 hover:text-secondaryColor">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
             </svg>         
@@ -176,7 +176,7 @@
               <div class="flex items-center justify-between bg-primary-800 px-4 py-3 rounded-t">
                   <div class="ml-2 text-white">
                       <h2 class="text-2xl leading-tight">
-                          Listado de ventas
+                          Listado de ventas directas
                       </h2>
                       <p> Total de ventas: {{ ventas.length }} </p>
                   </div>
