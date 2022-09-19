@@ -19,7 +19,11 @@ const base_url = environment.base_url;
 })
 export class NuevaVentaComponent implements OnInit {
 
- // Permisos de usuarios login
+  // Porcentajes
+  public porcentajes = '';
+  public porcentajeAplicado = false;
+
+  // Permisos de usuarios login
   public permisos = { all: false };
 
   // Modal
@@ -65,6 +69,7 @@ export class NuevaVentaComponent implements OnInit {
   public productoSeleccionado: any = null;
   public cantidad: number = null;
   public precio: number = null;
+  public precioResguardo: number = null;
 
   // Paginacion - Clientes
   public paginaActual: number = 1;
@@ -166,6 +171,8 @@ export class NuevaVentaComponent implements OnInit {
   // Seleccionar producto
   seleccionarProducto(producto: any): void { 
     
+    this.porcentajes = '';
+    this.porcentajeAplicado = false;
     this.cantidad = null;
     this.productoSeleccionado = producto;
     
@@ -346,6 +353,12 @@ export class NuevaVentaComponent implements OnInit {
   // Crear venta
   crearVenta(): void {
 
+    // Verificacion: Productos
+    if(this.productosVenta.length === 0){
+      this.alertService.info('Debes cargar al menos un producto');
+      return;
+    }
+
     // Verificacion: Proveedor
     if(this.proveedor === ''){
       this.alertService.info('Debes seleccionar un proveedor');
@@ -355,12 +368,6 @@ export class NuevaVentaComponent implements OnInit {
     // Verificacion: Número de factura
     if(this.nro_factura === ''){
       this.alertService.info('Debes colocar un numero de factura');
-      return;
-    }
-
-    // Verificacion: Productos
-    if(this.productosVenta.length === 0){
-      this.alertService.info('Debes cargar al menos un producto');
       return;
     }
 
@@ -401,8 +408,6 @@ export class NuevaVentaComponent implements OnInit {
           updatorUser: this.authService.usuario.userId,
         };
 
-        console.log(data);
-
         this.ventasService.nuevaVenta(data).subscribe({
           next: () => {
             this.reiniciarValores();
@@ -418,6 +423,8 @@ export class NuevaVentaComponent implements OnInit {
 
   // Editar producto
   abrirEditarProducto(producto): void {
+    this.porcentajes = '';
+    this.porcentajeAplicado = false;
     this.productoSeleccionado = producto;
     this.showEditarProducto = true;
     this.productoCargado = false;
@@ -497,6 +504,59 @@ export class NuevaVentaComponent implements OnInit {
     this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1; 
     this.alertService.loading();
     this.listarClientes();
+  }
+
+  // Aplicar variacion porcentual
+  aplicarPorcentajes(): void {
+
+    this.precioResguardo = this.precio;
+
+    if(!Number(this.precio)){
+      this.alertService.info('Primero debe colocar un precio');
+      return;
+    }
+
+    let error = false;
+    let precioTMP = this.precio;
+    const porcentajesArray = this.porcentajes.trim().split(' ');
+    
+    porcentajesArray.map( porcentaje => {
+      
+      const signo = porcentaje.charAt(0);
+      
+      if(signo === '+'){
+        const valor = Number(porcentaje);
+        if(!valor){
+          this.alertService.info('Formato incorrecto');
+          error = true;
+        }
+        precioTMP = (1 + (valor/100)) * precioTMP;
+      
+      }else if(signo === '-'){
+        const valor = Number(porcentaje);
+        if(!valor){
+          this.alertService.info('Formato incorrecto');
+          error = true;
+        }
+        precioTMP = (1 + (valor/100)) * precioTMP;
+      
+      }else{
+        this.alertService.info('Formato incorrecto');
+        error = true;
+      }
+    });
+
+    if(!error){
+      this.precio =this.dataService.redondear(precioTMP, 2);
+      this.porcentajeAplicado = true;
+    }
+
+  }
+
+  eliminarPorcentaje(): void {
+    this.precio = this.precioResguardo;
+    this.porcentajes = '';
+    this.porcentajeAplicado = false;
   }
 
   // Alamcenamiento en localstorage

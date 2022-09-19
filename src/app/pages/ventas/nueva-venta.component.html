@@ -19,8 +19,26 @@
       </div>
       <div class="ml-2 w-1/2">
         <p class="text-sm font-semibold"> Precio </p>
-        <input (keyup.enter)="actualizarProducto()" [disabled]="productoCargado" [(ngModel)]="precio" type="number" min="0" class="border w-full mt-1 focus:outline-none text-sm border-gray-400 p-2 rounded" placeholder="Ej. 1200">
+        <input (keyup.enter)="actualizarProducto()" [disabled]="productoCargado || porcentajeAplicado" [(ngModel)]="precio" type="number" min="0" class="border w-full mt-1 focus:outline-none text-sm border-gray-400 p-2 rounded" placeholder="Ej. 1200">
       </div>
+    </div>
+    <div class="w-full text-sm md:w-1/2 mt-2 flex items-center">
+      <div class="mr-1">
+        <p class="font-semibold"> Variación porcentual </p>
+        <div class="flex items-center w-full">
+          <input [disabled]="porcentajeAplicado" (keyup.enter)="aplicarPorcentajes()" [(ngModel)]="porcentajes" type="text" placeholder="Ej. +5 -12 +10" class="w-full focus:outline-none mt-1 border rounded border-gray-400 p-2">    
+          <button *ngIf="!porcentajeAplicado" title="Agregar variacion porcentual" (click)="aplicarPorcentajes()" class="p-2 border border-gray-400 ml-2 mt-1 focus:outline-none hover:text-green-700 rounded">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </button>
+          <button *ngIf="porcentajeAplicado" title="Recuperar precio original" (click)="eliminarPorcentaje()" class="p-2 border border-gray-400 ml-2 mt-1 focus:outline-none hover:text-red-700 rounded">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div> 
     </div>
     <div class="flex items-center text-sm mt-3">
       <button (click)="actualizarProducto()" class="border w-1/2 shadow h-max p-2 rounded bg-green-700 text-white focus:outline-none">
@@ -86,8 +104,26 @@
         </div>
         <div class="ml-2 w-1/2">
           <p class="text-sm font-semibold"> Precio </p>
-          <input (keyup.enter)="agregarProducto()" [disabled]="productoCargado" [(ngModel)]="precio" type="number" min="0" class="border w-full mt-1 focus:outline-none text-sm border-gray-400 p-2 rounded" placeholder="Ej. 1200">
+          <input (keyup.enter)="agregarProducto()" [disabled]="productoCargado || porcentajeAplicado" [(ngModel)]="precio" type="number" min="0" class="border w-full mt-1 focus:outline-none text-sm border-gray-400 p-2 rounded" placeholder="Ej. 1200">
         </div>
+      </div>
+      <div class="w-full text-sm md:w-1/2 mt-2 flex items-center">
+        <div class="mr-1">
+          <p class="font-semibold"> Variación porcentual </p>
+          <div class="flex items-center w-full">
+            <input [disabled]="porcentajeAplicado" (keyup.enter)="aplicarPorcentajes()" [(ngModel)]="porcentajes" type="text" placeholder="Ej. +5 -12 +10" class="w-full focus:outline-none mt-1 border rounded border-gray-400 p-2">    
+            <button *ngIf="!porcentajeAplicado" title="Agregar variacion porcentual" (click)="aplicarPorcentajes()" class="p-2 border border-gray-400 ml-2 mt-1 focus:outline-none hover:text-green-700 rounded">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </button>
+            <button *ngIf="porcentajeAplicado" title="Recuperar precio original" (click)="eliminarPorcentaje()" class="p-2 border border-gray-400 ml-2 mt-1 focus:outline-none hover:text-red-700 rounded">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div> 
       </div>
       <div class="flex items-center text-sm mt-3">
         <button (click)="agregarProducto()" class="border w-1/2 shadow h-max p-2 rounded bg-green-700 text-white focus:outline-none">
