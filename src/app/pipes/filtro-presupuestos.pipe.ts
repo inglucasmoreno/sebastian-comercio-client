@@ -31,6 +31,7 @@ export class FiltroPresupuestosPipe implements PipeTransform {
     if(parametro.length !== 0){
       return filtrados.filter( valor => { 
         return valor.descripcion.toLocaleLowerCase().includes(parametro) ||
+               valor.observacion?.toLocaleLowerCase().includes(parametro) ||
                valor.nro === Number(parametro)
       });
     }else{

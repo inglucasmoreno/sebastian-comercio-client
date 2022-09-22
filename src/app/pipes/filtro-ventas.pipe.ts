@@ -33,6 +33,7 @@ export class FiltroVentasPipe implements PipeTransform {
         return valor.cliente.descripcion.toLocaleLowerCase().includes(parametro) ||
                valor.proveedor.descripcion.toLocaleLowerCase().includes(parametro) ||
                valor.nro_factura.toLocaleLowerCase().includes(parametro) ||
+               valor.observacion?.toLocaleLowerCase().includes(parametro) ||
                valor.nro === Number(parametro)
       });
     }else{

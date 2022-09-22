@@ -19,6 +19,10 @@ const base_url = environment.base_url;
 })
 export class PresupuestosComponent implements OnInit {
 
+  // Porcentajes
+  public porcentajeAplicado = false;
+  public porcentajes = '';
+
   // Permisos de usuarios login
   public permisos = { all: false };
 
@@ -43,6 +47,7 @@ export class PresupuestosComponent implements OnInit {
   public cantidad = null;
   public precio_unitario = null;
   public precio_total = null;
+  public precioResguardo: number = null;
 
   // Productos - Nuevo producto
   public productoCargado: boolean;
@@ -307,6 +312,8 @@ export class PresupuestosComponent implements OnInit {
 
   // Seleccionar producto - Para actualizar
   seleccionarProducto(producto): void {
+    this.porcentajes = '';
+    this.porcentajeAplicado = false;
     this.productoSeleccionado = producto;
     this.cantidad = producto.cantidad;
     this.precio_unitario = producto.precio_unitario;
@@ -593,6 +600,8 @@ export class PresupuestosComponent implements OnInit {
   // Seleccionar producto
   seleccionarProductoNuevo(producto: any): void { 
     
+    this.porcentajes = '';
+    this.porcentajeAplicado = false;
     this.cantidad = null;
     this.productoSeleccionado = producto;
     
@@ -625,6 +634,60 @@ export class PresupuestosComponent implements OnInit {
     this.filtro.parametroProductos = '';
     this.cantidadItemsProductos = 10;
     this.listarProductos();   
+  }
+
+  // Aplicar variacion porcentual
+  aplicarPorcentajes(): void {
+
+    this.precioResguardo = this.precio_unitario;
+
+    if(!Number(this.precio_unitario)){
+      this.alertService.info('Primero debe colocar un precio');
+      return;
+    }
+
+    let error = false;
+    let precioTMP = this.precio_unitario;
+    const porcentajesArray = this.porcentajes.trim().split(' ');
+    
+    porcentajesArray.map( porcentaje => {
+      
+      const signo = porcentaje.charAt(0);
+      
+      if(signo === '+'){
+        const valor = Number(porcentaje);
+        if(!valor){
+          this.alertService.info('Formato incorrecto');
+          error = true;
+        }
+        precioTMP = (1 + (valor/100)) * precioTMP;
+      
+      }else if(signo === '-'){
+        const valor = Number(porcentaje);
+        if(!valor){
+          this.alertService.info('Formato incorrecto');
+          error = true;
+        }
+        precioTMP = (1 + (valor/100)) * precioTMP;
+      
+      }else{
+        this.alertService.info('Formato incorrecto');
+        error = true;
+      }
+    });
+
+    if(!error){
+      this.precio_unitario = this.dataService.redondear(precioTMP, 2);
+      this.porcentajeAplicado = true;
+    }
+
+  }
+
+  // Eliminar porcentaje
+  eliminarPorcentaje(): void {
+    this.precio_unitario = this.precioResguardo;
+    this.porcentajes = '';
+    this.porcentajeAplicado = false;
   }
 
   // Reiniciando formulario
