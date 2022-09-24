@@ -193,7 +193,7 @@ export class VentasComponent implements OnInit {
     
     if(!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
 
-    this.alertService.question({ msg: '¿Quieres actualizar el estado?', buttonText: 'Actualizar' })
+    this.alertService.question({ msg: venta.activo ? '¿Quieres dar de baja la venta?' : '¿Quieres dar de alta la venta?', buttonText: venta.activo ? 'Dar de baja' : 'Data de alta' })
         .then(({isConfirmed}) => {  
           if (isConfirmed) {
             this.alertService.loading();

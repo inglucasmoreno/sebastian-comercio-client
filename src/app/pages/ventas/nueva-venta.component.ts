@@ -22,6 +22,8 @@ export class NuevaVentaComponent implements OnInit {
   // Porcentajes
   public porcentajes = '';
   public porcentajeAplicado = false;
+  public porcentajeAplicadoTotal = false;
+  public porcentajesTotal = '';
 
   // Permisos de usuarios login
   public permisos = { all: false };
@@ -227,6 +229,7 @@ export class NuevaVentaComponent implements OnInit {
         familia: this.productoSeleccionado.familia.descripcion,
         unidad_medida: unidad_medida.descripcion,
         precio_unitario: this.precio,
+        precio_original: this.precio,
         cantidad: this.cantidad,
         precio_total: this.dataService.redondear(this.precio * this.cantidad, 2),
         creatorUser: this.authService.usuario.userId,
@@ -439,6 +442,10 @@ export class NuevaVentaComponent implements OnInit {
     this.clientes = [];
     this.clienteSeleccionado = null;
 
+    // Porcentajes
+    this.porcentajesTotal = '';
+    this.porcentajeAplicadoTotal = false;
+
     // Tipo de cliente
     this.tipo_cliente = 'consumidor_final';
 
@@ -553,6 +560,62 @@ export class NuevaVentaComponent implements OnInit {
 
   }
 
+  // Aplicar porcentajes - Todo los productos
+  aplicarPorcentajesTotal(): void {
+    
+    let error = false;
+    const porcentajesArray = this.porcentajesTotal.trim().split(' ');
+
+    // Verificacion
+    porcentajesArray.map( porcentaje => {
+      const signo = porcentaje.charAt(0);
+      if(signo === '+'){
+        const valor = Number(porcentaje);
+        if(!valor) error = true;
+      }else if(signo === '-'){
+        const valor = Number(porcentaje);
+        if(!valor) error = true;
+      }else{
+        error = true;
+      }
+    });
+
+    if(error){
+      this.alertService.info('Formato incorrecto');
+      return;
+    }
+
+    this.porcentajeAplicadoTotal = true;
+
+    this.productosVenta.map( producto => {
+      
+      let precioTMP = producto.precio_unitario;
+
+      porcentajesArray.map( porcentaje => {     
+        const valor = Number(porcentaje);
+        precioTMP = (1 + (valor/100)) * precioTMP; 
+      });
+      
+      producto.precio_unitario = this.dataService.redondear(precioTMP, 2);
+      producto.precio_total = this.dataService.redondear(precioTMP * producto.cantidad, 2);
+    
+    });
+
+    this.calcularPrecio();
+      
+  }
+
+  eliminarPorcentajesTotal(): void {
+    this.productosVenta.map( producto => {
+      producto.precio_unitario = producto.precio_original;
+      producto.precio_total = this.dataService.redondear(producto.precio_original * producto.cantidad, 2);
+    });
+    this.porcentajesTotal = '';
+    this.porcentajeAplicadoTotal = false;
+    this.calcularPrecio();  
+  }
+
+
   eliminarPorcentaje(): void {
     this.precio = this.precioResguardo;
     this.porcentajes = '';
@@ -563,6 +626,8 @@ export class NuevaVentaComponent implements OnInit {
   almacenamientoLocalStorage(): void {
     localStorage.setItem('venta_etapa', JSON.stringify(this.etapa));
     localStorage.setItem('venta_productoCargado', JSON.stringify(this.productoCargado));
+    localStorage.setItem('porcentajesTotal', JSON.stringify(this.porcentajesTotal));
+    localStorage.setItem('porcentajeAplicadoTotal', JSON.stringify(this.porcentajeAplicadoTotal));
     localStorage.setItem('venta_tipo_cliente', JSON.stringify(this.tipo_cliente));
     localStorage.setItem('venta_tipo_venta', JSON.stringify(this.tipo_venta));
     localStorage.setItem('venta_clienteSeleccionado', JSON.stringify(this.clienteSeleccionado));
@@ -577,6 +642,8 @@ export class NuevaVentaComponent implements OnInit {
     this.etapa = localStorage.getItem('venta_etapa') ? JSON.parse(localStorage.getItem('venta_etapa')) : 'tipo_venta';
     this.productoCargado = localStorage.getItem('venta_productoCargado') ? JSON.parse(localStorage.getItem('venta_productoCargado')) : false;
     this.clienteSeleccionado = localStorage.getItem('venta_clienteSeleccionado') ? JSON.parse(localStorage.getItem('venta_clienteSeleccionado')) : null;  
+    this.porcentajesTotal = localStorage.getItem('porcentajesTotal') ? JSON.parse(localStorage.getItem('porcentajesTotal')) : '';
+    this.porcentajeAplicadoTotal = localStorage.getItem('porcentajeAplicadoTotal') ? JSON.parse(localStorage.getItem('porcentajeAplicadoTotal')) : false;
     this.tipo_cliente = localStorage.getItem('venta_tipo_cliente') ? JSON.parse(localStorage.getItem('venta_tipo_cliente')) : 'consumidor_final';
     this.tipo_venta = localStorage.getItem('venta_tipo_venta') ? JSON.parse(localStorage.getItem('venta_tipo_venta')) : 'Directa';  
     this.clientesForm = localStorage.getItem('venta_clientesForm') ? JSON.parse(localStorage.getItem('venta_clientesForm')) : {

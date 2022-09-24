@@ -315,6 +315,9 @@
                       <table class="min-w-full leading-normal">
                           <thead>            
                                 <tr class="border">
+                                  <th *ngIf="permisos.all" class="px-5 border-b-2 border-gray-200 bg-gray-100 text-center text-sm font-semibold text-gray-900 tracking-wider">
+                                    Acción
+                                  </th>
                                   <th class="px-5 border-b-2 border-gray-200 bg-gray-100 text-sm font-semibold text-gray-900 tracking-wider">
                                     <div (click)="ordenarPorColumna('nro')" class="cursor-pointer w-max flex items-center justify-center focus:outline-none">
                                         <span>
@@ -363,13 +366,29 @@
                                         </span>
                                     </div>
                                 </th>
-                                  <th *ngIf="permisos.all" class="px-5 border-b-2 border-gray-200 bg-gray-100 text-center text-sm font-semibold text-gray-900 tracking-wider">
-                                      Acción
-                                  </th>
                               </tr>
                           </thead>
                           <tbody *ngIf="presupuestos">
                               <tr class="animate__animated animate__fadeIn" *ngFor="let presupuesto of presupuestos | filtroPresupuestos:filtro.parametro:filtro.activo | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual}">
+                                  <td *ngIf="permisos.all" class="px-5 py-2 border-b border-gray-200 text-xs text-center">
+                                    <span class="flex items-center justify-center text-gray-900 whitespace-no-wrap">
+                                      <app-boton-tabla (click)="abrirEditarPresupuesto(presupuesto)"  title="Ver detalles">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                        </svg>
+                                      </app-boton-tabla>
+                                      <app-boton-tabla (click)="generarPDF(presupuesto)" class="ml-2" title="Generar PDF">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                        </svg>
+                                      </app-boton-tabla>
+                                      <app-boton-tabla (click)="abrirGenerarVenta(presupuesto)" class="ml-2" title="Generar venta">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                      </app-boton-tabla>
+                                    </span>
+                                  </td>
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
                                     <p class="text-gray-900 whitespace-no-wrap">
                                         {{ presupuesto.nro | codigoPresupuesto }}
@@ -390,25 +409,6 @@
                                         ${{ presupuesto.precio_total | moneda }}
                                     </p>
                                 </td>
-                                  <td *ngIf="permisos.all" class="px-5 py-2 border-b border-gray-200 text-xs text-center">
-                                    <span class="flex items-center justify-center text-gray-900 whitespace-no-wrap">
-                                      <app-boton-tabla (click)="abrirEditarPresupuesto(presupuesto)"  title="Ver detalles">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                          <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                        </svg>
-                                      </app-boton-tabla>
-                                      <app-boton-tabla (click)="generarPDF(presupuesto)" class="ml-2" title="Generar PDF">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                          <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                                        </svg>
-                                      </app-boton-tabla>
-                                      <app-boton-tabla (click)="abrirGenerarVenta(presupuesto)" class="ml-2" title="Generar venta">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                      </app-boton-tabla>
-                                    </span>
-                                  </td>
                               </tr>
                           </tbody>
                       </table>
