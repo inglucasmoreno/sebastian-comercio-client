@@ -50,6 +50,13 @@ export class VentasProductosService {
       headers: this.getToken
     });
   } 
+
+  // Actualizar productos
+  actualizarProductos(data: any[]): Observable<any> {
+    return this.http.put(`${base_url}/ventas-productos/actualizar/productos`, data, {
+      headers: this.getToken
+    });
+  } 
   
   // Eliminar producto
   eliminarProducto(id:string): Observable<any> {

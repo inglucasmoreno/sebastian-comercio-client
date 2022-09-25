@@ -50,7 +50,14 @@ export class PresupuestoProductosService {
       headers: this.getToken
     });
   } 
-  
+
+  // Actualizar productos
+  actualizarProductos(data: any[]): Observable<any> {
+    return this.http.put(`${base_url}/presupuesto-productos/actualizar/productos`, data, {
+      headers: this.getToken
+    });
+  } 
+
   // Eliminar producto
   eliminarProducto(id:string): Observable<any> {
     return this.http.delete(`${base_url}/presupuesto-productos/${id}`, {

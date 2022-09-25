@@ -22,6 +22,9 @@ export class PresupuestosComponent implements OnInit {
   // Porcentajes
   public porcentajeAplicado = false;
   public porcentajes = '';
+  public porcentajesTotal = '';
+  public porcentajeAplicadoTotal = false;
+  public precioConPorcentaje = null;
 
   // Permisos de usuarios login
   public permisos = { all: false };
@@ -273,6 +276,9 @@ export class PresupuestosComponent implements OnInit {
   abrirEditarPresupuesto(presupuesto: any): void {
 
     this.presupuestoSeleccionado = presupuesto;
+    this.precioConPorcentaje = null;
+    this.porcentajeAplicadoTotal = false;
+    this.porcentajesTotal = '';
     this.productoSeleccionado = null;
     this.observacion = presupuesto.observacion;
 
@@ -286,7 +292,15 @@ export class PresupuestosComponent implements OnInit {
 
     this.presupuestoProductosService.listarProductos(parametros).subscribe({
       next: ({productos}) => {
+        
         this.productos = productos;
+
+        // Se le agregan los precios de reguardo
+        this.productos.map( producto => {
+          producto.precio_unitario_resguardo = producto.precio_unitario;
+          producto.precio_total_resguardo = producto.precio_total;
+        });
+
         window.scroll(0,0);
         this.presupuestoSeleccionado = presupuesto;
         this.showModalEditarPresupuesto = true;
@@ -312,6 +326,12 @@ export class PresupuestosComponent implements OnInit {
 
   // Seleccionar producto - Para actualizar
   seleccionarProducto(producto): void {
+    
+    if(this.porcentajeAplicadoTotal){
+      this.alertService.info('Debe completar la modificación de porcentajes');
+      return;
+    }
+    
     this.porcentajes = '';
     this.porcentajeAplicado = false;
     this.productoSeleccionado = producto;
@@ -683,11 +703,105 @@ export class PresupuestosComponent implements OnInit {
 
   }
 
+  // Aplicar porcentajes - Todo los productos
+  aplicarPorcentajesTotal(): void {
+  
+    let error = false;
+    const porcentajesArray = this.porcentajesTotal.trim().split(' ');
+
+    // Verificacion
+    porcentajesArray.map( porcentaje => {
+      const signo = porcentaje.charAt(0);
+      if(signo === '+'){
+        const valor = Number(porcentaje);
+        if(!valor) error = true;
+      }else if(signo === '-'){
+        const valor = Number(porcentaje);
+        if(!valor) error = true;
+      }else{
+        error = true;
+      }
+    });
+
+    if(error){
+      this.alertService.info('Formato incorrecto');
+      return;
+    }
+
+    this.porcentajeAplicadoTotal = true;
+
+    this.productos.map( producto => {
+      
+      let precioTMP = producto.precio_unitario;
+
+      porcentajesArray.map( porcentaje => {     
+        const valor = Number(porcentaje);
+        precioTMP = (1 + (valor/100)) * precioTMP; 
+      });
+      
+      producto.precio_unitario = this.dataService.redondear(precioTMP, 2);
+      producto.precio_total = this.dataService.redondear(precioTMP * producto.cantidad, 2);
+    
+    });
+
+    this.calcularPrecioPorcentaje();
+      
+  }
+
+  // Eliminar porcentajes
+  eliminarPorcentajesTotal(): void {
+    this.productos.map( producto => {
+      producto.precio_unitario = producto.precio_unitario_resguardo;
+      producto.precio_total = producto.precio_total_resguardo;
+    });
+    this.porcentajesTotal = '';
+    this.porcentajeAplicadoTotal = false;
+    this.precioConPorcentaje = null;
+  }
+
   // Eliminar porcentaje
   eliminarPorcentaje(): void {
     this.precio_unitario = this.precioResguardo;
     this.porcentajes = '';
     this.porcentajeAplicado = false;
+  }
+
+  // Calcular nuevo precio con porcentaje aplicado
+  calcularPrecioPorcentaje(): void {
+    let precioTMP = 0;
+    this.productos.map( producto => {
+      precioTMP += producto.precio_total;
+    });
+    this.precioConPorcentaje = this.dataService.redondear(precioTMP, 2);;
+  }
+
+  // Actualizar productos con porcentajes
+  actualizarProductosConPorcentajes(): void {
+    this.alertService.loading();
+
+    let data = [];
+
+    this.productos.map( producto => {
+      data.push({
+        _id: producto._id,
+        presupuesto: producto.presupuesto,
+        precio_unitario: producto.precio_unitario,
+        precio_total: producto.precio_total,
+        creatorUser: this.authService.usuario.userId,
+        updatorUser: this.authService.usuario.userId,
+      })
+    });
+
+    this.presupuestoProductosService.actualizarProductos(data).subscribe({
+      next: () => {
+        this.porcentajesTotal = '';
+        this.presupuestoSeleccionado.precio_total = this.precioConPorcentaje;
+        this.porcentajeAplicadoTotal = false;
+        this.precioConPorcentaje = null;
+        this.alertService.success('Actualizacion correcta');
+      },
+      error: ({ error }) => this.alertService.errorApi(error)
+    })
   }
 
   // Reiniciando formulario
