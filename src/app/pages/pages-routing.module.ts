@@ -22,6 +22,8 @@ import { FamiliaProductosComponent } from './familia-productos/familia-productos
 import { ProveedoresComponent } from './proveedores/proveedores.component';
 import { VentasComponent } from './ventas/ventas.component';
 import { NuevaVentaComponent } from './ventas/nueva-venta.component';
+import { CajasComponent } from './cajas/cajas.component';
+import { TiposMovimientosComponent } from './tipos-movimientos/tipos-movimientos.component';
 
 const routes: Routes = [
     {
@@ -64,6 +66,10 @@ const routes: Routes = [
             // Ventas
             { path: 'ventas', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasComponent },
             { path: 'nueva-venta', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: NuevaVentaComponent },
+
+            // Cajas
+            { path: 'saldos', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: CajasComponent },
+            { path: 'tipos-movimientos', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: TiposMovimientosComponent },
 
         ]
     }

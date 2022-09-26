@@ -5,6 +5,7 @@ import { items } from './items';
 import { itemsProductos } from './items-productos';
 import { itemsPresupuestos } from './items-presupuestos';
 import { itemsVentas } from './items-ventas';
+import { itemsCajas } from './items-cajas';
 
 @Component({
   selector: 'app-header',
@@ -19,12 +20,14 @@ export class HeaderComponent implements OnInit {
   public itemsPresupuestos: any[];
   public itemsProductos: any[];
   public itemsVentas: any[];
+  public itemsCajas: any[];
  
   // Flags - Navegacion
   public administrador = false;
   public showProductos = false;
   public showPresupuestos = false;
   public showVentas = false;
+  public showCajas = false;
 
   // Permisos para navegacion
   public permiso_usuarios = true;
@@ -37,6 +40,7 @@ export class HeaderComponent implements OnInit {
     this.itemsProductos = itemsProductos;
     this.itemsPresupuestos = itemsPresupuestos;
     this.itemsVentas = itemsVentas;
+    this.itemsCajas = itemsCajas;
   }
   
   // Habilitacion de navegacion

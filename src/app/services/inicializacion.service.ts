@@ -29,4 +29,18 @@ export class InicializacionService {
     });
   }
 
+  // Inicializacion de saldos
+  inicializarSaldos(usuario: string): Observable<any> {
+    return this.http.post(`${base_url}/inicializacion/saldos`,{},{
+      params: { usuario }
+    });
+  }
+
+  // Inicializacion de tipo de movimientos
+  inicializarTiposMovimientos(usuario: string): Observable<any> {
+    return this.http.post(`${base_url}/inicializacion/tipos-movimientos`,{},{
+      params: { usuario }
+    });
+  }
+
 }

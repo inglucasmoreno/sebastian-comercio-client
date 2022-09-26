@@ -318,6 +318,12 @@ export class VentasComponent implements OnInit {
 
   // Seleccionar producto - Para actualizar
   seleccionarProducto(producto): void {
+
+    if(this.porcentajeAplicadoTotal){
+      this.alertService.info('Debe completar la modificación por porcentajes');
+      return;
+    }
+
     this.porcentajes = '';
     this.porcentajeAplicado = false;
     this.productoSeleccionado = producto;
@@ -561,6 +567,12 @@ export class VentasComponent implements OnInit {
   }
   
   buscarProductos(): void {
+
+    if(this.porcentajeAplicadoTotal){
+      this.alertService.info('Debe completar la modificación por porcentajes');
+      return;
+    }   
+
     this.productoSeleccionado = null;
     this.cantidad = null;
     this.filtro.parametroProductos = '';
@@ -672,7 +684,6 @@ export class VentasComponent implements OnInit {
         venta: producto.venta,
         precio_unitario: producto.precio_unitario,
         precio_total: producto.precio_total,
-        creatorUser: this.authService.usuario.userId,
         updatorUser: this.authService.usuario.userId,
       })
     });

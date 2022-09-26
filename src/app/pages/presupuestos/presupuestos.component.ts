@@ -328,7 +328,7 @@ export class PresupuestosComponent implements OnInit {
   seleccionarProducto(producto): void {
     
     if(this.porcentajeAplicadoTotal){
-      this.alertService.info('Debe completar la modificación de porcentajes');
+      this.alertService.info('Debe completar la modificación por porcentajes');
       return;
     }
     
@@ -649,11 +649,18 @@ export class PresupuestosComponent implements OnInit {
   }
   
   buscarProductos(): void {
+  
+    if(this.porcentajeAplicadoTotal){
+      this.alertService.info('Debe completar la modificación por porcentajes');
+      return;
+    }
+    
     this.productoSeleccionado = null;
     this.cantidad = null;
     this.filtro.parametroProductos = '';
     this.cantidadItemsProductos = 10;
     this.listarProductos();   
+  
   }
 
   // Aplicar variacion porcentual
@@ -787,7 +794,6 @@ export class PresupuestosComponent implements OnInit {
         presupuesto: producto.presupuesto,
         precio_unitario: producto.precio_unitario,
         precio_total: producto.precio_total,
-        creatorUser: this.authService.usuario.userId,
         updatorUser: this.authService.usuario.userId,
       })
     });

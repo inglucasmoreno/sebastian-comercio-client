@@ -23,6 +23,8 @@ import { FamiliaProductosComponent } from './familia-productos/familia-productos
 import { ProveedoresComponent } from './proveedores/proveedores.component';
 import { VentasComponent } from './ventas/ventas.component';
 import { NuevaVentaComponent } from './ventas/nueva-venta.component';
+import { CajasComponent } from './cajas/cajas.component';
+import { TiposMovimientosComponent } from './tipos-movimientos/tipos-movimientos.component';
 
 
 @NgModule({
@@ -43,6 +45,8 @@ import { NuevaVentaComponent } from './ventas/nueva-venta.component';
     ProveedoresComponent,
     VentasComponent,
     NuevaVentaComponent,
+    CajasComponent,
+    TiposMovimientosComponent,
   ],
   imports: [
     CommonModule,

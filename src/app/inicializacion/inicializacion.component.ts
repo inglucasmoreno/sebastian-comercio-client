@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertService } from '../services/alert.service';
+import { CajasService } from '../services/cajas.service';
 import { InicializacionService } from '../services/inicializacion.service';
 
 @Component({
@@ -10,6 +11,7 @@ import { InicializacionService } from '../services/inicializacion.service';
 export class InicializacionComponent implements OnInit {
 
   constructor(private inicializacionService: InicializacionService,
+              private cajasService: CajasService,
               private alertService: AlertService) { }
 
   ngOnInit(): void {}
@@ -23,5 +25,6 @@ export class InicializacionComponent implements OnInit {
       this.alertService.errorApi(error.message);
     });
   }
+
 
 }
