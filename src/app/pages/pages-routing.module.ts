@@ -24,6 +24,7 @@ import { VentasComponent } from './ventas/ventas.component';
 import { NuevaVentaComponent } from './ventas/nueva-venta.component';
 import { CajasComponent } from './cajas/cajas.component';
 import { TiposMovimientosComponent } from './tipos-movimientos/tipos-movimientos.component';
+import { MovimientosComponent } from './movimientos/movimientos.component';
 
 const routes: Routes = [
     {
@@ -67,9 +68,10 @@ const routes: Routes = [
             { path: 'ventas', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasComponent },
             { path: 'nueva-venta', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: NuevaVentaComponent },
 
-            // Cajas
+            // Caja
             { path: 'saldos', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: CajasComponent },
             { path: 'tipos-movimientos', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: TiposMovimientosComponent },
+            { path: 'movimientos', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: MovimientosComponent },
 
         ]
     }

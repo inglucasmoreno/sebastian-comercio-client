@@ -1,0 +1,31 @@
+
+<!-- Modal: Crear nuevo movimiento -->
+<app-modal-medium [showModal]="showModalCreacion">
+  <div>
+    <div class="flex items-center justify-between p-2 rounded-t bg-primary-800 ">
+      <h1 class="text-white"> Nuevo movimiento </h1>
+      <button (click)="showModalCreacion = false" class="text-white focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="p-2">
+      <h1> Creacion de nuevo movimiento </h1>  
+    </div>
+  </div>
+</app-modal-medium>
+
+<!-- Pagina principal -->
+<div>
+  <div class="container max-w-5xl mt-5 m-auto border border-gray-300">
+    <div class="bg-primary-800 p-2 flex items-center justify-between">
+      <h1 class="text-white text-xl"> Listado de movimientos </h1>
+      <button (click)="abrirModalCreacion()" class="p-2 border rounded focus:outline-none hover:text-secondaryColor border-gray-300 bg-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

@@ -25,6 +25,7 @@ import { VentasComponent } from './ventas/ventas.component';
 import { NuevaVentaComponent } from './ventas/nueva-venta.component';
 import { CajasComponent } from './cajas/cajas.component';
 import { TiposMovimientosComponent } from './tipos-movimientos/tipos-movimientos.component';
+import { MovimientosComponent } from './movimientos/movimientos.component';
 
 
 @NgModule({
@@ -47,6 +48,7 @@ import { TiposMovimientosComponent } from './tipos-movimientos/tipos-movimientos
     NuevaVentaComponent,
     CajasComponent,
     TiposMovimientosComponent,
+    MovimientosComponent,
   ],
   imports: [
     CommonModule,
