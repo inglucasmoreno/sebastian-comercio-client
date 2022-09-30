@@ -18,6 +18,13 @@ export class MovimientosService {
 
   constructor(private http: HttpClient) {}
 
+  // Inicializacion movimientos
+  initMovimientos(): Observable<any> {
+    return this.http.get(`${base_url}/movimientos/inicializacion/seccion`, {
+      headers: this.getToken
+    });
+  };
+
   // Nuevo movimiento
   nuevoMovimiento(data: any): Observable<any> {
     return this.http.post(`${base_url}/movimientos`, data, {

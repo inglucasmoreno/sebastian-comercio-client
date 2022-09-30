@@ -10,8 +10,63 @@
         </svg>
       </button>
     </div>
-    <div class="p-2">
-      <h1> Creacion de nuevo movimiento </h1>  
+    <div class="p-2 text-sm">
+      <div class="mb-3 flex items-center">
+        <div class="w-1/2">
+          <p class="font-semibold"> <span class="text-red-500"> * </span> Tipo de movimiento </p>
+          <select [(ngModel)]="tipo_movimiento" class="border border-gray-400 w-full p-2 focus:outline-none rounded mt-2">
+            <option value=""> Seleccionar tipo </option>
+            <option *ngFor="let tipo of tiposMovimientos" [value]="tipo._id"> {{ tipo.descripcion }} </option>
+          </select>
+        </div>
+        <div class="w-1/2 ml-2">
+          <p class="font-semibold"> <span class="text-red-500"> * </span> Monto </p>
+          <input [(ngModel)]="monto" type="number" placeholder="Ej. 3000" class="border border-gray-400 w-full p-2 focus:outline-none rounded mt-2">
+        </div>
+      </div>
+      <hr>
+      <div class="flex items-center mt-2">
+        <div class="w-1/2">
+          <p class="font-semibold"> <span class="text-red-500"> * </span> Tipo de origen </p>
+          <select (change)="tipoOrigen()" [(ngModel)]="tipo_origen" class="border w-full border-gray-400 p-2 focus:outline-none rounded mt-2">
+            <option value="Interno"> Interno </option>
+            <option value="Cliente"> Cliente </option>
+            <option value="Proveedor"> Proveedor </option>
+          </select>          
+        </div>
+        <div class="w-1/2 ml-2">
+          <p class="font-semibold"> <span class="text-red-500"> * </span> Tipo de destino </p>
+          <select (change)="tipoDestino()"  [(ngModel)]="tipo_destino" class="border w-full border-gray-400 p-2 focus:outline-none rounded mt-2">
+            <option value="Interno"> Interno </option>
+            <option value="Cliente"> Cliente </option>
+            <option value="Proveedor"> Proveedor </option>
+          </select>   
+        </div>
+      </div>
+      <div class="flex items-center mt-2 mb-4">
+        <div class="w-1/2">
+          <p class="font-semibold"> <span class="text-red-500"> * </span> Origen </p>
+          <select (change)="seleccionarOrigen()" [(ngModel)]="origen" class="border w-full border-gray-400 p-2 focus:outline-none rounded mt-2">
+            <option value=""> Seleccionar origen </option>
+            <option [value]="origen._id" *ngFor="let origen of origenes"> {{ origen.descripcion }} {{ tipo_origen === 'Interno' ? ' - $' + (origen.saldo | moneda) : null }} </option>
+          </select>          
+        </div>
+        <div class="w-1/2 ml-2">
+          <p class="font-semibold"> <span class="text-red-500"> * </span> Destino </p>
+          <select (change)="seleccionarDestino()" [(ngModel)]="destino" class="border w-full border-gray-400 p-2 focus:outline-none rounded mt-2">
+            <option value=""> Seleccionar destino </option>
+            <option [value]="destino._id" *ngFor="let destino of destinos"> {{ destino.descripcion }} {{ tipo_destino === 'Interno' ? ' - $' + (destino.saldo | moneda) : null }} </option>
+          </select>   
+        </div>
+      </div>
+      <hr>
+      <div class="mt-2">
+        <p class="font-semibold"> Observación </p>
+        <input [(ngModel)]="observacion" type="text" placeholder="Colocar observación Aquí" class="border w-full border-gray-400 p-2 focus:outline-none rounded mt-2">
+      </div>
+      <button (click)="generarMovimiento()" class="mt-4 border font-semibold focus:outline-none p-2 w-full text-center hover:text-secondaryColor border-gray-400 text-gray-800 bg-gray-100 rounded">
+        Generar movimiento
+      </button>
     </div>
   </div>
 </app-modal-medium>
