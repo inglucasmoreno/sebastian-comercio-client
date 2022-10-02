@@ -3,6 +3,7 @@ import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { MovimientosService } from 'src/app/services/movimientos.service';
+import gsap from 'gsap';
 
 @Component({
   selector: 'app-movimientos',
@@ -12,7 +13,9 @@ import { MovimientosService } from 'src/app/services/movimientos.service';
 })
 export class MovimientosComponent implements OnInit {
 
+  // Modals
   showModalCreacion = false;
+  showModalDetalles = false;
 
   // Listados
   public tiposMovimientos: any[] = [];
@@ -37,6 +40,25 @@ export class MovimientosComponent implements OnInit {
 
   // Movimientos
   public movimientos: any[] = [];
+  public movimientoSeleccionado: any;
+
+  // Paginacion
+  public totalItems: number;
+  public desde: number = 0;
+  public paginaActual: number = 1;
+  public cantidadItems: number = 10;
+
+  // Filtrado
+  public filtro = {
+    tipo_movimiento: '',
+    parametro: '',
+  }
+
+  // Ordenar
+  public ordenar = {
+    direccion: -1,  // Asc (1) | Desc (-1)
+    columna: 'createdAt'
+  }
 
   constructor(private movimientosService: MovimientosService,
               private authService: AuthService,
@@ -44,14 +66,25 @@ export class MovimientosComponent implements OnInit {
               private dataService: DataService) { }
 
   ngOnInit(): void {
+    gsap.from('.gsap-contenido', { y:100, opacity: 0, duration: .2 });
     this.dataService.ubicacionActual = 'Dashboard - Movimientos';
     this.valoresIniciales();
   }
 
   listarMovimientos(): void {
-    this.movimientosService.listarMovimientos().subscribe({
-      next: ({movimientos}) => {
+    this.movimientosService.listarMovimientos(
+      this.ordenar.direccion,
+      this.ordenar.columna,
+      this.desde,
+      this.cantidadItems,
+      'true',
+      this.filtro.parametro,
+      this.filtro.tipo_movimiento
+    ).subscribe({
+      next: ({movimientos, totalItems}) => {
         this.movimientos = movimientos;
+        this.totalItems = totalItems;
+        console.log(movimientos);
         this.showModalCreacion = false;        
         this.alertService.close();
       },error: ({error}) => this.alertService.errorApi(error.message)
@@ -68,7 +101,7 @@ export class MovimientosComponent implements OnInit {
         this.proveedores = data.proveedores;
         this.origenes = data.cajas;
         this.destinos = data.cajas;
-        this.alertService.close();
+        this.listarMovimientos();
       },
       error: ({error}) => this.alertService.errorApi(error.message)
     })
@@ -151,9 +184,7 @@ export class MovimientosComponent implements OnInit {
       return;
     }
 
-    // Generacion de venta
-
-
+    // Generacion de movimiento
     this.alertService.question({ msg: 'Esta por generar un movimiento', buttonText: 'Generar' })
         .then(({isConfirmed}) => {  
           if (isConfirmed) {
@@ -180,6 +211,7 @@ export class MovimientosComponent implements OnInit {
             this.movimientosService.nuevoMovimiento(data).subscribe({
               next: () => {
 
+                // Actualizacion de saldos
                 if(this.tipo_origen === 'Interno'){
                   this.saldos.map( saldo => {
                     if(String(saldo._id) === String(this.origen)){
@@ -205,6 +237,35 @@ export class MovimientosComponent implements OnInit {
         });
 
   }
+
+  // Abrir detalles
+  abrirDetalles(movimiento: any): void {
+    window.scroll(0,0);
+    this.movimientoSeleccionado = movimiento;
+    console.log(movimiento);
+    this.showModalDetalles = true;
+  }
+
+  // Ordenar por fecha
+  ordenarFecha(): void {
+    this.ordenar.direccion = this.ordenar.direccion === -1 ? 1 : -1;
+    this.cambiarPagina(1);
+  }
+
+  // Cambiar cantidad de items
+  cambiarCantidadItems(): void {
+    this.paginaActual = 1
+    this.cambiarPagina(1);
+  }
+
+  // Paginacion - Cambiar pagina
+  cambiarPagina(nroPagina): void {
+    this.paginaActual = nroPagina;
+    this.desde = (this.paginaActual - 1) * this.cantidadItems;
+    this.alertService.loading();
+    this.listarMovimientos();
+  }
+
 
 
 }

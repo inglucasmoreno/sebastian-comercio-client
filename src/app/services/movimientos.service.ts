@@ -40,11 +40,24 @@ export class MovimientosService {
   };
 
   // Listar movimientos
-  listarMovimientos(parametros?: any): Observable<any> {
+  listarMovimientos(
+    direccion : number = -1, 
+    columna: string = 'createdAt',
+    desde: number = 0,
+    registerpp: number = 10,
+    activo: string = '',
+    parametro: string = '',
+    tipo_movimiento: string = ''
+    ): Observable<any> {
     return this.http.get(`${base_url}/movimientos`, {
       params: {
-        direccion: parametros?.direccion || 1,
-        columna: parametros?.columna || 'descripcion'
+        columna,
+        desde,
+        registerpp,
+        parametro,
+        direccion: String(direccion),
+        activo,
+        tipo_movimiento
       },
       headers: this.getToken
     });
