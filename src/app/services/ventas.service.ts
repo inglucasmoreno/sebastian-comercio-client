@@ -32,6 +32,13 @@ export class VentasService {
     });
   };
 
+  // Generar Excel
+  generarExcel(): Observable<any> {
+    return this.http.get(`${base_url}/ventas/reporte/excel`, {
+      headers: this.getToken
+    });
+  };
+
   // Venta por ID
   getVenta(id: string): Observable<any> {
     return this.http.get(`${base_url}/ventas/${ id }`,{ 

@@ -126,7 +126,7 @@
         </div>
 
         <!-- Cajas -->
-        <li *ngIf="authService.usuario.permisos.includes('CAJAS_NAV') || authService.usuario.role === 'ADMIN_ROLE'" (click)="showCajas = !showCajas" class="flex items-center justify-between outline-none cursor-pointer p-2">
+        <!-- <li *ngIf="authService.usuario.permisos.includes('CAJAS_NAV') || authService.usuario.role === 'ADMIN_ROLE'" (click)="showCajas = !showCajas" class="flex items-center justify-between outline-none cursor-pointer p-2">
 
             <div class="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -153,7 +153,7 @@
             <ng-container *ngFor="let element of itemsCajas">
                 <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route" [item]="element.item"></app-items>
             </ng-container>
-        </div>
+        </div> -->
 
         <!-- Finalizar sesion -->
         <li (click)="logout()" class="flex outline-none transform hover:translate-x-2 duration-500 items-center cursor-pointer p-2">

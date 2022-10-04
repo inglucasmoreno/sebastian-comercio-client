@@ -727,6 +727,23 @@ export class VentasComponent implements OnInit {
     this.precioConPorcentaje = this.dataService.redondear(precioTMP, 2);;
   }
 
+  // Reporte - Excel
+  reporteExcel(): void{
+    this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
+    .then(({isConfirmed}) => {  
+      if (isConfirmed) {
+        this.alertService.loading();
+        this.ventasService.generarExcel().subscribe({
+          next: () => {
+            window.open(`${base_url}/excel/ventas-directas.xlsx`, '_blank');
+            this.alertService.close();
+          },
+          error: ({error}) => this.alertService.errorApi(error.message)
+        });
+      }
+    });
+  }
+
   // Reiniciando formulario
   reiniciarFormulario(): void {
     this.descripcion = '';  
