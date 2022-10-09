@@ -1,62 +1,72 @@
 
-<!-- Modal: Crear / Editar unidad -->
-<app-modal [showModal]="showModalUnidad">
-  <div (keyup.enter)="estadoFormulario === 'crear' ? nuevaUnidad() : actualizarUnidad()">
+<!-- Modal: Crear / Editar cuenta corriente -->
+<app-modal [showModal]="showModalCuentaCorriente">
+  <div (keyup.enter)="nuevaCuentaCorriente()">
       <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
-          <h1 class=" text-white px-2 py-1 rounded-t text-lg"> {{ estadoFormulario == 'crear' ? 'Creando unidad' : 'Editando unidad' }} </h1>
-          <svg (click)="showModalUnidad = false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <h1 class=" text-white px-2 py-1 rounded-t text-lg"> {{ estadoFormulario == 'crear' ? 'Creando cuenta corriente' : 'Editando cuenta corriente' }} </h1>
+          <svg (click)="showModalCuentaCorriente = false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </div>
       <div class="p-4 text-sm">
-          <p class="font-semibold"> <span class="text-red-500"> * </span> Descripción </p>
-          <input [(ngModel)]="descripcion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Kilogramo" type="text">
-          <div *ngIf="unidadSeleccionada && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
-            <div class="xl:w-1/2">
-                <p class="font-semibold text-sm"> Fecha de alta </p>
-                <div class="border text-sm mt-2 border-gray-300 rounded p-2 bg-gray-100">
-                    {{ unidadSeleccionada.createdAt | fecha }}
-                </div>
-            </div>
-            <div class="xl:ml-4 xl:w-1/2 mt-4 xl:mt-0">
-                <p class="font-semibold text-sm"> Usuario creador </p>
-                <div class="border text-sm capitalize mt-2 border-gray-300 rounded p-2 bg-gray-100">
-                    {{ unidadSeleccionada.creatorUser.apellido.toLowerCase() }} {{ unidadSeleccionada.creatorUser.nombre.toLowerCase() }}
-                </div>
-            </div>
+        <div class="md:flex md:items-center">
+          <div class="md:w-1/2">
+            <p class="font-semibold"> <span class="text-red-500"> * </span> Proveedor </p>
+            <select [disabled]="estadoFormulario === 'editar'" [(ngModel)]="proveedor" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+              <option value=""> Seleccionar proveedor </option>
+              <option *ngFor="let proveedor of proveedores" [value]="proveedor._id"> {{ proveedor.descripcion }} </option>
+            </select>
+          </div>
+          <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+            <p class="font-semibold"> <span class="text-red-500"> * </span> Saldo </p>
+            <input [disabled]="estadoFormulario === 'editar'" [(ngModel)]="saldo" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 1000" type="number">
+          </div>
+        </div>
+        <div *ngIf="cuentaCorrienteSeleccionada && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
+          <div class="xl:w-1/2">
+              <p class="font-semibold text-sm"> Fecha de alta </p>
+              <div class="border text-sm mt-2 border-gray-300 rounded p-2 bg-gray-100">
+                  {{ cuentaCorrienteSeleccionada.createdAt | fecha }}
+              </div>
+          </div>
+          <div class="xl:ml-4 xl:w-1/2 mt-4 xl:mt-0">
+              <p class="font-semibold text-sm"> Usuario creador </p>
+              <div class="border text-sm capitalize mt-2 border-gray-300 rounded p-2 bg-gray-100">
+                  {{ cuentaCorrienteSeleccionada.creatorUser.apellido.toLowerCase() }} {{ cuentaCorrienteSeleccionada.creatorUser.nombre.toLowerCase() }}
+              </div>
+          </div>
         </div> 
-        <div *ngIf="unidadSeleccionada && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
+        <div *ngIf="cuentaCorrienteSeleccionada && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
             <div class="xl:w-1/2">
                 <p class="font-semibold text-sm"> Ultima actualización </p>
                 <div class="border text-sm mt-2 border-gray-300 rounded p-2 bg-gray-100">
-                    {{ unidadSeleccionada.updatedAt | fecha }}
+                    {{ cuentaCorrienteSeleccionada.updatedAt | fecha }}
                 </div>
             </div>
             <div class="xl:ml-4 xl:w-1/2 mt-4 xl:mt-0">
                 <p class="font-semibold text-sm"> Usuario ultima actualización </p>
                 <div class="border text-sm capitalize mt-2 border-gray-300 rounded p-2 bg-gray-100">
-                    {{ unidadSeleccionada.updatorUser.apellido.toLowerCase() }} {{ unidadSeleccionada.updatorUser.nombre.toLowerCase() }}
+                    {{ cuentaCorrienteSeleccionada.updatorUser.apellido.toLowerCase() }} {{ cuentaCorrienteSeleccionada.updatorUser.nombre.toLowerCase() }}
                 </div>
             </div>
         </div>   
-          <button *ngIf="estadoFormulario == 'crear'" (click)="nuevaUnidad()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Crear unidad </button>
-          <button *ngIf="estadoFormulario == 'editar'" (click)="actualizarUnidad()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Actualizar unidad </button>
+          <button *ngIf="estadoFormulario == 'crear'" (click)="nuevaCuentaCorriente()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Crear cuenta corriente </button>
       </div>
   </div>
 </app-modal>
 
-<!-- Listado de unidades -->
+<!-- Listado de cuentas corrientes -->
 <div class="md:max-w-5xl mx-auto">
     <app-tarjeta-lista>
       <div class="container mx-auto">
           <div>
               <div class="flex items-center justify-between bg-primary-800 px-4 py-3 rounded-t">
                   <div class="ml-2 text-white">
-                      <h2 class="text-2xl leading-tight">
-                          Listado de unidades
+                      <h2 class="text-xl md:text-2xl leading-tight">
+                          Cuentas corrientes de proveedores
                       </h2>
-                      <p> Total de unidades: {{ unidades.length }} </p>
+                      <p> Total de cuentas: {{ cuentasCorrientes.length }} </p>
                   </div>
                   <div *ngIf="permisos.all">
-                    <button title="Nueva unidad" (click)="abrirModal('crear')" class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
+                    <button title="Nueva cuenta corriente" (click)="abrirModal('crear')" class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                         </svg>
@@ -104,15 +114,25 @@
                           <thead>
                               <tr class="border">
                                   <th class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-900 tracking-wider">
-                                      <div (click)="ordenarPorColumna('descripcion')" class="cursor-pointer flex items-center focus:outline-none">
+                                      <div (click)="ordenarPorColumna('proveedor.descripcion')" class="cursor-pointer flex items-center focus:outline-none">
                                           <span> Descripción </span>
                                           <span class="ml-2 text-gray-600">    
-                                              <svg *ngIf="ordenar.columna == 'descripcion' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                                   
-                                              <svg *ngIf="ordenar.columna == 'descripcion' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>
-                                              <svg *ngIf="ordenar.columna != 'descripcion'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                              <svg *ngIf="ordenar.columna == 'proveedor.descripcion' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                                   
+                                              <svg *ngIf="ordenar.columna == 'proveedor.descripcion' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                              <svg *ngIf="ordenar.columna != 'proveedor.descripcion'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                           </span>
                                       </div>
                                   </th>
+                                  <th class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-900 tracking-wider">
+                                    <div (click)="ordenarPorColumna('saldo')" class="cursor-pointer flex items-center focus:outline-none">
+                                        <span> Saldo </span>
+                                        <span class="ml-2 text-gray-600">    
+                                            <svg *ngIf="ordenar.columna == 'saldo' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                                   
+                                            <svg *ngIf="ordenar.columna == 'saldo' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                            <svg *ngIf="ordenar.columna != 'saldo'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                        </span>
+                                    </div>
+                                </th>
                                   <th class="px-5 border-b-2 border-gray-200 bg-gray-100 text-sm font-semibold text-gray-900 tracking-wider">
                                       <div (click)="ordenarPorColumna('createdAt')" class="cursor-pointer w-max flex items-center justify-center focus:outline-none">
                                           <span>
@@ -142,28 +162,38 @@
                                   </th>
                               </tr>
                           </thead>
-                          <tbody *ngIf="unidades">
-                              <tr class="animate__animated animate__fadeIn" *ngFor="let unidad of unidades | filtroUnidadMedida:filtro.parametro:filtro.activo | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual}">
+                          <tbody *ngIf="cuentasCorrientes">
+                              <tr class="animate__animated animate__fadeIn" *ngFor="let cuentaCorriente of cuentasCorrientes | filtroCcProveedores:filtro.parametro:filtro.activo | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual}">
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
                                       <p class="text-gray-900 w-max whitespace-no-wrap">
-                                          {{ unidad.descripcion }}
+                                          {{ cuentaCorriente.proveedor.descripcion }}
                                       </p>
                                   </td>
+                                  <td class="px-5 py-2 border-b border-gray-200 text-xs">
+                                    <p class="text-gray-900 w-max whitespace-no-wrap">
+                                        ${{ cuentaCorriente.saldo | moneda }}
+                                    </p>
+                                </td>
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
                                       <p class="text-gray-900 whitespace-no-wrap">
-                                          {{ unidad.createdAt | fecha }}
+                                          {{ cuentaCorriente.createdAt | fecha }}
                                       </p>
                                   </td>
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
-                                      <app-pastilla-estado [activo]=unidad.activo (click)="actualizarEstado(unidad)"></app-pastilla-estado>
+                                      <app-pastilla-estado [activo]=cuentaCorriente.activo (click)="actualizarEstado(cuentaCorriente)"></app-pastilla-estado>
                                   </td>
                                   <td *ngIf="permisos.all" class="px-5 py-2 border-b border-gray-200 text-xs text-center">
-                                        <span class="flex items-center justify-center text-gray-900 whitespace-no-wrap">
-                                            <app-boton-tabla (click)="abrirModal('editar', unidad)" title="Editar unidad">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                </svg>
-                                            </app-boton-tabla>
+                                    <span class="flex items-center justify-center text-gray-900 whitespace-no-wrap">
+                                          <app-boton-tabla (click)="abrirModal('editar', cuentaCorriente)" title="Editar cuenta corriente">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                              <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                            </svg>   
+                                          </app-boton-tabla>
+                                          <app-boton-tabla [routerLink]="['/dashboard/cc-proveedores-movimientos', cuentaCorriente._id]" class="ml-2" title="Registros">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                            </svg> 
+                                          </app-boton-tabla>
                                         </span>
                                   </td>
                               </tr>
@@ -172,11 +202,12 @@
                   </div>
               </div>
           </div>
-          <div *ngIf="unidades.length > cantidadItems" class="px-5 text-sm py-5 mt-4 bg-white border-t flex shadow flex-col xs:flex-row items-center xs:justify-between">
+          <div *ngIf="cuentasCorrientes.length > cantidadItems" class="px-5 text-sm py-5 mt-4 bg-white border-t flex shadow flex-col xs:flex-row items-center xs:justify-between">
               <pagination-controls nextLabel="Siguiente" previousLabel="Anterior" (pageChange)="paginaActual = $event"></pagination-controls>
           </div>
       </div>
     </app-tarjeta-lista>
 </div>
+
 
 

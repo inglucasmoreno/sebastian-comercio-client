@@ -55,7 +55,7 @@ export class CajasComponent implements OnInit {
               private dataService: DataService) { }
 
     ngOnInit(): void {
-      this.dataService.ubicacionActual = 'Dashboard - Saldos'; 
+      this.dataService.ubicacionActual = 'Dashboard - Cajas'; 
       this.permisos.all = this.permisosUsuarioLogin();
       this.alertService.loading();
       this.listarCajas(); 
@@ -188,7 +188,7 @@ export class CajasComponent implements OnInit {
       if(!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
 
       if(caja._id === '000000000000000000000000' || caja._id === '111111111111111111111111' || caja._id === '222222222222222222222222' || caja._id === '333333333333333333333333'){
-        this.alertService.info('No se puede dar de baja a este saldo');
+        this.alertService.info('No se puede dar de baja a esta caja');
         return;
       }
 
@@ -208,13 +208,13 @@ export class CajasComponent implements OnInit {
 
     }
 
-    // Inicializar saldos
-    inicializarSaldos(): void {
-      this.alertService.question({ msg: '¿Quieres inicializar los saldos?', buttonText: 'Inicializar' })
+    // Inicializar cajas
+    inicializarCajas(): void {
+      this.alertService.question({ msg: '¿Quieres inicializar las cajas', buttonText: 'Inicializar' })
           .then(({isConfirmed}) => {  
             if (isConfirmed) {
               this.alertService.loading();
-              this.inicializacionService.inicializarSaldos(this.authService.usuario.userId).subscribe({
+              this.inicializacionService.inicializarCajas(this.authService.usuario.userId).subscribe({
                 next: () => {
                   this.flagInicializacion = true;
                   this.listarCajas();

@@ -58,7 +58,7 @@ constructor(private proveedoresService: ProveedoresService,
             private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.ubicacionActual = 'Dashboard - proveedores'; 
+    this.dataService.ubicacionActual = 'Dashboard - Proveedores'; 
     this.permisos.all = this.permisosUsuarioLogin();
     this.alertService.loading();
     this.listarProveedores(); 

@@ -26,6 +26,12 @@ import { NuevaVentaComponent } from './ventas/nueva-venta.component';
 import { CajasComponent } from './cajas/cajas.component';
 import { TiposMovimientosComponent } from './tipos-movimientos/tipos-movimientos.component';
 import { MovimientosComponent } from './movimientos/movimientos.component';
+import { CcClientesComponent } from './cc-clientes/cc-clientes.component';
+import { CcProveedoresComponent } from './cc-proveedores/cc-proveedores.component';
+import { CcClientesMovimientosComponent } from './cc-clientes/cc-clientes-movimientos.component';
+import { CcProveedoresMovimientosComponent } from './cc-proveedores/cc-proveedores-movimientos.component';
+import { BancosComponent } from './bancos/bancos.component';
+import { ChequesComponent } from './cheques/cheques.component';
 
 
 @NgModule({
@@ -49,6 +55,12 @@ import { MovimientosComponent } from './movimientos/movimientos.component';
     CajasComponent,
     TiposMovimientosComponent,
     MovimientosComponent,
+    CcClientesComponent,
+    CcProveedoresComponent,
+    CcClientesMovimientosComponent,
+    CcProveedoresMovimientosComponent,
+    BancosComponent,
+    ChequesComponent,
   ],
   imports: [
     CommonModule,

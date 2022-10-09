@@ -37,14 +37,15 @@ export class CcProveedoresMovimientosService {
     return this.http.get(`${base_url}/cc-proveedores-movimientos`, {
       params: {
         direccion: parametros?.direccion || 1,
-        columna: parametros?.columna || 'descripcion'
+        columna: parametros?.columna || 'descripcion',
+        cc_proveedor: parametros?.cc_proveedor || '',
       },
       headers: this.getToken
     });
   }
 
   // Actualizar movimientos
-  actualizarMovimientos(id:string, data: any): Observable<any> {
+  actualizarMovimiento(id:string, data: any): Observable<any> {
     return this.http.put(`${base_url}/cc-proveedores-movimientos/${id}`, data, {
       headers: this.getToken
     });

@@ -15,6 +15,12 @@ import { CodigoVentasPipe } from './codigo-ventas.pipe';
 import { FiltroVentasPipe } from './filtro-ventas.pipe';
 import { FiltroCajasPipe } from './filtro-cajas.pipe';
 import { FiltroTiposMovimientosPipe } from './filtro-tipos-movimientos.pipe';
+import { FiltroCcClientesPipe } from './filtro-cc-clientes.pipe';
+import { FiltroCcProveedoresPipe } from './filtro-cc-proveedores.pipe';
+import { FiltroCcClientesMovimientosPipe } from './filtro-cc-clientes-movimientos.pipe';
+import { FiltroCcProveedoresMovimientosPipe } from './filtro-cc-proveedores-movimientos.pipe';
+import { FiltroBancosPipe } from './filtro-bancos.pipe';
+import { FiltroChequesPipe } from './filtro-cheques.pipe';
 
 @NgModule({
   declarations: [
@@ -33,6 +39,12 @@ import { FiltroTiposMovimientosPipe } from './filtro-tipos-movimientos.pipe';
     FiltroVentasPipe,
     FiltroCajasPipe,
     FiltroTiposMovimientosPipe,
+    FiltroCcClientesPipe,
+    FiltroCcProveedoresPipe,
+    FiltroCcClientesMovimientosPipe,
+    FiltroCcProveedoresMovimientosPipe,
+    FiltroBancosPipe,
+    FiltroChequesPipe,
   ],
   imports: [
     CommonModule
@@ -52,7 +64,13 @@ import { FiltroTiposMovimientosPipe } from './filtro-tipos-movimientos.pipe';
     CodigoVentasPipe,
     FiltroVentasPipe,
     FiltroCajasPipe,
-    FiltroTiposMovimientosPipe
+    FiltroTiposMovimientosPipe,
+    FiltroCcClientesPipe,
+    FiltroCcProveedoresPipe,
+    FiltroCcClientesMovimientosPipe,
+    FiltroCcProveedoresMovimientosPipe,
+    FiltroBancosPipe,
+    FiltroChequesPipe
   ]
 })
 export class PipesModule { }

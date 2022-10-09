@@ -29,9 +29,9 @@ export class InicializacionService {
     });
   }
 
-  // Inicializacion de saldos
-  inicializarSaldos(usuario: string): Observable<any> {
-    return this.http.post(`${base_url}/inicializacion/saldos`,{},{
+  // Inicializacion de cajas
+  inicializarCajas(usuario: string): Observable<any> {
+    return this.http.post(`${base_url}/inicializacion/cajas`,{},{
       params: { usuario }
     });
   }

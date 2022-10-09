@@ -84,7 +84,6 @@ export class MovimientosComponent implements OnInit {
       next: ({movimientos, totalItems}) => {
         this.movimientos = movimientos;
         this.totalItems = totalItems;
-        console.log(movimientos);
         this.showModalCreacion = false;        
         this.alertService.close();
       },error: ({error}) => this.alertService.errorApi(error.message)
@@ -143,7 +142,6 @@ export class MovimientosComponent implements OnInit {
           this.origen_seleccionado = origen;
         }
       });
-      console.log(this.origen_seleccionado);
     }
   }
 
@@ -155,7 +153,6 @@ export class MovimientosComponent implements OnInit {
           this.destino_seleccionado = destino;
         }
       });
-      console.log(this.destino_seleccionado);
     }
   }
 
@@ -242,7 +239,6 @@ export class MovimientosComponent implements OnInit {
   abrirDetalles(movimiento: any): void {
     window.scroll(0,0);
     this.movimientoSeleccionado = movimiento;
-    console.log(movimiento);
     this.showModalDetalles = true;
   }
 
