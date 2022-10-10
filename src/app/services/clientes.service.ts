@@ -33,6 +33,13 @@ export class ClientesService {
     });
   };
 
+  // Cliente por Identificacion
+  getClienteIdentificacion(identificacion: string): Observable<any> {
+    return this.http.get(`${base_url}/clientes/identificacion/${ identificacion }`,{ 
+      headers: this.getToken
+    });
+  };
+
   // Listar clientes
   listarClientes(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/clientes`, {

@@ -32,6 +32,13 @@ export class CcClientesService {
     });
   };
 
+  // Cuenta corriente por cliente
+  getCuentaCorrientePorCliente(idCliente: string): Observable<any> {
+    return this.http.get(`${base_url}/cc-clientes/cliente/${ idCliente }`,{ 
+      headers: this.getToken
+    });
+  };
+
   // Listar cuentas corrientes
   listarCuentasCorrientes(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/cc-clientes`, {

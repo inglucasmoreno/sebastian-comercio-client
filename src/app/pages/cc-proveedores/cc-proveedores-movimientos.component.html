@@ -124,7 +124,8 @@
                   </div>
               </div>
               <div class="text-sm px-4">
-                <p class="w-max px-1"> <span class="font-semibold"> Saldo actual: </span> ${{ cuentaCorriente?.saldo | moneda }} </p>
+                <p class="px-1 font-semibold"> {{ cuentaCorriente?.proveedor.descripcion }} </p>
+                <p class="px-1"> <span class="font-semibold"> Saldo actual: </span> ${{ cuentaCorriente?.saldo | moneda }} </p>
               </div>
               <div class="px-4 py-2 mt-2 overflow-x-auto">
                   <div class="inline-block max-h-screen overflow-y-auto min-w-full overflow-hidden pb-5">

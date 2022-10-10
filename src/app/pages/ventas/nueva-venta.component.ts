@@ -8,6 +8,9 @@ import { ProveedoresService } from 'src/app/services/proveedores.service';
 import { VentasService } from 'src/app/services/ventas.service';
 import { environment } from 'src/environments/environment';
 import gsap from 'gsap';
+import { CajasService } from 'src/app/services/cajas.service';
+import { CcClientesService } from 'src/app/services/cc-clientes.service';
+import { BancosService } from 'src/app/services/bancos.service';
 
 const base_url = environment.base_url;
 
@@ -32,6 +35,7 @@ export class NuevaVentaComponent implements OnInit {
   public showClientes = false;
   public showProductos = false;
   public showEditarProducto = false;
+  public showFormaPago = false;
 
   // Clientes
   public clientes: any[] = [];
@@ -43,6 +47,9 @@ export class NuevaVentaComponent implements OnInit {
   // Tipo de venta
   public tipo_venta = 'Directa';
   public tipo_cliente = 'consumidor_final';
+
+  // Cajas
+  public cajas: any[] = [];
 
   // Flags
   public etapa = 'tipo_venta';
@@ -64,6 +71,34 @@ export class NuevaVentaComponent implements OnInit {
   public proveedor = '';
   public precio_total = 0;
   public observacion:string = '';
+
+  // Venta propia
+  public forma_pago: string = '';
+  public forma_pago_monto: number = null;
+  public formas_pago: any[] = [];
+  public cheques: any[] = [];
+  public formaPagoSeleccionada: any = null;
+  public estadoCuentaCorriente: string = 'No tiene'; // Tiene | No tiene | No exite
+
+  // Cuenta corriente - Cliente
+  public datosCliente: any = null;
+  public cuenta_corriente: any = null;
+
+  // Bancos
+  public bancos: any[] = [];
+
+  // Cheque
+  public showModalCheque = false;
+  public estadoFormularioCheque = 'crear';
+  public chequeSeleccionado = null;
+
+  public cheque = {
+    nro_cheque: '',
+    emisor: '',
+    banco: '',
+    importe: null,
+    fecha_cobro: ''
+  }
 
   // Productos
   public productos: any[] = [];
@@ -102,6 +137,9 @@ export class NuevaVentaComponent implements OnInit {
               private ventasService: VentasService,
               private productosService: ProductosService,
               private alertService: AlertService,
+              private bancosService: BancosService,
+              private ccClientesService: CcClientesService,
+              private cajasService: CajasService,
               private dataService: DataService) { }
 
   // Inicio del componente
@@ -354,7 +392,7 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   // Crear venta
-  crearVenta(): void {
+  crearVentaDirecta(): void {
 
     // Verificacion: Productos
     if(this.productosVenta.length === 0){
@@ -422,6 +460,261 @@ export class NuevaVentaComponent implements OnInit {
 
       }
     });    
+  }
+
+  // Crear venta propia
+  crearVentaPropia(formaPago): void {
+
+  }
+
+  // Forma de pago seleccionada
+  seleccionandoFormaPago(): void {
+
+    console.log(this.forma_pago);
+    if(this.forma_pago.trim() === '') return;
+  
+  }
+
+  // Agregar forma de pago
+  agregarFormaPago(): void {
+
+    // Verificacion de forma de pago vacia
+    if(this.forma_pago.trim() === ''){
+      this.alertService.info('Debe seleccionar una forma de pago');
+      return;
+    }
+
+    // Verificacion de monto invalido
+    if(!this.forma_pago_monto || this.forma_pago_monto <  0){
+      this.alertService.info('Debe colocar un monto válido');
+      return;
+    }
+
+    let existe = false;
+
+    // Si la forma de pago existe
+    this.formas_pago.map( forma => {
+      if(forma._id === this.forma_pago){
+        existe = true;
+        forma.monto += this.forma_pago_monto;
+        this.forma_pago = '';
+        this.forma_pago_monto = null;
+      }
+    })
+
+    if(existe) return; // Si existe se sale de la condicion
+
+    // Imapcto en cuenta corriente - CLIENTE
+    if(this.forma_pago === 'cuenta_corriente'){
+      this.formas_pago.unshift({
+        _id: this.forma_pago,
+        descripcion: 'CUENTA CORRIENTE',
+        monto: this.forma_pago_monto
+      })     
+    }
+
+    // Impacto en caja interna
+    else{
+      let caja_descripcion = '';
+      this.cajas.map( caja => {
+        if(caja._id == this.forma_pago) caja_descripcion = caja.descripcion;
+      });
+      this.formas_pago.unshift({
+        _id: this.forma_pago,
+        descripcion: caja_descripcion,
+        monto: this.forma_pago_monto
+      })
+    }
+    
+    this.forma_pago = '';
+    this.forma_pago_monto = null
+
+  }
+
+  // Eliminar forma de pago
+  eliminarFormaPago(forma_pago): void {
+    this.formas_pago = this.formas_pago.filter( elemento => elemento._id !== forma_pago._id);
+  }
+
+  // Forma de pago
+  abrirFormaPago(): void {
+    
+    this.alertService.loading();
+    
+    // Listando cajas
+    this.cajasService.listarCajas().subscribe({
+      
+      next: ({cajas}) => {
+        
+        this.cajas = cajas.filter( caja => (caja.activo && caja._id !== '222222222222222222222222'));
+
+        // Se buscar el cliente y su cuenta corriente
+        this.clientesService.getClienteIdentificacion(this.clientesForm.identificacion).subscribe({
+          next: ({cliente}) => {
+
+            if(cliente){ // El cliente EXISTE en la BD
+
+              this.datosCliente = cliente;
+
+              // Se busca la cuenta corriente del cliente
+              this.ccClientesService.getCuentaCorrientePorCliente(cliente._id).subscribe({
+                next: ({cuenta_corriente}) => {
+                  
+                  if(cuenta_corriente){
+                    this.cuenta_corriente = cuenta_corriente;
+                    this.estadoCuentaCorriente = 'Tiene';
+
+                  }else{
+                    this.cuenta_corriente = null;
+                    this.estadoCuentaCorriente = 'No tiene';
+                  }
+
+                  this.forma_pago = '';
+                  this.forma_pago_monto = this.precio_total;
+                  this.formas_pago = [];
+                  this.showFormaPago = true;
+                  this.alertService.close();
+
+                },
+                error: ({error}) => this.alertService.errorApi(error.message) 
+              })    
+
+            }else{ // El cliente NO EXISTE en la BD
+              
+              this.showFormaPago = true;
+              this.estadoCuentaCorriente = 'No existe';
+              this.alertService.close();
+            
+            }
+
+          }, error: ({error}) => this.alertService.errorApi(error.message)
+        })
+
+      },error: ({error}) => this.alertService.errorApi(error.message)
+    
+    })
+
+  }
+
+  // Abrir datos de cheque
+  abrirModalCheque(estado, cheque = null): void {
+    this.alertService.loading();
+    this.estadoFormularioCheque = estado;
+    
+    if(estado === 'editar'){
+      this.chequeSeleccionado = cheque;
+      this.cheque = cheque;
+    }else{
+      // Reinicio de formulario de cheque
+      this.chequeSeleccionado = null;
+      this.cheque = {
+        nro_cheque: '',
+        importe: null,
+        emisor: '',
+        banco: '',
+        fecha_cobro: ''
+      }
+    } 
+   
+    this.bancosService.listarBancos().subscribe({
+      next: ({ bancos }) => {
+        this.bancos = bancos.filter(banco => banco.activo);
+        this.showFormaPago = false;
+        this.showModalCheque = true;
+        this.alertService.close();
+      }, error: ({error}) => this.alertService.errorApi(error.message)
+    })
+  }
+
+  // Agregar cheque
+  agregarCheque(): void {
+
+    // Verificacion: Numero de cheque vacio
+    if(this.cheque.nro_cheque.trim() === ""){
+      this.alertService.info('Debes colocar un número de cheque');
+      return;
+    }
+    
+    // Verificacion: importe vacio
+    if(!this.cheque.importe || this.cheque.importe < 0){
+      this.alertService.info('Debes colocar un importe válido');
+      return;
+    }
+
+    // Verificacion: emisor vacio
+    if(this.cheque.emisor.trim() === ''){
+      this.alertService.info('Debes colocar un emisor');
+      return;
+    }
+
+    // Verificacion: banco vacio
+    if(this.cheque.banco.trim() === ''){
+      this.alertService.info('Debes colocar un banco');
+      return;
+    }
+
+    // Verificacion: fecha de cobro vacia
+    if(this.cheque.fecha_cobro.trim() === ''){
+      this.alertService.info('Debes colocar una fecha de cobro');
+      return;
+    }
+
+    this.cheques.unshift(this.cheque);    
+
+    console.log(this.cheques);
+
+    this.cerrarModalCheque();
+
+  }
+
+  // Actualizar cheque
+  actualizarCheque(): void {
+
+    // Verificacion: Numero de cheque vacio
+    if(this.cheque.nro_cheque.trim() === ""){
+      this.alertService.info('Debes colocar un número de cheque');
+      return;
+    }
+    
+    // Verificacion: importe vacio
+    if(!this.cheque.importe || this.cheque.importe < 0){
+      this.alertService.info('Debes colocar un importe válido');
+      return;
+    }
+
+    // Verificacion: emisor vacio
+    if(this.cheque.emisor.trim() === ''){
+      this.alertService.info('Debes colocar un emisor');
+      return;
+    }
+
+    // Verificacion: banco vacio
+    if(this.cheque.banco.trim() === ''){
+      this.alertService.info('Debes colocar un banco');
+      return;
+    }
+
+    // Verificacion: fecha de cobro vacia
+    if(this.cheque.fecha_cobro.trim() === ''){
+      this.alertService.info('Debes colocar una fecha de cobro');
+      return;
+    }
+
+    // Se aplican los cambios al cheque
+    this.cheques.map( cheque => {
+      if(cheque._id === this.chequeSeleccionado){
+        cheque = this.cheque;
+      }
+    })  
+
+    this.cerrarModalCheque();
+
+  }
+
+  // Cerrar modal cheque
+  cerrarModalCheque(): void {
+    this.showModalCheque = false;
+    this.showFormaPago = true;
   }
 
   // Editar producto
@@ -492,6 +785,28 @@ export class NuevaVentaComponent implements OnInit {
 
     this.almacenamientoLocalStorage();
 
+  }
+
+  // Crear cuenta corriente
+  crearCuentaCorriente(): void {
+    this.alertService.question({ msg: 'Creando cuenta corriente para ' + this.datosCliente.descripcion, buttonText: 'Crear' })
+    .then(({isConfirmed}) => {  
+      if (isConfirmed) {
+        this.alertService.loading();
+        this.ccClientesService.nuevaCuentaCorriente({
+          cliente: this.datosCliente._id,
+          saldo: 0,
+          creatorUser: this.authService.usuario.userId,
+          updatorUser: this.authService.usuario.userId,
+        }).subscribe({
+          next: ({cuenta_corriente}) => {
+            this.cuenta_corriente = cuenta_corriente;
+            this.estadoCuentaCorriente = 'Tiene';
+            this.alertService.success('Cuenta corriente creada');
+          },error: ({error}) => this.alertService.errorApi(error.message) 
+        })
+      }
+    }); 
   }
 
   // Filtrar Activo/Inactivo
@@ -614,7 +929,6 @@ export class NuevaVentaComponent implements OnInit {
     this.porcentajeAplicadoTotal = false;
     this.calcularPrecio();  
   }
-
 
   eliminarPorcentaje(): void {
     this.precio = this.precioResguardo;
