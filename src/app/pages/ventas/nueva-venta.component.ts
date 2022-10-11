@@ -11,6 +11,7 @@ import gsap from 'gsap';
 import { CajasService } from 'src/app/services/cajas.service';
 import { CcClientesService } from 'src/app/services/cc-clientes.service';
 import { BancosService } from 'src/app/services/bancos.service';
+import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
 
 const base_url = environment.base_url;
 
@@ -135,6 +136,7 @@ export class NuevaVentaComponent implements OnInit {
               private authService: AuthService,
               private proveedoresService: ProveedoresService,
               private ventasService: VentasService,
+              private ventasPropiasService: VentasPropiasService,
               private productosService: ProductosService,
               private alertService: AlertService,
               private bancosService: BancosService,
@@ -391,7 +393,7 @@ export class NuevaVentaComponent implements OnInit {
     this.listarClientes();
   }
 
-  // Crear venta
+  // Crear venta - DIRECTA
   crearVentaDirecta(): void {
 
     // Verificacion: Productos
@@ -412,6 +414,7 @@ export class NuevaVentaComponent implements OnInit {
       return;
     }
 
+    // Creando - VENTA DIRECTA
     this.alertService.question({ msg: '¿Quieres generar la venta?', buttonText: 'Generar' })
     .then(({isConfirmed}) => {  
       if (isConfirmed) {
@@ -462,8 +465,75 @@ export class NuevaVentaComponent implements OnInit {
     });    
   }
 
-  // Crear venta propia
-  crearVentaPropia(formaPago): void {
+  // Crear venta - PROPIA
+  crearVentaPropia(): void {
+
+    // Verificacion: Productos
+    if(this.productosVenta.length === 0){
+      this.alertService.info('Debes cargar al menos un producto');
+      return;
+    }
+
+    // Verificacion: Formas de pago - Al menos una forma de pago
+    if(this.formas_pago.length === 0){
+      this.alertService.info('Debes colocar al menos una forma de pago');
+      return;
+    }
+
+    // Creando - VENTA PROPIA 
+    this.alertService.question({ msg: '¿Quieres generar la venta?', buttonText: 'Generar' })
+    .then(({isConfirmed}) => {  
+      if (isConfirmed) {
+
+        this.alertService.loading();
+
+        let dataCliente = '';
+
+        // Adaptando cliente
+        if(this.clienteSeleccionado && this.tipo_cliente !== 'consumidor_final'){
+          dataCliente = this.clienteSeleccionado._id;
+        }else if(!this.clienteSeleccionado && this.tipo_cliente !== 'consumidor_final'){
+          dataCliente = '';
+        }else if(this.tipo_cliente === 'consumidor_final'){
+          dataCliente = '000000000000000000000000'
+        }
+
+        const data = {
+          cliente: dataCliente,
+          tipo_cliente: this.tipo_cliente,
+          tipo_venta: this.tipo_venta,
+          formas_pago: this.formas_pago,
+          cheques: this.cheques,
+          cliente_descripcion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.descripcion : 'CONSUMIDOR FINAL',
+          observacion: this.observacion,
+          cliente_tipo_identificacion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.tipo_identificacion : 'DNI',
+          cliente_identificacion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.identificacion : '',
+          cliente_direccion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.direccion : '',
+          cliente_telefono: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.telefono : '',
+          cliente_correo_electronico: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.correo_electronico : '',
+          cliente_condicion_iva: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.condicion_iva : 'Consumidor Final',
+          precio_total: this.precio_total,
+          productos: this.productosVenta,
+          creatorUser: this.authService.usuario.userId,
+          updatorUser: this.authService.usuario.userId,
+        };
+
+
+        this.ventasPropiasService.nuevaVenta(data).subscribe({
+          next: () => {
+            this.reiniciarValores();
+            this.showFormaPago = false;
+            this.alertService.success('Venta generada correctamente');
+            window.open(`${base_url}/pdf/venta-propia.pdf`, '_blank');   
+          },
+          error: ({error}) => this.alertService.errorApi(error.message)
+        });
+
+      }
+    });    
+
+
+
 
   }
 
@@ -661,8 +731,6 @@ export class NuevaVentaComponent implements OnInit {
 
     this.cheques.unshift(this.cheque);    
 
-    console.log(this.cheques);
-
     this.cerrarModalCheque();
 
   }
@@ -769,6 +837,12 @@ export class NuevaVentaComponent implements OnInit {
     this.productoSeleccionado = null;
     this.cantidad = null;
     this.precio = null;
+
+    // Formas de pago
+    this.formas_pago = [];
+    this.forma_pago = '';
+    this.forma_pago_monto = null;
+    this.cheques = [];
 
     // Filtrado
     this.filtro = {
