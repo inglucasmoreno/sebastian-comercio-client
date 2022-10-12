@@ -31,6 +31,7 @@ import { CcClientesMovimientosComponent } from './cc-clientes/cc-clientes-movimi
 import { CcProveedoresMovimientosComponent } from './cc-proveedores/cc-proveedores-movimientos.component';
 import { BancosComponent } from './bancos/bancos.component';
 import { ChequesComponent } from './cheques/cheques.component';
+import { VentasPropiasComponent } from './ventas/ventas-propias.component';
 
 const routes: Routes = [
     {
@@ -73,6 +74,7 @@ const routes: Routes = [
             // Ventas
             { path: 'ventas', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasComponent },
             { path: 'nueva-venta', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: NuevaVentaComponent },
+            { path: 'ventas-propias', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasPropiasComponent },
 
             // Caja
             { path: 'cajas', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: CajasComponent },

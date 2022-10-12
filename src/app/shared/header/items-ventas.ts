@@ -3,4 +3,5 @@
 export const itemsVentas = [
   { svg: '', route: 'nueva-venta', item: 'Nueva venta', permiso:['VENTAS_NAV'] },
   { svg: '', route: 'ventas', item: 'Ventas directas', permiso:['VENTAS_NAV'] },
+  { svg: '', route: 'ventas-propias', item: 'Ventas propias', permiso:['VENTAS_PROPIAS_NAV'] },
 ];
