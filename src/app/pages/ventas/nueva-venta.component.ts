@@ -74,6 +74,10 @@ export class NuevaVentaComponent implements OnInit {
   public observacion:string = '';
 
   // Venta propia
+  public incrementoCC: boolean = false;
+  public totalPagado: number = 0;
+  public cancelada: boolean = true;
+  public deuda_monto: number = 0;
   public forma_pago: string = '';
   public forma_pago_monto: number = null;
   public formas_pago: any[] = [];
@@ -97,6 +101,7 @@ export class NuevaVentaComponent implements OnInit {
     nro_cheque: '',
     emisor: '',
     banco: '',
+    banco_descripcion: '',
     importe: null,
     fecha_cobro: ''
   }
@@ -290,6 +295,22 @@ export class NuevaVentaComponent implements OnInit {
   
   }
 
+  // Calcular total
+  calcularTotalPagado(): void {
+    
+    let totalPagadoTMP = 0;
+    
+    this.formas_pago.map( forma => { totalPagadoTMP += forma.monto; })
+    this.cheques.map( cheque => { totalPagadoTMP += cheque.importe; })
+        
+    this.totalPagado = totalPagadoTMP;
+
+    // Calculo de adicion para cuenta corriente
+    if(this.precio_total < this.totalPagado) this.incrementoCC = true;
+    else this.incrementoCC = false;
+    
+  }
+
   // Actualizar producto
   actualizarProducto(): void {
 
@@ -480,6 +501,12 @@ export class NuevaVentaComponent implements OnInit {
       return;
     }
 
+    // Verificacion: Venta propia
+    if(this.incrementoCC && !this.cuenta_corriente){
+      this.alertService.info('Se necesita una cuenta corriente para el saldo a favor');
+      return;
+    }
+
     // Creando - VENTA PROPIA 
     this.alertService.question({ msg: '¿Quieres generar la venta?', buttonText: 'Generar' })
     .then(({isConfirmed}) => {  
@@ -504,6 +531,8 @@ export class NuevaVentaComponent implements OnInit {
           tipo_venta: this.tipo_venta,
           formas_pago: this.formas_pago,
           cheques: this.cheques,
+          cancelada: this.cancelada,
+          deuda_monto: this.deuda_monto,
           cliente_descripcion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.descripcion : 'CONSUMIDOR FINAL',
           observacion: this.observacion,
           cliente_tipo_identificacion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.tipo_identificacion : 'DNI',
@@ -532,17 +561,26 @@ export class NuevaVentaComponent implements OnInit {
       }
     });    
 
-
-
-
   }
 
   // Forma de pago seleccionada
   seleccionandoFormaPago(): void {
-
     console.log(this.forma_pago);
     if(this.forma_pago.trim() === '') return;
-  
+  }
+
+  // Seleccionar banco
+  seleccionarBanco(): void {
+    if(this.cheque.banco.trim() !== ''){
+      this.bancos.map( banco => {
+        if(banco._id === this.cheque.banco){
+          this.cheque.banco_descripcion = banco.descripcion;
+          return;
+        }
+      });
+    }else{
+      this.cheque.banco_descripcion = '';
+    }
   }
 
   // Agregar forma de pago
@@ -560,19 +598,31 @@ export class NuevaVentaComponent implements OnInit {
       return;
     }
 
+    // Calculo de deuda
+    if(this.forma_pago === 'cuenta_corriente'){
+      if(this.cuenta_corriente.saldo < this.forma_pago_monto){
+        this.deuda_monto = this.forma_pago_monto - this.cuenta_corriente.saldo;
+        this.cancelada = false;
+      }  
+    }
+
     let existe = false;
 
     // Si la forma de pago existe
     this.formas_pago.map( forma => {
       if(forma._id === this.forma_pago){
         existe = true;
-        forma.monto += this.forma_pago_monto;
-        this.forma_pago = '';
-        this.forma_pago_monto = null;
+        // forma.monto += this.forma_pago_monto;
+        // this.forma_pago = '';
+        // this.forma_pago_monto = null;
       }
     })
 
-    if(existe) return; // Si existe se sale de la condicion
+    // La forma de pago ya existe
+    if(existe){
+      this.alertService.info('Esa forma de pago ya fue ingresada');
+      return; // Si existe se sale de la condicion
+    } 
 
     // Imapcto en cuenta corriente - CLIENTE
     if(this.forma_pago === 'cuenta_corriente'){
@@ -596,6 +646,8 @@ export class NuevaVentaComponent implements OnInit {
       })
     }
     
+    this.calcularTotalPagado();
+
     this.forma_pago = '';
     this.forma_pago_monto = null
 
@@ -603,8 +655,24 @@ export class NuevaVentaComponent implements OnInit {
 
   // Eliminar forma de pago
   eliminarFormaPago(forma_pago): void {
+
+    // Se reinician los valores de deuda
+    if(forma_pago.descripcion === 'CUENTA CORRIENTE'){
+      this.cancelada = true;
+      this.deuda_monto = 0;
+    }
+
     this.formas_pago = this.formas_pago.filter( elemento => elemento._id !== forma_pago._id);
+  
+    this.calcularTotalPagado();
+
   }
+
+  // Eliminar cheque
+  eliminarCheque(cheque): void {
+    this.cheques = this.cheques.filter( elemento => elemento._id !== cheque._id);
+    this.calcularTotalPagado();
+  }  
 
   // Forma de pago
   abrirFormaPago(): void {
@@ -626,8 +694,11 @@ export class NuevaVentaComponent implements OnInit {
 
               this.datosCliente = cliente;
 
+              console.log(cliente._id);
+
               // Se busca la cuenta corriente del cliente
               this.ccClientesService.getCuentaCorrientePorCliente(cliente._id).subscribe({
+
                 next: ({cuenta_corriente}) => {
                   
                   if(cuenta_corriente){
@@ -657,6 +728,11 @@ export class NuevaVentaComponent implements OnInit {
             
             }
 
+            this.cheques = [];
+            this.incrementoCC = false;
+            this.cancelada = true;
+            this.deuda_monto = 0;
+
           }, error: ({error}) => this.alertService.errorApi(error.message)
         })
 
@@ -682,6 +758,7 @@ export class NuevaVentaComponent implements OnInit {
         importe: null,
         emisor: '',
         banco: '',
+        banco_descripcion: '',
         fecha_cobro: ''
       }
     } 
@@ -731,6 +808,8 @@ export class NuevaVentaComponent implements OnInit {
 
     this.cheques.unshift(this.cheque);    
 
+    this.calcularTotalPagado();
+
     this.cerrarModalCheque();
 
   }
@@ -775,6 +854,8 @@ export class NuevaVentaComponent implements OnInit {
       }
     })  
 
+    this.calcularTotalPagado();
+
     this.cerrarModalCheque();
 
   }
@@ -808,7 +889,7 @@ export class NuevaVentaComponent implements OnInit {
     this.porcentajeAplicadoTotal = false;
 
     // Tipo de cliente
-    this.tipo_cliente = 'consumidor_final';
+    this.tipo_cliente = 'cliente';
 
     // Flags
     this.etapa = 'tipo_venta';
@@ -1008,6 +1089,12 @@ export class NuevaVentaComponent implements OnInit {
     this.precio = this.precioResguardo;
     this.porcentajes = '';
     this.porcentajeAplicado = false;
+  }
+
+  // Seleccion de tipo de venta
+  seleccionarTipoVenta(): void {
+    if(this.tipo_venta === 'Propia') this.tipo_cliente = 'cliente';
+    this.almacenamientoLocalStorage();
   }
 
   // Alamcenamiento en localstorage

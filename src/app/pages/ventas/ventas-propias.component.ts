@@ -30,12 +30,17 @@ export class VentasPropiasComponent implements OnInit {
   public showModalVenta = false;
   public showModalEditarVenta = false;
 
+  // Cheques
+  public showDetallesCheque = false;
+  public chequeSeleccionado: any;
+
   // Venta
   public idVenta: string = '';
   public observacion: string = '';
   public ventas: any[] = [];
   public ventaSeleccionada: any;
   public descripcion: string = '';
+  public pagoTotal: number = 0;
   
   // Productos
   public productos: any[];
@@ -233,6 +238,25 @@ export class VentasPropiasComponent implements OnInit {
 
   }
 
+  // Calculo de pago total
+  calcularPagoTotal(): void {
+
+    let pagoTotalTMP = 0;
+    
+    // Sumando montos de formas de pago
+    this.ventaSeleccionada.formas_pago.map( forma => {
+      pagoTotalTMP += forma.monto;
+    });
+
+    // Sumando montos de cheques
+    this.ventaSeleccionada.cheques.map( cheque => {
+      pagoTotalTMP += cheque.importe;
+    });
+
+    this.pagoTotal = pagoTotalTMP;
+
+  }
+
   // Generar PDF
   generarPDF(venta: any): void {
     this.alertService.loading();
@@ -245,12 +269,28 @@ export class VentasPropiasComponent implements OnInit {
     })
   }
 
+  // Abrir detalles de cheque
+  abrirDetallesCheque(cheque: any): void {
+    this.chequeSeleccionado = cheque;
+    this.showModalVenta = false;
+    this.showModalEditarVenta = false;
+    this.showDetallesCheque = true;
+  }
+
+  // Cerrar detalles de cheque
+  cerrarDetallesCheque(): void {
+    this.showDetallesCheque = false;
+    this.showModalEditarVenta = true;
+  }
+
   // Abrir editar venta
   abrirEditarVenta(venta: any): void {
 
-    this.ventaSeleccionada = null;
+    this.ventaSeleccionada = venta;
     this.productoSeleccionado = null;
     this.observacion = venta.observacion;
+
+    this.calcularPagoTotal();
 
     const parametros = {
       direccion: this.ordenar.direccion,
@@ -272,7 +312,6 @@ export class VentasPropiasComponent implements OnInit {
         });
 
         window.scroll(0,0);
-        this.ventaSeleccionada = venta;
         this.showModalEditarVenta = true;
         this.alertService.close();
       },

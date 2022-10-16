@@ -17,7 +17,7 @@
           </div>
           <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
             <p class="font-semibold"> <span class="text-red-500"> * </span> Saldo </p>
-            <input [disabled]="estadoFormulario === 'editar'" [(ngModel)]="saldo" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 1000" type="number">
+            <input [ngClass]="{'text-red-700':saldo < 0 && estadoFormulario === 'editar'}" [disabled]="estadoFormulario === 'editar'" [(ngModel)]="saldo" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 1000" type="number">
           </div>
         </div>
         <div *ngIf="cuentaCorrienteSeleccionada && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
@@ -170,7 +170,7 @@
                                       </p>
                                   </td>
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
-                                    <p class="text-gray-900 w-max whitespace-no-wrap">
+                                    <p [ngClass]="{'text-red-700':cuentaCorriente.saldo < 0}" class="text-gray-900 w-max whitespace-no-wrap">
                                         ${{ cuentaCorriente.saldo | moneda }}
                                     </p>
                                 </td>

@@ -24,7 +24,7 @@
         <div class="md:flex md:items-center mt-4">
             <div class="md:w-1/2">
                 <p class="font-semibold"> <span class="text-red-500"> * </span> Banco </p>
-                <select [(ngModel)]="cheque.banco" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+                <select (change)="seleccionarBanco()" [(ngModel)]="cheque.banco" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
                     <option value=""> Seleccionar banco </option>                    
                     <option *ngFor="let banco of bancos" [value]="banco._id"> {{ banco.descripcion }} </option>
                 </select>
@@ -55,13 +55,13 @@
     </div>
     <div class="p-2 text-sm">
       <div class="md:flex md:items-center md:justify-between">
-        <p class="font-semibold"> Recibo de cobro </p>
+        <p class="font-semibold"> Forma de pago </p>
         <p> <span class="font-semibold"> Total a pagar: </span> ${{ precio_total | moneda }} </p>
       </div>
       <div class="md:mt-2 md:flex md:items-center w-full">
         <select (change)="seleccionandoFormaPago()" [(ngModel)]="forma_pago" class="p-2 focus:outline-none w-1/2 rounded border border-gray-400">
           <option value=""> Seleccionar forma de pago </option>
-          <option *ngFor="let caja of cajas" [value]="caja._id"> {{ caja.descripcion }} - ${{ caja.saldo | moneda }} </option>
+          <option *ngFor="let caja of cajas" [value]="caja._id"> {{ caja.descripcion }} </option>
           <option *ngIf="estadoCuentaCorriente === 'Tiene'" value="cuenta_corriente"> CUENTA CORRIENTE {{ cuenta_corriente ? ' - $' + (cuenta_corriente.saldo | moneda)  : null}} </option>
         </select>
         <input (keyup.enter)="agregarFormaPago()" [(ngModel)]="forma_pago_monto" type="number" class="p-2 border block focus:outline-none border-gray-400 rounded ml-1" placeholder="Colocar monto">
@@ -102,7 +102,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>              
               </button>
-              <p class="ml-1"> {{ forma.descripcion }} </p>
+              <p class="ml-1"> {{ forma.descripcion }} {{ forma.descripcion === 'CUENTA CORRIENTE' ? '- $' + (cuenta_corriente.saldo | moneda) : null }} </p>
               <button *ngIf="forma._id === '222222222222222222222222'" class="ml-1 focus:outline-none text-primary-700">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -114,7 +114,7 @@
 
           <div [ngClass]="{'bg-red-50' : cheque._id === '222222222222222222222222'}" class="flex mt-2 p-1 items-center justify-between" *ngFor="let cheque of cheques">
             <div class="flex items-center">
-              <button (click)="eliminarFormaPago(cheque)" class="bg-red-700 text-white border rounded-full font-semibold focus:outline-none">
+              <button (click)="eliminarCheque(cheque)" class="bg-red-700 text-white border rounded-full font-semibold focus:outline-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>              
@@ -127,6 +127,21 @@
               </button>
             </div>
             <p class="font-semibold"> ${{ cheque.importe | moneda }} </p>  
+          </div>
+
+          <div class="flex py-2 px-1 mt-1 items-center font-semibold border-t border-gray-400 justify-between">
+            <span> PAGO TOTAL </span>
+            <span> ${{ totalPagado | moneda }} </span>
+          </div>
+
+          <div *ngIf="!cancelada" class="flex p-1 mb-2 mt-1 bg-red-50 border font-semibold border-red-400 text-red-700 items-center justify-between">
+            <span> Deuda en cuenta corriente </span>
+            <span> -${{ deuda_monto | moneda }} </span>
+          </div>
+
+          <div *ngIf="incrementoCC" class="flex p-1 font-semibold mt-1 bg-green-50 border border-green-400 text-green-700 items-center justify-between">
+            <span> A favor del cliente </span>
+            <span> ${{ totalPagado - precio_total | moneda }} </span>
           </div>
           
         </div>
@@ -394,13 +409,13 @@
     <h1 class="font-semibold text-2xl p-2"> GENERADOR DE VENTAS </h1>
     <div class="mt-2 flex items-center justify-center">
         <select [(ngModel)]="tipo_cliente" class="py-2 mt-1 border px-4 rounded border-gray-400 shadow tranform duration-500 outline-none text-gray-800">
-          <option value="consumidor_final"> Consumidor final </option>
+          <option *ngIf="tipo_venta === 'Directa'" value="consumidor_final"> Consumidor final </option>
           <option value="cliente"> Cliente </option>
         </select>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
         </svg>
-        <select (change)="almacenamientoLocalStorage()" [(ngModel)]="tipo_venta" class="py-2 ml-2 mt-1 border px-4 rounded border-gray-400 shadow tranform duration-500 outline-none text-gray-800">
+        <select (change)="seleccionarTipoVenta()" [(ngModel)]="tipo_venta" class="py-2 ml-2 mt-1 border px-4 rounded border-gray-400 shadow tranform duration-500 outline-none text-gray-800">
           <option value="Directa"> Directa </option>
           <option value="Propia"> Propia </option>
         </select>
