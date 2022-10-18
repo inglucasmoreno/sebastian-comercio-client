@@ -496,13 +496,15 @@ export class NuevaVentaComponent implements OnInit {
     }
 
     // Verificacion: Formas de pago - Al menos una forma de pago
-    if(this.formas_pago.length === 0){
+    if(this.formas_pago.length === 0 && this.cheques.length === 0){
       this.alertService.info('Debes colocar al menos una forma de pago');
       return;
     }
 
+    console.log(!this.cuenta_corriente.activo)
+
     // Verificacion: Venta propia
-    if(this.incrementoCC && !this.cuenta_corriente){
+    if(this.incrementoCC && (!this.cuenta_corriente || !this.cuenta_corriente.activo)){
       this.alertService.info('Se necesita una cuenta corriente para el saldo a favor');
       return;
     }
@@ -624,7 +626,7 @@ export class NuevaVentaComponent implements OnInit {
       return; // Si existe se sale de la condicion
     } 
 
-    // Imapcto en cuenta corriente - CLIENTE
+    // Impacto en cuenta corriente - CLIENTE
     if(this.forma_pago === 'cuenta_corriente'){
       this.formas_pago.unshift({
         _id: this.forma_pago,
@@ -806,7 +808,12 @@ export class NuevaVentaComponent implements OnInit {
       return;
     }
 
-    this.cheques.unshift(this.cheque);    
+    // Agregando cheque
+    this.cheques.unshift({
+      ...this.cheque,
+      creatorUser: this.authService.usuario.userId,
+      updatorUser: this.authService.usuario.userId,
+    });    
 
     this.calcularTotalPagado();
 

@@ -3,6 +3,7 @@ import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { ProductosService } from 'src/app/services/productos.service';
+import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
 import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
 import { environment } from 'src/environments/environment';
@@ -42,6 +43,9 @@ export class VentasPropiasComponent implements OnInit {
   public descripcion: string = '';
   public pagoTotal: number = 0;
   
+  // Relacion -> CHEQUES - VENTAS
+  public cheques_venta = [];
+
   // Productos
   public productos: any[];
   public productoSeleccionado: any;
@@ -83,6 +87,7 @@ export class VentasPropiasComponent implements OnInit {
   public cantidadItemsProductos: number = 10;
 
   constructor(private ventasPropiasService: VentasPropiasService,
+              private ventasPropiasChequesService: VentasPropiasChequesService,
               private productosService: ProductosService,
               private ventasPropiasProductosService: VentasPropiasProductosService,
               private authService: AuthService,
@@ -226,7 +231,6 @@ export class VentasPropiasComponent implements OnInit {
 
     this.ventasPropiasProductosService.listarProductos(parametros).subscribe({
       next: ({productos}) => {
-        console.log(productos);
         this.productos = productos;
         window.scroll(0,0);
         this.ventaSeleccionada = venta;
@@ -249,8 +253,8 @@ export class VentasPropiasComponent implements OnInit {
     });
 
     // Sumando montos de cheques
-    this.ventaSeleccionada.cheques.map( cheque => {
-      pagoTotalTMP += cheque.importe;
+    this.cheques_venta.map( relacion => {
+      pagoTotalTMP += relacion.cheque.importe;
     });
 
     this.pagoTotal = pagoTotalTMP;
@@ -290,8 +294,6 @@ export class VentasPropiasComponent implements OnInit {
     this.productoSeleccionado = null;
     this.observacion = venta.observacion;
 
-    this.calcularPagoTotal();
-
     const parametros = {
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
@@ -302,7 +304,7 @@ export class VentasPropiasComponent implements OnInit {
 
     this.ventasPropiasProductosService.listarProductos(parametros).subscribe({
       next: ({productos}) => {
-        console.log(productos)
+
         this.productos = productos;
 
         // Se le agregan los precios de reguardo
@@ -311,9 +313,18 @@ export class VentasPropiasComponent implements OnInit {
           producto.precio_total_resguardo = producto.precio_total;
         });
 
-        window.scroll(0,0);
-        this.showModalEditarVenta = true;
-        this.alertService.close();
+        // Se obtienen los cheques relacionados con la venta
+        this.ventasPropiasChequesService.listarRelaciones({ venta_propia: venta._id }).subscribe({
+          next: ({relaciones}) => {
+            this.cheques_venta = relaciones;
+            console.log(relaciones);
+            window.scroll(0,0);
+            this.calcularPagoTotal();
+            this.showModalEditarVenta = true;
+            this.alertService.close();
+          },
+          error: ({error}) => this.alertService.errorApi(error.message)
+        })
       },
       error: ({error}) => this.alertService.errorApi(error.message)
     })

@@ -33,11 +33,12 @@ export class VentasPropiasChequesService {
   };
 
   // Listar relaciones
-  listarRelacion(parametros?: any): Observable<any> {
+  listarRelaciones(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/ventas-propias-cheques`, {
       params: {
         direccion: parametros?.direccion || 1,
-        columna: parametros?.columna || 'descripcion'
+        columna: parametros?.columna || 'descripcion',
+        venta_propia: parametros?.venta_propia || ''
       },
       headers: this.getToken
     });

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { format } from 'date-fns';
+import { add, format } from 'date-fns';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { BancosService } from 'src/app/services/bancos.service';

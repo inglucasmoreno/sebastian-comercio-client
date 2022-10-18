@@ -62,7 +62,7 @@
         <select (change)="seleccionandoFormaPago()" [(ngModel)]="forma_pago" class="p-2 focus:outline-none w-1/2 rounded border border-gray-400">
           <option value=""> Seleccionar forma de pago </option>
           <option *ngFor="let caja of cajas" [value]="caja._id"> {{ caja.descripcion }} </option>
-          <option *ngIf="estadoCuentaCorriente === 'Tiene'" value="cuenta_corriente"> CUENTA CORRIENTE {{ cuenta_corriente ? ' - $' + (cuenta_corriente.saldo | moneda)  : null}} </option>
+          <option *ngIf="estadoCuentaCorriente === 'Tiene' && cuenta_corriente.activo" value="cuenta_corriente"> CUENTA CORRIENTE {{ cuenta_corriente ? ' - $' + (cuenta_corriente.saldo | moneda)  : null}} </option>
         </select>
         <input (keyup.enter)="agregarFormaPago()" [(ngModel)]="forma_pago_monto" type="number" class="p-2 border block focus:outline-none border-gray-400 rounded ml-1" placeholder="Colocar monto">
         <button (click)="agregarFormaPago()" class="p-2 border focus:outline-none border-gray-400 rounded ml-1 hover:text-secondaryColor">

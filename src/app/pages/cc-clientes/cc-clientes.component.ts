@@ -207,5 +207,4 @@ export class CcClientesComponent implements OnInit {
       this.listarCuentasCorrientes();
     }
  
-
 }
