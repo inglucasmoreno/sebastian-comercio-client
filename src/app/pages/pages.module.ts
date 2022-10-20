@@ -33,6 +33,7 @@ import { CcProveedoresMovimientosComponent } from './cc-proveedores/cc-proveedor
 import { BancosComponent } from './bancos/bancos.component';
 import { ChequesComponent } from './cheques/cheques.component';
 import { VentasPropiasComponent } from './ventas/ventas-propias.component';
+import { CajasMovimientosComponent } from './cajas/cajas-movimientos.component';
 
 
 @NgModule({
@@ -63,6 +64,7 @@ import { VentasPropiasComponent } from './ventas/ventas-propias.component';
     BancosComponent,
     ChequesComponent,
     VentasPropiasComponent,
+    CajasMovimientosComponent,
   ],
   imports: [
     CommonModule,

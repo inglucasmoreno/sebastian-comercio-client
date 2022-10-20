@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'filtroCcClientesMovimientos'
+  name: 'filtroCajasMovimientos'
 })
-export class FiltroCcClientesMovimientosPipe implements PipeTransform {
+export class FiltroCajasMovimientosPipe implements PipeTransform {
 
   transform(valores: any[], parametro: string): any {
         

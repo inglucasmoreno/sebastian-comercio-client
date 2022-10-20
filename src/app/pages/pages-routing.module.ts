@@ -32,6 +32,7 @@ import { CcProveedoresMovimientosComponent } from './cc-proveedores/cc-proveedor
 import { BancosComponent } from './bancos/bancos.component';
 import { ChequesComponent } from './cheques/cheques.component';
 import { VentasPropiasComponent } from './ventas/ventas-propias.component';
+import { CajasMovimientosComponent } from './cajas/cajas-movimientos.component';
 
 const routes: Routes = [
     {
@@ -80,6 +81,7 @@ const routes: Routes = [
             { path: 'cajas', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: CajasComponent },
             { path: 'tipos-movimientos', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: TiposMovimientosComponent },
             { path: 'movimientos', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: MovimientosComponent },
+            { path: 'cajas-movimientos/:id', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: CajasMovimientosComponent },
 
             // Tesoreria
             { path: 'cc-clientes', data: { permisos: 'TESORERIA_NAV' }, canActivate: [PermisosGuard], component: CcClientesComponent },

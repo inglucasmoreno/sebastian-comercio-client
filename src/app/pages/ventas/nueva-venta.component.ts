@@ -501,10 +501,17 @@ export class NuevaVentaComponent implements OnInit {
       return;
     }
 
-    console.log(!this.cuenta_corriente.activo)
+    // Verificacion: Total pagado
+    if(this.precio_total > this.totalPagado){
+      this.alertService.info('Se debe pagar la totalidad de la venta');
+      return;
+    }
 
-    // Verificacion: Venta propia
-    if(this.incrementoCC && (!this.cuenta_corriente || !this.cuenta_corriente.activo)){
+    console.log(this.precio_total);
+    console.log(this.totalPagado);
+
+    // Verificacion: Cuenta corriente
+    if(this.incrementoCC && (!this.cuenta_corriente || !this.cuenta_corriente?.activo)){
       this.alertService.info('Se necesita una cuenta corriente para el saldo a favor');
       return;
     }
@@ -602,8 +609,11 @@ export class NuevaVentaComponent implements OnInit {
 
     // Calculo de deuda
     if(this.forma_pago === 'cuenta_corriente'){
-      if(this.cuenta_corriente.saldo < this.forma_pago_monto){
+      if((this.cuenta_corriente.saldo < this.forma_pago_monto) && (this.cuenta_corriente.saldo > 0)){
         this.deuda_monto = this.forma_pago_monto - this.cuenta_corriente.saldo;
+        this.cancelada = false;
+      }else if(this.cuenta_corriente.saldo <= 0){
+        this.deuda_monto = this.forma_pago_monto;
         this.cancelada = false;
       }  
     }

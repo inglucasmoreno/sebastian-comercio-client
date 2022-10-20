@@ -2,20 +2,22 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { CcClientesMovimientosService } from 'src/app/services/cc-clientes-movimientos.service';
-import { CcClientesService } from 'src/app/services/cc-clientes.service';
+import { CajasMovimientosService } from 'src/app/services/cajas-movimientos.service';
+import { CajasService } from 'src/app/services/cajas.service';
 import { DataService } from 'src/app/services/data.service';
 import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
 import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
 
 @Component({
-  selector: 'app-cc-clientes-movimientos',
-  templateUrl: './cc-clientes-movimientos.component.html',
+  selector: 'app-cajas-movimientos',
+  templateUrl: './cajas-movimientos.component.html',
+  styles: [
+  ]
 })
-export class CcClientesMovimientosComponent implements OnInit {
+export class CajasMovimientosComponent implements OnInit {
 
-  // Permisos de usuarios login
+// Permisos de usuarios login
   public permisos = { all: false };
 
   // Modal
@@ -27,9 +29,9 @@ export class CcClientesMovimientosComponent implements OnInit {
   // Estado formulario 
   public estadoFormulario = 'crear';
 
-  // Cuenta corriente
-  public idCuentaCorriente: string = '';
-  public cuentaCorriente: any;
+  // Caja
+  public idCaja: string = '';
+  public caja: any;
 
   // Movimiento
   public idMovimiento: string = '';
@@ -65,19 +67,19 @@ export class CcClientesMovimientosComponent implements OnInit {
   }
 
   constructor(
-             private movimientosService: CcClientesMovimientosService,
-             private activatedRoute: ActivatedRoute,
-             private cuentaCorrienteService: CcClientesService,
+             private movimientosService: CajasMovimientosService,
              private ventasPropiasService: VentasPropiasService,
              private ventasPropiasChequesService: VentasPropiasChequesService,
              private ventasPropiasProductosService: VentasPropiasProductosService,
+             private activatedRoute: ActivatedRoute,
+             private cajasService: CajasService,
              private authService: AuthService,
              private alertService: AlertService,
              private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.ubicacionActual = 'Dashboard - Cuenta corriente - Registros';
-    this.activatedRoute.params.subscribe(({id}) => { this.idCuentaCorriente = id; });
+    this.dataService.ubicacionActual = 'Dashboard - Cajas - Registros';
+    this.activatedRoute.params.subscribe(({id}) => { this.idCaja = id; });
     this.permisos.all = this.permisosUsuarioLogin();
     this.calculosIniciales(); 
   }
@@ -85,9 +87,9 @@ export class CcClientesMovimientosComponent implements OnInit {
   // Calculos iniciales
   calculosIniciales(): void {
     this.alertService.loading();
-    this.cuentaCorrienteService.getCuentaCorriente(this.idCuentaCorriente).subscribe({
-      next: ({cuenta_corriente}) => {
-        this.cuentaCorriente = cuenta_corriente;
+    this.cajasService.getCaja(this.idCaja).subscribe({
+      next: ({caja}) => {
+        this.caja = caja;
         this.listarMovimientos();
       },
       error: ({error}) => this.alertService.errorApi(error.message)
@@ -96,7 +98,7 @@ export class CcClientesMovimientosComponent implements OnInit {
 
   // Asignar permisos de usuario login
   permisosUsuarioLogin(): boolean {
-    return this.authService.usuario.permisos.includes('VENTAS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
+    return this.authService.usuario.permisos.includes('CAJAS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
   }
 
   // Abrir modal
@@ -132,7 +134,7 @@ export class CcClientesMovimientosComponent implements OnInit {
     const parametros = {
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
-      cc_cliente: this.idCuentaCorriente
+      caja: this.idCaja
     }
     this.movimientosService.listarMovimientos(parametros)
     .subscribe( ({ movimientos }) => {
@@ -163,8 +165,7 @@ export class CcClientesMovimientosComponent implements OnInit {
 
     const data = {
       descripcion: this.descripcion,
-      cc_cliente: this.cuentaCorriente._id,
-      cliente: this.cuentaCorriente.cliente._id,
+      caja: this.caja._id,
       monto: this.monto,
       tipo: this.tipo,
       creatorUser: this.authService.usuario.userId,
@@ -172,7 +173,7 @@ export class CcClientesMovimientosComponent implements OnInit {
     }
 
     this.movimientosService.nuevoMovimiento(data).subscribe(({ saldo_nuevo }) => {
-      this.cuentaCorriente.saldo = saldo_nuevo;
+      this.caja.saldo = saldo_nuevo;
       this.listarMovimientos();
     },({error})=>{
       this.alertService.errorApi(error.message);  
@@ -309,6 +310,5 @@ export class CcClientesMovimientosComponent implements OnInit {
     this.alertService.loading();
     this.listarMovimientos();
   }
-
 
 }
