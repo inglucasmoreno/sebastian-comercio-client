@@ -15,12 +15,14 @@ export class CajasComponent implements OnInit {
 
   // Flags
   public flagInicializacion = false;
+  public flagMovimientoInterno = false;
 
   // Permisos de usuarios login
   public permisos = { all: false };
 
   // Modal
   public showModalCaja = false;
+  public showModalMovimientoInterno = false;
 
   // Estado formulario 
   public estadoFormulario = 'crear';
@@ -28,9 +30,19 @@ export class CajasComponent implements OnInit {
   // Caja
   public idCaja: string = '';
   public cajas: any = [];
+  public cajasSelector: any = [];
   public monto: number = null;
   public cajaSeleccionada: any;
   public descripcion: string = '';
+
+  // Movimiento interno
+  public movimientoInterno = {
+    caja_origen: '',
+    monto: null,
+    caja_destino: '',
+    creatorUser: this.authService.usuario.userId,
+    updatorUser: this.authService.usuario.userId,
+  }
 
   // Paginacion
   public paginaActual: number = 1;
@@ -104,8 +116,10 @@ export class CajasComponent implements OnInit {
       this.cajasService.listarCajas(parametros)
       .subscribe( ({ cajas }) => {
         this.cajas = cajas;
+        this.cajasSelector = cajas.filter( caja => caja.activo );
         this.showModalCaja = false;
-
+      
+        // FLAG - INICIALIZACION
         if(this.flagInicializacion){
           this.flagInicializacion = false;
           this.alertService.success('Inicializacion completada');
@@ -113,6 +127,16 @@ export class CajasComponent implements OnInit {
           this.alertService.close();
         }
 
+        // FLAG - MOVIMIENTO INTERNO
+        if(this.flagMovimientoInterno){
+          this.flagMovimientoInterno = false;
+          this.alertService.success('Movimiento interno generado corretamente');
+        }else{
+          this.alertService.close();
+        }
+        
+        this.showModalMovimientoInterno = false;
+      
       }, (({error}) => {
         this.alertService.errorApi(error.msg);
       }));
@@ -133,20 +157,26 @@ export class CajasComponent implements OnInit {
         return;
       }
 
-      this.alertService.loading();
+      // Generar movimiento interno
+      this.alertService.question({ msg: 'Estas por generar un movimiento', buttonText: 'Generar' })
+          .then(({isConfirmed}) => {  
+            if (isConfirmed) {
+              this.alertService.loading();
 
-      const data = {
-        descripcion: this.descripcion,
-        saldo: this.dataService.redondear(this.monto, 2),
-        creatorUser: this.authService.usuario.userId,
-        updatorUser: this.authService.usuario.userId,
-      }
-
-      this.cajasService.nuevaCaja(data).subscribe(() => {
-        this.listarCajas();
-      },({error})=>{
-        this.alertService.errorApi(error.message);  
-      });
+              const data = {
+                descripcion: this.descripcion,
+                saldo: this.dataService.redondear(this.monto, 2),
+                creatorUser: this.authService.usuario.userId,
+                updatorUser: this.authService.usuario.userId,
+              }
+        
+              this.cajasService.nuevaCaja(data).subscribe(() => {
+                this.listarCajas();
+              },({error})=>{
+                this.alertService.errorApi(error.message);  
+              });
+            }
+          });
       
     }
 
@@ -223,6 +253,56 @@ export class CajasComponent implements OnInit {
               })
             }
           });
+    }
+
+    // Movimiento interno
+    generarMovimientoInterno(): void {
+      
+      // Verificacion: Caja origen
+      if(this.movimientoInterno.caja_origen === ''){
+        this.alertService.info('Debe seleccionar una caja origen');
+        return;
+      }
+
+      // Verificacion: Monto
+      if(this.movimientoInterno.monto < 0){
+        this.alertService.info('Debe colocar un monto correcto');
+        return;
+      }
+
+      // Verificacion: Caja destino
+      if(this.movimientoInterno.caja_destino === ''){
+        this.alertService.info('Debe seleccionar una caja destino');
+        return;
+      }
+
+      // Verificacion: Origen === Destino
+      if(this.movimientoInterno.caja_origen === this.movimientoInterno.caja_destino){
+        this.alertService.info('El origen y el destino deben ser diferentes');
+        return;
+      }
+
+      // Realizar movimiento interno
+      this.alertService.loading();
+      this.cajasService.movimientoInterno(this.movimientoInterno).subscribe({
+        next: () => {
+          this.flagMovimientoInterno = true;
+          this.listarCajas();
+        }, error: ({error}) => this.alertService.errorApi(error.message)
+      })
+
+    }
+
+    // Abrir movimiento interno
+    abrirMovimientoInterno(): void {
+      this.movimientoInterno = {
+        caja_origen: '',
+        monto: null,
+        caja_destino: '',
+        creatorUser: this.authService.usuario.userId,
+        updatorUser: this.authService.usuario.userId,
+      }
+      this.showModalMovimientoInterno = true;
     }
 
     // Reiniciando formulario

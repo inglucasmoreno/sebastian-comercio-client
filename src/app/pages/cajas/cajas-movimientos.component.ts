@@ -8,6 +8,9 @@ import { DataService } from 'src/app/services/data.service';
 import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
 import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
+import { environment } from 'src/environments/environment';
+
+const base_url = environment.base_url;
 
 @Component({
   selector: 'app-cajas-movimientos',
@@ -17,7 +20,7 @@ import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
 })
 export class CajasMovimientosComponent implements OnInit {
 
-// Permisos de usuarios login
+  // Permisos de usuarios login
   public permisos = { all: false };
 
   // Modal
@@ -266,6 +269,18 @@ export class CajasMovimientosComponent implements OnInit {
     }
   }
 
+  // Generar PDF
+  generarPDF(venta: any): void {
+    this.alertService.loading();
+    this.ventasPropiasService.generarPDF({ venta: venta._id }).subscribe({
+      next: () => {
+        window.open(`${base_url}/pdf/venta-propia.pdf`, '_blank');
+        this.alertService.close();
+      },
+      error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+  }
+  
   // Abrir detalles de venta
   abrirDetallesVenta(): void {
     this.showModalDetalles = false;

@@ -25,6 +25,13 @@ export class CajasService {
     });
   };
 
+  // Movimiento interno
+  movimientoInterno(data: any): Observable<any> {
+    return this.http.post(`${base_url}/cajas/movimiento-interno`, data, {
+      headers: this.getToken
+    });
+  };
+
   // Caja por ID
   getCaja(id: string): Observable<any> {
     return this.http.get(`${base_url}/cajas/${ id }`,{ 

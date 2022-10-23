@@ -299,12 +299,19 @@ export class NuevaVentaComponent implements OnInit {
   calcularTotalPagado(): void {
     
     let totalPagadoTMP = 0;
+    let faltaPagar = 0;
     
     this.formas_pago.map( forma => { totalPagadoTMP += forma.monto; })
     this.cheques.map( cheque => { totalPagadoTMP += cheque.importe; })
         
     this.totalPagado = totalPagadoTMP;
 
+    // Calculo de monto faltante
+    faltaPagar = this.precio_total - this.totalPagado;
+    
+    if(faltaPagar > 0) this.forma_pago_monto = faltaPagar;
+    else this.forma_pago_monto = null;
+    
     // Calculo de adicion para cuenta corriente
     if(this.precio_total < this.totalPagado) this.incrementoCC = true;
     else this.incrementoCC = false;
@@ -661,7 +668,7 @@ export class NuevaVentaComponent implements OnInit {
     this.calcularTotalPagado();
 
     this.forma_pago = '';
-    this.forma_pago_monto = null
+    // this.forma_pago_monto = null
 
   }
 

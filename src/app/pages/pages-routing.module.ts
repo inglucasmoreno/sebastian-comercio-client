@@ -76,6 +76,8 @@ const routes: Routes = [
             { path: 'ventas', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasComponent },
             { path: 'nueva-venta', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: NuevaVentaComponent },
             { path: 'ventas-propias', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasPropiasComponent },
+            { path: 'cc-clientes', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: CcClientesComponent },
+            { path: 'cc-clientes-movimientos/:id', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: CcClientesMovimientosComponent },
 
             // Caja
             { path: 'cajas', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: CajasComponent },
@@ -83,13 +85,15 @@ const routes: Routes = [
             { path: 'movimientos', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: MovimientosComponent },
             { path: 'cajas-movimientos/:id', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: CajasMovimientosComponent },
 
-            // Tesoreria
-            { path: 'cc-clientes', data: { permisos: 'TESORERIA_NAV' }, canActivate: [PermisosGuard], component: CcClientesComponent },
-            { path: 'cc-clientes-movimientos/:id', data: { permisos: 'TESORERIA_NAV' }, canActivate: [PermisosGuard], component: CcClientesMovimientosComponent },
-            { path: 'cc-proveedores', data: { permisos: 'TESORERIA_NAV' }, canActivate: [PermisosGuard], component: CcProveedoresComponent },
-            { path: 'cc-proveedores-movimientos/:id', data: { permisos: 'TESORERIA_NAV' }, canActivate: [PermisosGuard], component: CcProveedoresMovimientosComponent },
-            { path: 'cheques', data: { permisos: 'TESORERIA_NAV' }, canActivate: [PermisosGuard], component: ChequesComponent },
-            { path: 'bancos', data: { permisos: 'TESORERIA_NAV' }, canActivate: [PermisosGuard], component: BancosComponent },
+            // Cheques
+            { path: 'cheques', data: { permisos: 'CHEQUES_NAV' }, canActivate: [PermisosGuard], component: ChequesComponent },
+
+            // Compras
+            { path: 'cc-proveedores', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: CcProveedoresComponent },
+            { path: 'cc-proveedores-movimientos/:id', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: CcProveedoresMovimientosComponent },
+
+            // Configuraciones
+            { path: 'bancos', data: { permisos: 'CONFIGURACIONES_NAV' }, canActivate: [PermisosGuard], component: BancosComponent },
 
         ]
     }
