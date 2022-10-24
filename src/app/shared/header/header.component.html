@@ -1,4 +1,5 @@
-<nav [ngClass]="{'-translate-x-0 ease-in opacity-100' : this.dataService.showMenu === true, '-translate-x-full ease-out opacity-0':this.dataService.showMenu === false}" class="absolute inset-0 transform duration-200 lg:transform-none lg:opacity-100 ease-in -translate-x-full lg:relative z-10 w-80 bg-primary-800 text-white h-full border-r-4 border-gray-500 p-3">
+<nav [ngClass]="{'-translate-x-0 ease-in opacity-100' : this.dataService.showMenu === true, '-translate-x-full ease-out opacity-0':this.dataService.showMenu === false}" class="absolute inset-0 transform duration-200 lg:transform-none lg:opacity-100 ease-in -translate-x-full lg:relative z-10 w-80 bg-primary-800 text-white h-full overflow-y-auto border-r-4 border-gray-500 p-3">
+
     <div class="flex justify-between">
         <div title="perfil de usuario" routerLink="perfil" class="flex cursor-pointer hover:text-blue-200">
             <div *ngIf="authService.usuario.role === 'ADMIN_ROLE'" class="bg-blue-100 flex items-center justify-center w-14 h-14 rounded-full shadow border border-blue-200">
