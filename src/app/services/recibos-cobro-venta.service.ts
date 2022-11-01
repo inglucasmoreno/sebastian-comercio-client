@@ -8,8 +8,7 @@ const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
 })
-export class RecibosCobrosService {
-
+export class RecibosCobroVentaService {
   get getToken(): any {
     return {
       'Authorization': localStorage.getItem('token')
@@ -18,23 +17,23 @@ export class RecibosCobrosService {
 
   constructor(private http: HttpClient) {}
 
-  // Nuevo recibo de cobro
-  nuevoRecibo(data: any): Observable<any> {
-    return this.http.post(`${base_url}/recibo-cobro`, data, {
+  // Nueva relacion
+  nuevaRelacion(data: any): Observable<any> {
+    return this.http.post(`${base_url}/recibos-cobro-venta`, data, {
       headers: this.getToken
     });
   };
 
-  // Recibo cobro por ID
-  getRecibo(id: string): Observable<any> {
-    return this.http.get(`${base_url}/recibo-cobro/${ id }`,{ 
+  // Relacion por ID
+  getRelacion(id: string): Observable<any> {
+    return this.http.get(`${base_url}/recibos-cobro-venta/${ id }`,{ 
       headers: this.getToken
     });
   };
 
-  // Listar recibos de cobro
-  listarRecibos(parametros?: any): Observable<any> {
-    return this.http.get(`${base_url}/recibo-cobro`, {
+  // Listar relaciones
+  listarRelaciones(parametros?: any): Observable<any> {
+    return this.http.get(`${base_url}/recibos-cobro-venta`, {
       params: {
         direccion: parametros?.direccion || 1,
         columna: parametros?.columna || 'descripcion'
@@ -43,11 +42,11 @@ export class RecibosCobrosService {
     });
   }
 
-  // Actualizar recibo de cobro
-  actualizarRecibo(id:string, data: any): Observable<any> {
-    return this.http.put(`${base_url}/recibo-cobro/${id}`, data, {
+  // Actualizar relacion
+  actualizarRelacion(id:string, data: any): Observable<any> {
+    return this.http.put(`${base_url}/recibos-cobro-venta/${id}`, data, {
       headers: this.getToken
     });
-  }  
+  }    
 
 }

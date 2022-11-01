@@ -51,7 +51,9 @@ export class VentasPropiasService {
     return this.http.get(`${base_url}/ventas-propias`, {
       params: {
         direccion: parametros?.direccion || 1,
-        columna: parametros?.columna || 'descripcion'
+        columna: parametros?.columna || 'descripcion',
+        cliente: parametros?.cliente || '',
+        cancelada: parametros?.cancelada || '',
       },
       headers: this.getToken
     });

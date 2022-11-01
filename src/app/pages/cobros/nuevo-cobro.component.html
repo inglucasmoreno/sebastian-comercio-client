@@ -1,0 +1,227 @@
+<!-- Agregar/Editar cheque -->
+<app-modal [showModal]="showModalCheque">
+  <div (keyup.enter)="estadoFormularioCheque === 'crear' ? agregarCheque() : actualizarCheque()">
+      <div class="flex items-center justify-between bg-primary-800 rounded-t p-1">
+          <h1 class=" text-white px-2 py-1 rounded-t text-lg"> {{ estadoFormularioCheque === 'crear' ? 'Agregando nuevo cheque' : 'Editando cheque' }}  </h1>
+          <svg (click)="cerrarModalCheque()" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </div>
+      <div class="p-4 text-sm">
+        <div class="md:flex md:items-center">
+            <div class="md:w-1/2">
+                <p class="font-semibold"> <span class="text-red-500"> * </span> Nro de cheque </p>
+                <input [(ngModel)]="cheque.nro_cheque" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 21700045" type="text">
+            </div>
+            <div class="md:w-1/2 md:ml-4 mt-2 md:mt-0">
+                <p class="font-semibold"> <span class="text-red-500"> * </span> Importe </p>
+                <input [(ngModel)]="cheque.importe" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 12000" type="number">
+            </div>
+        </div>
+        <div class="mt-4">
+            <p class="font-semibold"> <span class="text-red-500"> * </span> Emisor </p>
+            <input [(ngModel)]="cheque.emisor" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Moreno Lucas Omar" type="text">
+        </div>
+        <div class="md:flex md:items-center mt-4">
+            <div class="md:w-1/2">
+                <p class="font-semibold"> <span class="text-red-500"> * </span> Banco </p>
+                <select (change)="seleccionarBanco()" [(ngModel)]="cheque.banco" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+                    <option value=""> Seleccionar banco </option>                    
+                    <option *ngFor="let banco of bancos" [value]="banco._id"> {{ banco.descripcion }} </option>
+                </select>
+            </div>
+            <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+                <p class="font-semibold"> <span class="text-red-500"> * </span> Fecha de cobro </p>
+                <input [(ngModel)]="cheque.fecha_cobro" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" type="date">
+            </div>
+        </div>
+        <button (click)="estadoFormularioCheque === 'crear' ? agregarCheque() : actualizarCheque()" class="p-2 focus:outline-none text-sm mt-4 border border-gray-400 font-semibold bg-gray-100 hover:text-secondaryColor rounded w-full">
+          {{ estadoFormularioCheque === 'crear' ? 'Agregar cheque' : 'Actualizar cheque' }}
+        </button>
+      </div> 
+    </div>
+</app-modal>
+
+<!-- MODAL: COMPLETAR PAGO -->
+<app-modal [showModal]="showModalCobro">
+  <div>
+    <div class="bg-primary-900 flex items-center justify-between text-white p-2 rounded-t">
+      <h1> Completando cobro </h1>
+      <button (click)="showModalCobro = false" class="focus:outline-none cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="p-2 text-sm">
+      <h1> <span class="font-semibold"> Total a cobrar: </span>  ${{ montoTotal | moneda }} </h1> 
+      <div class="mt-2">
+        <h1 class="font-semibold p-1"> Personalización del cobro </h1>
+        <div class="w-full md:flex mt-2 md:items-center">
+          <select [(ngModel)]="forma_pago" class="p-2 w-full focus:outline-none border border-gray-400 rounded">
+            <option value=""> Seleccionar forma de pago </option>
+            <option *ngFor="let caja of cajas" [value]="caja._id"> {{ caja.descripcion }} </option>
+          </select>
+          <div class="flex mt-2 md:mt-0 items-center w-full">
+            <input (keyup.enter)="agregarFormaPago()" [(ngModel)]="forma_pago_monto" type="number" class="border border-gray-400 p-2 rounded focus:outline-none md:ml-2" placeholder="Monto">
+            <button (click)="agregarFormaPago()" title="Agregar cobro" class="p-2 ml-1 rounded border border-gray-400 hover:text-secondaryColor focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>         
+            </button>
+          </div>
+        </div>
+      </div> 
+      <button (click)="abrirModalCheque('crear')" class="flex items-center mt-2 p-1 focus:outline-none bg-gray-100 border rounded border-gray-400 hover:text-secondaryColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <p> Agregar cheque </p>        
+      </button>
+    </div>
+    <div *ngIf="formas_pago.length > 0 || cheques.length > 0" class="p-2 text-sm"> 
+      <p class="font-semibold p-2 border border-gray-300 bg-gray-100"> Detalles de cobro </p>
+      <div class="border-b border-gray-300 p-2 flex items-center justify-between" *ngFor="let forma_pago of formas_pago">
+        <div class="flex items-center">
+          <button title="Eliminar forma de pago" (click)="eliminarFormaPago(forma_pago)" class="rounded-full focus:outline-none bg-red-700 text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>            
+          </button>
+          <p class="ml-1"> {{ forma_pago.descripcion }} </p>
+        </div>
+        <p class="font-semibold"> ${{ forma_pago.monto | moneda }} </p>
+      </div>
+      <div [ngClass]="{'bg-red-50' : cheque._id === '222222222222222222222222'}" class="flex border-b border-gray-300 mt-2 pt-1 pb-2 px-2 items-center justify-between" *ngFor="let cheque of cheques">
+        <div class="flex items-center">
+          <button (click)="eliminarCheque(cheque)" class="bg-red-700 text-white border rounded-full font-semibold focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>              
+          </button>
+          <p class="ml-1"> CHEQUE <span class="text-xs"> #{{ cheque.nro_cheque }} </span>  </p>
+          <button (click)="abrirModalCheque('editar', cheque)" title="Editar datos de cheque" class="ml-1 focus:outline-none text-primary-700 hover:text-secondaryColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+          </button>
+        </div>
+        <p class="font-semibold"> ${{ cheque.importe | moneda }} </p>  
+      </div>
+      <div class="font-semibold flex items-center justify-between">
+        <p> MONTO TOTAL </p>
+        <p class="p-2"> ${{ montoTotalCobrado | moneda }} </p>
+      </div>
+      <div *ngIf="montoTotalCobrado - montoTotal > 0" class="flex p-1 font-semibold mt-1 bg-green-50 border border-green-400 text-green-700 items-center justify-between">
+        <span> A favor del cliente </span>
+        <span> ${{ montoTotalCobrado - montoTotal | moneda }} </span>
+      </div>
+    </div>
+    <div *ngIf="formas_pago.length > 0" class="p-2">
+      <button (click)="generarCobro()" class="bg-gray-100 focus:outline-none text-sm font-semibold w-full border border-gray-400 rounded p-2 hover:text-secondaryColor">
+        Generar cobro
+      </button>
+    </div>
+  </div>
+</app-modal>
+
+<div class="gsap-contenido">
+
+  <!-- ETAPA: CLIENTES -->
+  <div *ngIf="etapa === 'clientes'">
+    <div class="flex items-center justify-center">
+      <div class="text-center">
+        <h1 class="text-3xl font-semibold text-center mt-7"> NUEVO COBRO </h1>
+        <div class="text-center mt-5">
+          <select (change)="seleccionarCliente()" [(ngModel)]="cliente"
+            class="border text-sm focus:outline-none border-gray-400 p-2 rounded">
+            <option value=""> Seleccionar cliente </option>
+            <option *ngFor="let cliente of clientes" [value]="cliente._id"> {{ cliente.descripcion }} </option>
+          </select>
+        </div>
+        <button (click)="cambioEtapaCobro()"
+          class="border mt-5 text-sm hover:bg-secondaryColor transition duration-300 focus:outline-none border-gray-400 text-white shodow p-2 rounded bg-gray-900">
+          Comenzar
+        </button>
+      </div>
+    </div>
+    <img src="assets/cobros.svg" class="w-1/2 md:w-1/3 mx-auto mt-20">
+  </div>
+
+  <!-- ETAPA: PAGO -->
+  <div *ngIf="etapa === 'cobro'">
+    <div class="mt-5 justify-center rounded-t shadow border mx-auto border-gray-400 w-11/12 md:w-1/2">
+      <div class="text-sm flex items-center justify-between bg-primary-900 p-2 text-white">
+        <div>
+          <p class="font-semibold text-lg"> GENERANDO NUEVO COBRO </p>
+          <p> {{ this.clienteSeleccionado?.descripcion }} </p>
+        </div>
+        <div class="flex items-center">
+          <button (click)="etapa = 'clientes'" title="Regresar"
+            class="p-2 border focus:outline-none border-gray-400 text-primary-900 bg-white rounded hover:text-secondaryColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+            </svg>
+          </button>
+          <button (click)="abrirModalCobro()" *ngIf="carro_pago?.length > 0" title="Completar cobro"
+            class="p-2 ml-2 border focus:outline-none border-gray-400 text-primary-900 bg-white rounded hover:text-secondaryColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div *ngIf="ventas?.length === 0" class="p-2">
+        <p class="text-lg flex items-center">
+          <span>
+            Este cliente se encuentra al dia!
+          </span>
+        </p>
+      </div>
+      <div *ngIf="ventas?.length !== 0" class="p-2">
+        <h1 class="font-semibold"> LISTADO DE FACTURAS PENDIENTES </h1>
+        <p class="text-sm"> Total a pagar: ${{ montoTotal | moneda }} </p>
+        <div class="text-sm mt-2">
+          <div *ngFor="let venta of ventas" class="border mb-2 border-gray-400 shadow">
+            <div [ngClass]="{'bg-secondaryColor text-white' : venta.seleccionada, 'bg-gray-100' : !venta.seleccionada}"
+              class="flex items-center p-2 border-b border-gray-400 justify-between">
+              <p class="font-semibold"> {{ venta.nro | codigoVentasPropias }} </p>
+              <p class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                </svg>
+                <span class="ml-1">
+                  {{ venta.createdAt | fecha }}
+                </span>
+              </p>
+            </div>
+            <div class="p-2 flex  items-center justify-between">
+              <div>
+                <p> Monto total: ${{ venta.precio_total | moneda }} </p>
+                <p class="text-red-700 font-semibold"> Monto deuda: ${{ venta.deuda_monto | moneda }} </p>
+              </div>
+              <div>
+                <button
+                  [ngClass]="{'hover:text-red-700':venta.seleccionada, 'hover:text-green-700':!venta.seleccionada}"
+                  (click)="agregarVenta(venta)" [title]="venta.seleccionada ? 'No pagar factura' : 'Pagar factura'"
+                  class="p-2 focus:outline-none border border-gray-400 rounded">
+                  <svg *ngIf="!venta.seleccionada" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <svg *ngIf="venta.seleccionada" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

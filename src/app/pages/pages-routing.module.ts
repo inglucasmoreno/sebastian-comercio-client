@@ -33,6 +33,8 @@ import { BancosComponent } from './bancos/bancos.component';
 import { ChequesComponent } from './cheques/cheques.component';
 import { VentasPropiasComponent } from './ventas/ventas-propias.component';
 import { CajasMovimientosComponent } from './cajas/cajas-movimientos.component';
+import { CobrosComponent } from './cobros/cobros.component';
+import { NuevoCobroComponent } from './cobros/nuevo-cobro.component';
 
 const routes: Routes = [
     {
@@ -78,6 +80,10 @@ const routes: Routes = [
             { path: 'ventas-propias', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasPropiasComponent },
             { path: 'cc-clientes', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: CcClientesComponent },
             { path: 'cc-clientes-movimientos/:id', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: CcClientesMovimientosComponent },
+
+            // Cobros
+            { path: 'cobros', data: { permisos: 'COBROS_NAV' }, canActivate: [PermisosGuard], component: CobrosComponent },
+            { path: 'nuevo-cobro', data: { permisos: 'COBROS_NAV' }, canActivate: [PermisosGuard], component: NuevoCobroComponent },
 
             // Caja
             { path: 'cajas', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: CajasComponent },
