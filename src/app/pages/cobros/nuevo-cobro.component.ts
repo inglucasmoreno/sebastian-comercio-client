@@ -7,6 +7,11 @@ import { ClientesService } from 'src/app/services/clientes.service';
 import { RecibosCobroService } from 'src/app/services/recibos-cobro.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
 import gsap from 'gsap';
+import { environment } from 'src/environments/environment';
+import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
+import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
+
+const base_url = environment.base_url;
 
 @Component({
   selector: 'app-nuevo-cobro',
@@ -18,6 +23,9 @@ export class NuevoCobroComponent implements OnInit {
 
   // MODALS
   public showModalCobro = false;
+  public showModalCobroParcial = false;
+  public showModalDetallesVenta = false;
+  public showModalDetallesCheque = false;
 
   // ETAPAS
   public etapa: string = 'clientes';
@@ -30,7 +38,9 @@ export class NuevoCobroComponent implements OnInit {
   // VENTAS
   public montoTotal: number = 0;
   public montoTotalCobrado: number = 0;
+  public montoParcial: number = 0;
   public ventas: any[] = [];
+  public ventaSeleccionada: any = null;
 
   // CARRO DE PAGO
   public carro_pago: any[] = [];
@@ -48,6 +58,12 @@ export class NuevoCobroComponent implements OnInit {
   public estadoFormularioCheque = 'crear';
   public bancos: any[] = [];
 
+  // VETA PROPIA
+  public ventaPropia: any;
+  public productos: any[];
+  public relaciones: any[];  // Relaciones venta_propia = cheques
+  public chequeSeleccionadoDetalles: any;
+
   public cheque = {
     nro_cheque: '',
     emisor: '',
@@ -57,11 +73,17 @@ export class NuevoCobroComponent implements OnInit {
     fecha_cobro: ''
   }
 
+  public filtro = {
+    parametroProducto: ''
+  }
+
   // CAJAS
   public cajas: any[] = [];
 
   constructor(
     private authService: AuthService,
+    private ventasPropiasProductosService: VentasPropiasProductosService,
+    private ventasPropiasChequesService: VentasPropiasChequesService,
     private clientesService: ClientesService,
     private cobrosService: RecibosCobroService,
     private cajasService: CajasService,
@@ -70,7 +92,7 @@ export class NuevoCobroComponent implements OnInit {
     private alertService: AlertService) { }
 
   ngOnInit(): void {
-    gsap.from('.gsap-contenido', { y:100, opacity: 0, duration: .2 });
+    gsap.from('.gsap-contenido', { y: 100, opacity: 0, duration: .2 });
     this.cargaInicial();
   }
 
@@ -109,6 +131,7 @@ export class NuevoCobroComponent implements OnInit {
   agregarVenta(venta: any): void {
 
     venta.seleccionada = !venta.seleccionada ? true : false;
+    venta.cancelada = true;
 
     if (venta.seleccionada) {                   // Agregar venta -> carro de pago
 
@@ -140,25 +163,25 @@ export class NuevoCobroComponent implements OnInit {
 
   // ** CALCULO -> MONTO TOTAL COBRADO
   calculoMontoTotalACobrar(): void {
-    
+
     let montoTMP = 0;
-  
+
     // Formas de pago
     this.formas_pago.map(elemento => {
       montoTMP += elemento.monto;
     });
 
     // Cheques
-    this.cheques.map( elemento => {
+    this.cheques.map(elemento => {
       montoTMP += elemento.importe
     })
 
-    // Calculo -> Falta pagar
+    // Calculo -> Falta cobrar
     this.forma_pago_monto = (this.montoTotal - montoTMP) > 0 ? (this.montoTotal - montoTMP) : null;
     this.forma_pago = '';
 
     this.montoTotalCobrado = montoTMP;
-  
+
   }
 
   // ** ABRIR MODAL -> COMPLETANDO COBRO
@@ -340,9 +363,9 @@ export class NuevoCobroComponent implements OnInit {
 
   //** ELIMINAR CHEQUE
   eliminarCheque(cheque): void {
-    this.cheques = this.cheques.filter( elemento => elemento._id !== cheque._id);
+    this.cheques = this.cheques.filter(elemento => elemento._id !== cheque._id);
     this.calculoMontoTotalACobrar();
-  } 
+  }
 
   //** SELECCIONAR BANCO
   seleccionarBanco(): void {
@@ -360,48 +383,166 @@ export class NuevoCobroComponent implements OnInit {
 
   //** GENERANDO COBRO
   generarCobro(): void {
-    
+
     // Verificacion: No hay formas de pago agregada
-    if(this.formas_pago.length === 0){
+    if (this.formas_pago.length === 0 && this.cheques.length === 0) {
       this.alertService.info('Se debe agregar al menos una forma de pago');
       return;
     }
 
-    // Verificacion: Monto inferior al que se debe pagar
-    if(this.montoTotal > this.montoTotalCobrado){
+    // Verificacion: Monto inferior al que se debe cobrar
+    if (this.montoTotal > this.montoTotalCobrado) {
       this.alertService.info('Monto cobrado inferior al total');
       return;
     }
 
-    // Generar cobror
-    this.alertService.loading();
-    
-    const data = {
-      cliente: this.cliente,
-      formas_pago: this.formas_pago,
-      cobro_total: this.montoTotal,
-      carro_pago: this.carro_pago,
-      cheques: this.cheques,
-      creatorUser: this.authService.usuario.userId,
-      updatorUser: this.authService.usuario.userId,
-    };
-    
-    console.log(data);
+    this.alertService.question({ msg: 'Generando cobro', buttonText: 'Cobrar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
 
-    this.cobrosService.nuevoRecibo(data).subscribe({
-      next: () => {
-        this.reiniciarSeccion();
-        this.alertService.close();
-      }, error: ({error}) => this.alertService.errorApi(error.message)
-    });
+          // Generar cobror
+          this.alertService.loading();
+
+          const data = {
+            cliente: this.cliente,
+            formas_pago: this.formas_pago,
+            cobro_total: this.montoTotal,
+            carro_pago: this.carro_pago,
+            cheques: this.cheques,
+            creatorUser: this.authService.usuario.userId,
+            updatorUser: this.authService.usuario.userId,
+          };
+
+          console.log(data);
+
+          this.cobrosService.nuevoRecibo(data).subscribe({
+            next: () => {
+              this.reiniciarSeccion();
+              this.alertService.close();
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          });
+
+        }
+      });
 
   }
 
   // Reiniciar seccion
   reiniciarSeccion(): void {
     this.etapa = 'clientes';
-    this.cliente = '';    
+    this.cliente = '';
     this.showModalCobro = false;
+  }
+
+  // Abrir cobro parcial
+  abrirCobroParcial(venta: any): void {
+    this.montoParcial = null;
+    this.ventaSeleccionada = venta;
+    this.showModalCobroParcial = true;
+  }
+
+  // Cerrar cobro parcial
+  cerrarCobroParcial(): void {
+    this.showModalCobroParcial = false;
+  }
+
+  // Cobrar parcialmente
+  cobrarParcialmente(): void {
+
+    if (this.ventaSeleccionada.deuda_monto < this.montoParcial) {
+      this.alertService.info('No se puede superar el monto de deuda');
+      return;
+    }
+
+    if (this.ventaSeleccionada.deuda_monto === this.montoParcial) { // Se cancela la deuda
+
+      this.ventaSeleccionada.seleccionada = true;
+      this.ventaSeleccionada.cancelada = true;
+      this.ventaSeleccionada.monto_cobrado = this.montoParcial;
+
+
+    } else {  // Pago parcial
+
+      this.ventaSeleccionada.seleccionada = true;
+      this.ventaSeleccionada.cancelada = false;
+      this.ventaSeleccionada.monto_cobrado = this.montoParcial;
+
+    }
+
+    const dataVenta = {
+      venta: this.ventaSeleccionada._id,
+      monto_cobrado: this.montoParcial,
+      monto_deuda: this.ventaSeleccionada.deuda_monto - this.montoParcial,
+      cancelada: false,
+    }
+
+    this.carro_pago.unshift(dataVenta);
+
+
+    this.calculoMontoTotalCobro();
+
+    this.montoParcial = null;
+
+    this.showModalCobroParcial = false;
+
+  }
+
+  //** DETALLES DE VENTA PROPIA
+
+  // Abrir detalles de venta
+  abrirDetallesVenta(venta: any): void {
+    this.alertService.loading();
+    this.ventaPropia = venta;
+    this.ventasPropiasProductosService.listarProductos({ venta: venta._id }).subscribe({
+      next: ({ productos }) => {
+        this.productos = productos;
+
+        this.ventasPropiasChequesService.listarRelaciones({ venta_propia: venta._id }).subscribe({
+          next: ({ relaciones }) => {
+
+            this.relaciones = relaciones;
+
+            console.log(this.relaciones);
+
+            this.showModalDetallesVenta = true;
+
+            this.alertService.close();
+
+          }, error: ({ error }) => this.alertService.errorApi(error.message)
+        })
+
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+  }
+
+  // Cerrar detalles de venta
+  cerrarDetallesVenta(): void {
+    this.showModalDetallesVenta = false;
+  }
+
+  // Abrir detalles de cheque
+  abrirDetallesCheque(cheque: any): void {
+    this.chequeSeleccionado = cheque;
+    this.showModalDetallesVenta = false;
+    this.showModalDetallesCheque = true;
+  }
+
+  // Cerrar el detalles del cheque
+  cerrarDetallesCheque(): void {
+    this.showModalDetallesCheque = false;
+    this.showModalDetallesVenta = true;
+  }
+
+  // Generar PDF
+  generarPDF(venta: any): void {
+    this.alertService.loading();
+    this.ventasPropiasService.generarPDF({ venta: venta._id }).subscribe({
+      next: () => {
+        window.open(`${base_url}/pdf/venta-propia.pdf`, '_blank');
+        this.alertService.close();
+      },
+      error: ({ error }) => this.alertService.errorApi(error.message)
+    })
   }
 
   // ? ---------> CAMBIO DE ETAPA

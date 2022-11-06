@@ -1,4 +1,67 @@
 
+
+<!-- Detalles de recibo de cobro -->
+<app-modal [showModal]="showModalDetallesCobro">
+  <div class="text-sm"t>
+    <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
+      <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de cobro </h1>
+      <svg (click)="cerrarDetallesCobro()" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </div>
+    <div class="p-2">
+      <div class="flex items-center justify-between">
+        <p> <span class="font-semibold"> Código de recibo: </span> {{ recibo_cobro?.nro | codigoReciboCobro }} </p>
+        <p> <span class="font-semibold"> Fecha: </span> {{ recibo_cobro?.createdAt | fecha }} </p>    
+      </div>
+      <div class="mt-2">
+        <p> <span class="font-semibold"> Cliente: </span> {{ recibo_cobro?.cliente.descripcion }} </p>
+      </div>  
+      <div class="mt-2">
+        <h2 class="p-1 bg-gray-100 font-semibold rounded w-full border border-gray-300"> Facturas pagadas </h2>
+        <div (click)="abrirDetallesVenta('cobro', venta.venta_propia._id)" title="Detalles de venta" class="flex cursor-pointer hover:bg-secondaryColor hover:text-white p-2 items-center justify-between border-b border-gray-300 pb-2" *ngFor="let venta of recibo_ventas">
+          <div> 
+            <p> {{ venta.venta_propia.nro | codigoVentasPropias }} </p>
+            <p [ngClass]="{'bg-green-100 border-green-300 text-green-700':venta.venta_cancelada, 'bg-blue-100 border-blue-300 text-blue-700': !venta.venta_cancelada}" class="border mt-1 text-xs p-1 rounded"> {{ venta.venta_cancelada ? 'Factura cancelada' : 'Pago parcial'}} </p>
+          </div>
+          <p class="font-semibold"> ${{ venta.monto_cobrado | moneda }} </p>
+        </div>
+        <div class="p-2 flex items-center justify-between">
+          <p class="font-semibold"> TOTAL </p>
+          <p class="font-semibold"> ${{ recibo_cobro?.cobro_total | moneda }} </p>
+        </div>
+      </div>
+      <div class="mt-2">
+        <h2 class="p-1 bg-gray-100 font-semibold rounded w-full border border-gray-300"> Formas de pago </h2>
+        <div>
+          <div class="flex p-2 items-center justify-between border-b border-gray-300" *ngFor="let forma_pago of recibo_cobro?.formas_pago">
+            <p> {{ forma_pago.descripcion }} </p>
+            <p class="font-semibold"> ${{ forma_pago.monto | moneda }} </p>
+          </div>
+          <div class="flex items-center justify-between border-b border-gray-300 pb-1" *ngFor="let relacion of recibo_cheques">
+            <p class="flex p-2 items-center">  
+              <span>
+                CHEQUE -
+              </span>
+              <span class="ml-1"> 
+                #{{ relacion.cheque.nro_cheque }} 
+              </span> 
+              <button (click)="abrirDetallesCheque(relacion.cheque, 'cobro')" class="hover:text-secondaryColor ml-1 focus:outline-none cursor-pointer" title="Detalles de cheque">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                </svg>               
+              </button> 
+            </p>
+            <p class="font-semibold pr-2"> ${{ relacion.cheque.importe | moneda }} </p>
+          </div>
+          <div class="p-2 flex items-center justify-between">
+            <p class="font-semibold"> TOTAL </p>
+            <p class="font-semibold"> ${{ recibo_cobro?.cobro_total | moneda }} </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> 
+</app-modal>
+
 <!-- Detalles de cheque -->
 <app-modal [showModal]="showModalDetallesCheque">
     <div>
@@ -88,7 +151,7 @@
           <p class="p-1 flex items-center justify-between" *ngFor="let relacion of relaciones">
             <span class="flex items-center">
               CHEQUE - #{{ relacion.cheque.nro_cheque }}
-              <button (click)="abrirDetallesCheque(relacion.cheque)" class="hover:text-secondaryColor focus:outline-none cursor-pointer ml-1" title="Detalles de cheque">
+              <button (click)="abrirDetallesCheque(relacion.cheque, '')" class="hover:text-secondaryColor focus:outline-none cursor-pointer ml-1" title="Detalles de cheque">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
                 </svg>
@@ -151,8 +214,11 @@
                     <span class="font-semibold"> Saldo actual: </span> 
                     <span [ngClass]="{'text-red-700':movimientoSeleccionado?.saldo_nuevo < 0}"> ${{ movimientoSeleccionado?.saldo_nuevo | moneda }} </span>                      
                 </p>
-                <button (click)="abrirDetallesVenta()" *ngIf="movimientoSeleccionado?.venta_propia !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
+                <button (click)="abrirDetallesVenta('')" *ngIf="movimientoSeleccionado?.venta_propia !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
                     Detalles de venta
+                </button>
+                <button (click)="abrirDetallesCobro()" *ngIf="movimientoSeleccionado?.recibo_cobro && movimientoSeleccionado?.recibo_cobro !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
+                    Detalles del cobro
                 </button>
             </div>
         </div>

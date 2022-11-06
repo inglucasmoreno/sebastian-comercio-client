@@ -116,7 +116,7 @@ export class CajasComponent implements OnInit {
       this.cajasService.listarCajas(parametros)
       .subscribe( ({ cajas }) => {
         this.cajas = cajas;
-        this.cajasSelector = cajas.filter( caja => caja.activo );
+        this.cajasSelector = cajas.filter( caja => caja.activo && caja._id !== '222222222222222222222222' );
         this.showModalCaja = false;
       
         // FLAG - INICIALIZACION

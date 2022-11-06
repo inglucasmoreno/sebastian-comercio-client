@@ -36,7 +36,8 @@ export class RecibosCobroVentaService {
     return this.http.get(`${base_url}/recibos-cobro-venta`, {
       params: {
         direccion: parametros?.direccion || 1,
-        columna: parametros?.columna || 'descripcion'
+        columna: parametros?.columna || 'descripcion',
+        recibo_cobro: parametros?.recibo_cobro || ''
       },
       headers: this.getToken
     });

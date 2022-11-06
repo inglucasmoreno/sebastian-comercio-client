@@ -4,7 +4,11 @@ import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { CajasMovimientosService } from 'src/app/services/cajas-movimientos.service';
 import { CajasService } from 'src/app/services/cajas.service';
+import { ChequesService } from 'src/app/services/cheques.service';
 import { DataService } from 'src/app/services/data.service';
+import { RecibosCobroChequeService } from 'src/app/services/recibos-cobro-cheque.service';
+import { RecibosCobroVentaService } from 'src/app/services/recibos-cobro-venta.service';
+import { RecibosCobroService } from 'src/app/services/recibos-cobro.service';
 import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
 import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
@@ -26,6 +30,7 @@ export class CajasMovimientosComponent implements OnInit {
   // Modal
   public showModalMovimiento = false;
   public showModalDetalles = false;
+  public showModalDetallesCobro = false;
   public showModalDetallesVenta = false;
   public showModalDetallesCheque = false;
 
@@ -56,6 +61,14 @@ export class CajasMovimientosComponent implements OnInit {
   public relaciones: any[];  // Relaciones venta_propia = cheques
   public chequeSeleccionado: any;
 
+  // Cobros
+  public recibo_cobro: any = null;
+  public recibo_ventas: any[] = [];
+  public recibo_cheques: any[] = [];
+
+  // Otros
+  public origen: string = '';
+
   // Filtrado
   public filtro = {
     activo: 'true',
@@ -70,32 +83,36 @@ export class CajasMovimientosComponent implements OnInit {
   }
 
   constructor(
-             private movimientosService: CajasMovimientosService,
-             private ventasPropiasService: VentasPropiasService,
-             private ventasPropiasChequesService: VentasPropiasChequesService,
-             private ventasPropiasProductosService: VentasPropiasProductosService,
-             private activatedRoute: ActivatedRoute,
-             private cajasService: CajasService,
-             private authService: AuthService,
-             private alertService: AlertService,
-             private dataService: DataService) { }
+    private movimientosService: CajasMovimientosService,
+    private cobrosService: RecibosCobroService,
+    private recibosCobroVentaService: RecibosCobroVentaService,
+    private recibosCobroChequeService: RecibosCobroChequeService,
+    private ventasPropiasService: VentasPropiasService,
+    private ventasPropiasChequesService: VentasPropiasChequesService,
+    private ventasPropiasProductosService: VentasPropiasProductosService,
+    private activatedRoute: ActivatedRoute,
+    private cajasService: CajasService,
+    private authService: AuthService,
+    private chequesService: ChequesService,
+    private alertService: AlertService,
+    private dataService: DataService) { }
 
   ngOnInit(): void {
     this.dataService.ubicacionActual = 'Dashboard - Cajas - Registros';
-    this.activatedRoute.params.subscribe(({id}) => { this.idCaja = id; });
+    this.activatedRoute.params.subscribe(({ id }) => { this.idCaja = id; });
     this.permisos.all = this.permisosUsuarioLogin();
-    this.calculosIniciales(); 
+    this.calculosIniciales();
   }
 
   // Calculos iniciales
   calculosIniciales(): void {
     this.alertService.loading();
     this.cajasService.getCaja(this.idCaja).subscribe({
-      next: ({caja}) => {
+      next: ({ caja }) => {
         this.caja = caja;
         this.listarMovimientos();
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 
@@ -106,16 +123,16 @@ export class CajasMovimientosComponent implements OnInit {
 
   // Abrir modal
   abrirModal(estado: string, movimiento: any = null): void {
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
     this.descripcion = '';
     this.tipo = 'Debe';
     this.monto = null;
     this.idMovimiento = '';
-    
-    if(estado === 'editar') this.getMovimiento(movimiento);
+
+    if (estado === 'editar') this.getMovimiento(movimiento);
     else this.showModalMovimiento = true;
 
-    this.estadoFormulario = estado;  
+    this.estadoFormulario = estado;
   }
 
   // Traer datos de movimiento
@@ -127,7 +144,7 @@ export class CajasMovimientosComponent implements OnInit {
       this.descripcion = movimiento.descripcion;
       this.alertService.close();
       this.showModalMovimiento = true;
-    },({error})=>{
+    }, ({ error }) => {
       this.alertService.errorApi(error);
     });
   }
@@ -140,29 +157,29 @@ export class CajasMovimientosComponent implements OnInit {
       caja: this.idCaja
     }
     this.movimientosService.listarMovimientos(parametros)
-    .subscribe( ({ movimientos }) => {
-      this.movimientos = movimientos;
-      this.showModalMovimiento = false;
-      this.alertService.close();
-    }, (({error}) => {
-      this.alertService.errorApi(error.msg);
-    }));
+      .subscribe(({ movimientos }) => {
+        this.movimientos = movimientos;
+        this.showModalMovimiento = false;
+        this.alertService.close();
+      }, (({ error }) => {
+        this.alertService.errorApi(error.msg);
+      }));
   }
 
   // Nuevo movimiento
   nuevoMovimiento(): void {
 
-  // Verificacion: Descripción vacia
-  if(this.descripcion.trim() === ""){
-    this.alertService.info('Debes colocar una descripción');
-    return;
-  }
+    // Verificacion: Descripción vacia
+    if (this.descripcion.trim() === "") {
+      this.alertService.info('Debes colocar una descripción');
+      return;
+    }
 
-  // Verificacion: monto invalido
-  if(this.descripcion.trim() === ""){
-    this.alertService.info('Debes colocar un monto válido');
-    return;
-  }
+    // Verificacion: monto invalido
+    if (this.descripcion.trim() === "") {
+      this.alertService.info('Debes colocar un monto válido');
+      return;
+    }
 
     this.alertService.loading();
 
@@ -178,17 +195,17 @@ export class CajasMovimientosComponent implements OnInit {
     this.movimientosService.nuevoMovimiento(data).subscribe(({ saldo_nuevo }) => {
       this.caja.saldo = saldo_nuevo;
       this.listarMovimientos();
-    },({error})=>{
-      this.alertService.errorApi(error.message);  
+    }, ({ error }) => {
+      this.alertService.errorApi(error.message);
     });
-    
+
   }
 
   // Actualizar movimiento
   actualizarMovimiento(): void {
 
     // Verificacion: Descripción vacia
-    if(this.descripcion.trim() === ""){
+    if (this.descripcion.trim() === "") {
       this.alertService.info('Debes colocar una descripción');
       return;
     }
@@ -202,71 +219,39 @@ export class CajasMovimientosComponent implements OnInit {
 
     this.movimientosService.actualizarMovimiento(this.idMovimiento, data).subscribe(() => {
       this.listarMovimientos();
-    },({error})=>{
+    }, ({ error }) => {
       this.alertService.errorApi(error.message);
     });
   }
 
   // Actualizar estado Activo/Inactivo
   actualizarEstado(movimiento: any): void {
-    
+
     const { _id, activo } = movimiento;
-    
-    if(!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
+
+    if (!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
 
     this.alertService.question({ msg: '¿Quieres actualizar el estado?', buttonText: 'Actualizar' })
-        .then(({isConfirmed}) => {  
-          if (isConfirmed) {
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.movimientosService.actualizarMovimiento(_id, { activo: !activo }).subscribe(() => {
             this.alertService.loading();
-            this.movimientosService.actualizarMovimiento(_id, {activo: !activo}).subscribe(() => {
-              this.alertService.loading();
-              this.listarMovimientos();
-            }, ({error}) => {
-              this.alertService.close();
-              this.alertService.errorApi(error.message);
-            });
-          }
-        });
+            this.listarMovimientos();
+          }, ({ error }) => {
+            this.alertService.close();
+            this.alertService.errorApi(error.message);
+          });
+        }
+      });
 
   }
 
   // Abrir modal - Detalles de movimientos
-  abrirDetallesMovimientos(movimiento: any): void { 
-    if(movimiento.venta_propia !== ''){
-      this.alertService.loading();
-      this.ventasPropiasService.getVenta(movimiento.venta_propia).subscribe({
-        next: ({venta}) => {
-          this.ventaPropia = venta;
-          console.log(this.ventaPropia);
-
-          this.ventasPropiasProductosService.listarProductos({venta: venta._id}).subscribe({
-            next: ({productos}) => {
-              this.productos = productos;
-              console.log(this.productos);
-          
-              this.ventasPropiasChequesService.listarRelaciones({venta_propia: venta._id}).subscribe({
-                next: ({relaciones}) => {
-
-                  this.relaciones = relaciones;
-                  console.log(this.relaciones);
-
-                  this.movimientoSeleccionado = movimiento;
-                  this.showModalDetalles = true;
-
-                  this.alertService.close();
-
-                }, error: ({error}) => this.alertService.errorApi(error.message)
-              })            
-            
-            }, error: ({error}) => this.alertService.errorApi(error.message)
-          })
-
-        }, error: ({error}) => this.alertService.errorApi(error.message)
-      })
-    }else{
-      this.movimientoSeleccionado = movimiento;
-      this.showModalDetalles = true;
-    }
+  abrirDetallesMovimientos(movimiento: any): void {
+    this.movimientoSeleccionado = movimiento;
+    this.movimientoSeleccionado = movimiento;
+    this.showModalDetalles = true;
   }
 
   // Generar PDF
@@ -280,48 +265,166 @@ export class CajasMovimientosComponent implements OnInit {
       error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
-  
+
   // Abrir detalles de venta
-  abrirDetallesVenta(): void {
-    this.showModalDetalles = false;
-    this.showModalDetallesVenta = true;
+  abrirDetallesVenta(origen: string, venta_propia = ''): void {
+
+    this.alertService.loading();
+
+    this.origen = origen;
+
+    this.ventasPropiasService.getVenta(venta_propia !== '' ? venta_propia : this.movimientoSeleccionado.venta_propia).subscribe({
+      next: ({ venta }) => {
+        this.ventaPropia = venta;
+
+        this.ventasPropiasProductosService.listarProductos({ venta: venta._id }).subscribe({
+          next: ({ productos }) => {
+            this.productos = productos;
+
+            this.ventasPropiasChequesService.listarRelaciones({ venta_propia: venta._id }).subscribe({
+              next: ({ relaciones }) => {
+
+                this.relaciones = relaciones;
+                this.showModalDetalles = false;
+                this.showModalDetallesCobro = false;
+                this.showModalDetallesVenta = true;
+                this.alertService.close();
+
+              }, error: ({ error }) => this.alertService.errorApi(error.message)
+            })
+
+          }, error: ({ error }) => this.alertService.errorApi(error.message)
+        })
+
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
   }
 
   // Cerrar detalles de venta
   cerrarDetallesVenta(): void {
-    this.showModalDetallesVenta = false;
-    this.showModalDetalles = true;
+
+    if(this.origen === 'venta'){
+      this.showModalDetallesVenta = false;
+      this.showModalDetalles = true;
+    }else if(this.origen === 'cobro'){
+      this.showModalDetallesVenta = false;
+      this.showModalDetallesCobro = true;      
+    }
+
   }
 
   // Abrir detalles de cheque
-  abrirDetallesCheque(cheque: any): void {
+  abrirDetallesCheque(cheque: any, origen: string): void {
+
     this.chequeSeleccionado = cheque;
-    this.showModalDetallesVenta = false;
-    this.showModalDetallesCheque = true;
+    this.origen = origen;
+
+    if (this.origen === 'venta') {
+
+      this.showModalDetallesVenta = false;
+      this.showModalDetallesCheque = true;
+
+    } else if (this.origen === 'cobro') {
+
+      this.showModalDetallesCobro = false;
+      this.showModalDetallesCheque = true;
+
+    }
   }
 
   // Cerrar el detalles del cheque
   cerrarDetallesCheque(): void {
-    this.showModalDetallesCheque = false;
-    this.showModalDetallesVenta = true;
+
+    if (this.origen === 'venta') {
+
+      this.showModalDetallesVenta = true;
+      this.showModalDetallesCheque = false;
+
+    } else if (this.origen === 'cobro') {
+
+      this.showModalDetallesCobro = true;
+      this.showModalDetallesCheque = false;
+
+    } else if (this.origen === 'movimiento'){
+      
+      this.showModalDetalles = true;
+      this.showModalDetallesCheque = false;
+    
+    }
+
+  }
+
+  // Abrir detalles de cobro
+  abrirDetallesCobro(): void {
+
+    this.alertService.loading();
+
+    // RECIBO DE COBRO
+    this.cobrosService.getRecibo(this.movimientoSeleccionado.recibo_cobro).subscribe({
+      next: ({ recibo }) => {
+        this.recibo_cobro = recibo;
+
+        // RELACION -> RECIBO - VENTAS
+        this.recibosCobroVentaService.listarRelaciones({ recibo_cobro: this.recibo_cobro._id }).subscribe({
+          next: ({ relaciones }) => {
+            this.recibo_ventas = relaciones;
+
+            // RELACION -> RECIBO - CHEQUES
+            this.recibosCobroChequeService.listarRelaciones({ recibo_cobro: this.recibo_cobro._id }).subscribe({
+              next: ({ relaciones }) => {
+                this.recibo_cheques = relaciones;
+                this.showModalDetalles = false;
+                this.showModalDetallesCobro = true;
+                this.alertService.close();
+              }, error: ({ error }) => this.alertService.errorApi(error.message)
+            })
+
+          }, error: ({ error }) => this.alertService.errorApi(error.message)
+        })
+
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
+  }
+
+  // Abrir detalles de cheque
+  abrirDetallesChequeDesdeMovimiento(): void {
+    this.showModalDetalles = false;
+    this.alertService.loading();
+    this.chequesService.getCheque(this.movimientoSeleccionado.cheque).subscribe({
+      next:({cheque}) => {
+        this.origen = 'movimiento';
+        this.chequeSeleccionado = cheque;
+        this.showModalDetallesCheque = true;
+        this.alertService.close();
+      }, error: ({error}) => this.alertService.errorApi(error.message)
+    })
+    this.showModalDetallesCheque = true;
+  }
+
+  // Cerrar detalles de cobro
+  cerrarDetallesCobro(): void {
+    this.showModalDetallesCobro = false;
+    this.showModalDetalles = true;
   }
 
   // Filtrar Activo/Inactivo
-  filtrarActivos(activo: any): void{
+  filtrarActivos(activo: any): void {
     this.paginaActual = 1;
     this.filtro.activo = activo;
   }
 
   // Filtrar por Parametro
-  filtrarParametro(parametro: string): void{
+  filtrarParametro(parametro: string): void {
     this.paginaActual = 1;
     this.filtro.parametro = parametro;
   }
 
   // Ordenar por columna
-  ordenarPorColumna(columna: string){
+  ordenarPorColumna(columna: string) {
     this.ordenar.columna = columna;
-    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1; 
+    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
     this.alertService.loading();
     this.listarMovimientos();
   }

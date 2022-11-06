@@ -1,3 +1,22 @@
+<!-- Modal: Cobrando cheque -->
+<app-modal-small [showModal]="showModalCobrandoCheque">
+    <div>
+        <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
+            <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Cobrando cheque </h1>
+            <svg (click)="showModalCobrandoCheque = false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </div>
+        <div class="text-sm p-2">
+            <p class="font-semibold"> Caja destino </p>
+            <select [(ngModel)]="cajaSeleccionada" class="p-2 w-full border focus:outline-none mt-2 border-gray-300 rounded">
+                <option value=""> Seleccionar caja </option>
+                <option *ngFor="let caja of cajas" [value]="caja._id"> {{ caja.descripcion }} </option>
+            </select>
+            <button (click)="cobrarCheque()" class="p-2 mt-2 focus:outline-none font-semibold rounded w-full border border-secondaryColor bg-secondaryColor text-white">
+                Cobrar cheque
+            </button>
+        </div>
+    </div>
+</app-modal-small>
 
 <!-- Modal: Crear / Editar cheque -->
 <app-modal [showModal]="showModalCheque">
@@ -10,7 +29,7 @@
         <div class="md:flex md:items-center">
             <div class="md:w-1/2">
                 <p class="font-semibold"> <span class="text-red-500"> * </span> Nro de cheque </p>
-                <input [(ngModel)]="nro_cheque" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 21700045" type="text">
+                <input [disabled]="estadoFormulario === 'editar' && chequeSeleccionado.estado !== 'Creado'" [(ngModel)]="nro_cheque" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 21700045" type="text">
             </div>
             <div class="md:w-1/2 md:ml-4 mt-2 md:mt-0">
                 <p class="font-semibold"> <span class="text-red-500"> * </span> Importe </p>
@@ -19,19 +38,19 @@
         </div>
         <div class="mt-4">
             <p class="font-semibold"> <span class="text-red-500"> * </span> Emisor </p>
-            <input [(ngModel)]="emisor" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Moreno Lucas Omar" type="text">
+            <input [(ngModel)]="emisor" [disabled]="estadoFormulario === 'editar' && chequeSeleccionado.estado !== 'Creado'" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Moreno Lucas Omar" type="text">
         </div>
         <div class="md:flex md:items-center mt-4">
             <div class="md:w-1/2">
                 <p class="font-semibold"> <span class="text-red-500"> * </span> Banco </p>
-                <select [(ngModel)]="banco" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+                <select [(ngModel)]="banco" [disabled]="estadoFormulario === 'editar' && chequeSeleccionado.estado !== 'Creado'" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
                     <option value=""> Seleccionar banco </option>                    
                     <option *ngFor="let banco of bancos" [value]="banco._id"> {{ banco.descripcion }} </option>
                 </select>
             </div>
             <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
                 <p class="font-semibold"> <span class="text-red-500"> * </span> Fecha de cobro </p>
-                <input [(ngModel)]="fecha_cobro" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" type="date">
+                <input [disabled]="estadoFormulario === 'editar' && chequeSeleccionado.estado !== 'Creado'" [(ngModel)]="fecha_cobro" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" type="date">
             </div>
         </div>
         <div *ngIf="chequeSeleccionado && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
@@ -64,7 +83,7 @@
         </div>   
         <div class="mt-2">
             <button *ngIf="estadoFormulario == 'crear'" (click)="nuevoCheque()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Ingresar cheque </button>
-            <button *ngIf="estadoFormulario == 'editar'" (click)="actualizarCheque()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Actualizar cheque </button>
+            <button *ngIf="estadoFormulario == 'editar' && chequeSeleccionado.estado === 'Creado'" (click)="actualizarCheque()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Actualizar cheque </button>
         </div>
       </div>
   </div>
@@ -95,8 +114,9 @@
                       <div class="flex flex-row mb-1 sm:mb-0">
                           <div class="relative">
                               <select #txtActivo (change)="filtrarActivos(txtActivo.value)" class="h-full text-sm rounded-r border-t border-l rounded-l sm:rounded-r-none sm:border-r-0 border-r border-b block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500">
-                                  <option value='true'> En cartera </option>
-                                  <option value='false'> Utilizados </option>
+                                  <option value='Creado'> En cartera </option>
+                                  <option value='Cobrado'> Cobrados </option>
+                                  <option value='Transferido'> Transferidos </option>
                                   <option value=''> Todos </option>
                               </select>
                               <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -244,11 +264,21 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                                 </svg>
                                             </app-boton-tabla>
-                                            <!-- <app-boton-tabla class="ml-2" (click)="eliminarCheque(cheque)" title="Eliminar cheque">
+                                            <app-boton-tabla *ngIf="cheque.estado === 'Creado'" (click)="abrirModalCobrandoCheque(cheque)" class="ml-2" title="Cobrar cheque">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                  </svg>                                                  
+                                            </app-boton-tabla>
+                                            <div title="Cheque cobrado" *ngIf="cheque.estado === 'Cobrado'" class="p-2 border ml-2 border-green-400 rounded bg-green-100 text-green-700">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </app-boton-tabla> -->
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>                                                                                              
+                                            </div>
+                                            <div title="Cheque transferido" *ngIf="cheque.estado === 'Transferido'" class="p-2 border ml-2 border-blue-400 rounded bg-blue-100 text-blue-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                                  </svg>                                                
+                                            </div>
                                         </span>
                                     </td>
                               </tr>

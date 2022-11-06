@@ -1,5 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertService } from 'src/app/services/alert.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { DataService } from 'src/app/services/data.service';
+import { RecibosCobroChequeService } from 'src/app/services/recibos-cobro-cheque.service';
+import { RecibosCobroVentaService } from 'src/app/services/recibos-cobro-venta.service';
+import { RecibosCobroService } from 'src/app/services/recibos-cobro.service';
+import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
+import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
+import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
+import { environment } from 'src/environments/environment';
+
+const base_url = environment.base_url;
 
 @Component({
   selector: 'app-cobros',
@@ -9,9 +20,299 @@ import { AlertService } from 'src/app/services/alert.service';
 })
 export class CobrosComponent implements OnInit {
 
-  constructor(private alertService: AlertService) { }
+  // Permisos de usuarios login
+  public permisos = { all: false };
+
+  // Modal
+  public showModalRecibo = false;
+  public showModalDetallesCheque = false;
+  public showModalDetallesVenta = false;
+
+  // Estado formulario 
+  public estadoFormulario = 'crear';
+
+  // Recibo
+  public idRecibo: string = '';
+  public recibos: any = [];
+  public reciboSeleccionado: any;
+  public descripcion: string = '';
+  public chequeSeleccionado: any;
+
+  // Cheques
+  public relaciones_cheques: any[] = [];
+  public relaciones_ventas: any[] = [];
+
+  // Venta propia
+  public ventaPropia: any = null;
+  public venta_cheques: any[] = [];
+  public productos: any[] = [];
+
+  // Paginacion
+  public paginaActual: number = 1;
+  public cantidadItems: number = 10;
+
+  // Otros
+  public origen = 'cobro';
+
+  // Filtrado
+  public filtro = {
+    activo: 'true',
+    parametro: '',
+    parametroProducto: ''
+  }
+
+  // Ordenar
+  public ordenar = {
+    direccion: -1,  // Asc (1) | Desc (-1)
+    columna: 'createdAt'
+  }
+
+  constructor(
+    private recibosService: RecibosCobroService,
+    private chequesService: RecibosCobroChequeService,
+    private recibosVentasService: RecibosCobroVentaService,
+    private authService: AuthService,
+    private ventasPropiasService: VentasPropiasService,
+    private ventasPropiasChequesService: VentasPropiasChequesService,
+    private ventasPropiasProductosService: VentasPropiasProductosService,
+    private alertService: AlertService,
+    private dataService: DataService
+  ) { }
 
   ngOnInit(): void {
+    this.dataService.ubicacionActual = 'Dashboard - Recibos de cobro';
+    this.permisos.all = this.permisosUsuarioLogin();
+    this.alertService.loading();
+    this.listarRecibos();
+  }
+
+  // Asignar permisos de usuario login
+  permisosUsuarioLogin(): boolean {
+    return this.authService.usuario.permisos.includes('COBROS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
+  }
+
+  // Traer datos de recibo de cobro
+  getRecibo(recibo: any): void {
+    this.alertService.loading();
+    this.idRecibo = recibo._id;
+    this.reciboSeleccionado = recibo;
+    this.recibosService.getRecibo(recibo._id).subscribe(({ recibo }) => {
+      this.descripcion = recibo.descripcion;
+      this.alertService.close();
+    }, ({ error }) => {
+      this.alertService.errorApi(error);
+    });
+  }
+
+  // Listar recibos
+  listarRecibos(): void {
+    const parametros = {
+      direccion: this.ordenar.direccion,
+      columna: this.ordenar.columna
+    }
+    this.recibosService.listarRecibos(parametros)
+      .subscribe(({ recibos }) => {
+        this.recibos = recibos;
+        this.alertService.close();
+      }, (({ error }) => {
+        this.alertService.errorApi(error.msg);
+      }));
+  }
+
+  // Nuevo recibo
+  nuevoRecibo(): void {
+
+    // Verificacion: Descripción vacia
+    if (this.descripcion.trim() === "") {
+      this.alertService.info('Debes colocar una descripción');
+      return;
+    }
+
+    this.alertService.loading();
+
+    const data = {
+      descripcion: this.descripcion,
+      creatorUser: this.authService.usuario.userId,
+      updatorUser: this.authService.usuario.userId,
+    }
+
+    this.recibosService.nuevoRecibo(data).subscribe(() => {
+      this.listarRecibos();
+    }, ({ error }) => {
+      this.alertService.errorApi(error.message);
+    });
+
+  }
+
+  // Actualizar recibo
+  actualizarRecibo(): void {
+
+    // Verificacion: Descripción vacia
+    if (this.descripcion.trim() === "") {
+      this.alertService.info('Debes colocar una descripción');
+      return;
+    }
+
+    this.alertService.loading();
+
+    const data = {
+      descripcion: this.descripcion,
+      updatorUser: this.authService.usuario.userId,
+    }
+
+    this.recibosService.actualizarRecibo(this.idRecibo, data).subscribe(() => {
+      this.listarRecibos();
+    }, ({ error }) => {
+      this.alertService.errorApi(error.message);
+    });
+  }
+
+  // Actualizar estado Activo/Inactivo
+  actualizarEstado(recibo: any): void {
+
+    const { _id, activo } = recibo;
+
+    if (!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
+
+    this.alertService.question({ msg: '¿Quieres actualizar el estado?', buttonText: 'Actualizar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.recibosService.actualizarRecibo(_id, { activo: !activo }).subscribe(() => {
+            this.alertService.loading();
+            this.listarRecibos();
+          }, ({ error }) => {
+            this.alertService.close();
+            this.alertService.errorApi(error.message);
+          });
+        }
+      });
+
+  }
+
+  // Abrir detalles de recibo
+  abrirDetallesRecibo(recibo: any): void {
+
+    // Se obtienen las relaciones RECIBO - CHEQUE
+    this.chequesService.listarRelaciones({ recibo_cobro: recibo._id }).subscribe({
+      next: ({ relaciones }) => {
+        this.relaciones_cheques = relaciones;
+
+        // Se obtienen las relaciones RECIBO - VENTAS
+        this.recibosVentasService.listarRelaciones({ recibo_cobro: recibo._id }).subscribe({
+          next: ({ relaciones }) => {
+            this.relaciones_ventas = relaciones;
+            this.reciboSeleccionado = recibo;
+            this.showModalRecibo = true;
+          }, error: ({ error }) => this.alertService.errorApi(error.message)
+        })
+
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
+  }
+
+  abrirDetallesCheque(cheque: any, origen: any): void {
+    
+    this.chequeSeleccionado = cheque;
+    this.origen = origen;
+
+    if(origen === 'cobro'){
+      this.showModalRecibo = false;
+      this.showModalDetallesCheque = true;
+    }else if(origen === 'venta'){
+      this.showModalDetallesVenta = false;
+      this.showModalDetallesCheque = true;
+    }
+
+  }
+
+  // Cerrar el detalles del cheque
+  cerrarDetallesCheque(): void {
+
+    if(this.origen === 'cobro'){
+      this.showModalRecibo = true;
+      this.showModalDetallesCheque = false;
+    }else if(this.origen === 'venta'){
+      this.showModalDetallesVenta = true;
+      this.showModalDetallesCheque = false;
+    }
+
+  }
+
+  // Abrir detalles de venta
+  abrirDetallesVenta(idVenta: string): void {
+
+    this.alertService.loading();
+
+    this.ventasPropiasService.getVenta(idVenta).subscribe({
+      next: ({ venta }) => {
+        this.ventaPropia = venta;
+
+        this.ventasPropiasProductosService.listarProductos({ venta: venta._id }).subscribe({
+          next: ({ productos }) => {
+            this.productos = productos;
+
+            this.ventasPropiasChequesService.listarRelaciones({ venta_propia: venta._id }).subscribe({
+              next: ({ relaciones }) => {
+
+                this.venta_cheques = relaciones;
+                this.showModalRecibo = false;
+                this.showModalDetallesVenta = true;
+                this.alertService.close();
+
+              }, error: ({ error }) => this.alertService.errorApi(error.message)
+            })
+
+          }, error: ({ error }) => this.alertService.errorApi(error.message)
+        })
+
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
+  }
+
+  // Cerrar detalles de venta
+  cerrarDetallesVenta(): void {
+    this.showModalRecibo = true;
+    this.showModalDetallesVenta = false;   
+  }
+
+  // Generar PDF
+  generarPDF(venta: any): void {
+    this.alertService.loading();
+    this.ventasPropiasService.generarPDF({ venta: venta._id }).subscribe({
+      next: () => {
+        window.open(`${base_url}/pdf/venta-propia.pdf`, '_blank');
+        this.alertService.close();
+      },
+      error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+  }
+
+  // Reiniciando formulario
+  reiniciarFormulario(): void {
+    this.descripcion = '';
+  }
+
+  // Filtrar Activo/Inactivo
+  filtrarActivos(activo: any): void {
+    this.paginaActual = 1;
+    this.filtro.activo = activo;
+  }
+
+  // Filtrar por Parametro
+  filtrarParametro(parametro: string): void {
+    this.paginaActual = 1;
+    this.filtro.parametro = parametro;
+  }
+
+  // Ordenar por columna
+  ordenarPorColumna(columna: string) {
+    this.ordenar.columna = columna;
+    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
+    this.alertService.loading();
+    this.listarRecibos();
   }
 
 

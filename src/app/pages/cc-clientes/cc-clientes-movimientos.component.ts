@@ -5,6 +5,9 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CcClientesMovimientosService } from 'src/app/services/cc-clientes-movimientos.service';
 import { CcClientesService } from 'src/app/services/cc-clientes.service';
 import { DataService } from 'src/app/services/data.service';
+import { RecibosCobroChequeService } from 'src/app/services/recibos-cobro-cheque.service';
+import { RecibosCobroVentaService } from 'src/app/services/recibos-cobro-venta.service';
+import { RecibosCobroService } from 'src/app/services/recibos-cobro.service';
 import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
 import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
@@ -26,6 +29,7 @@ export class CcClientesMovimientosComponent implements OnInit {
   public showModalDetalles = false;
   public showModalDetallesVenta = false;
   public showModalDetallesCheque = false;
+  public showModalDetallesCobro = false;
 
   // Estado formulario 
   public estadoFormulario = 'crear';
@@ -54,6 +58,14 @@ export class CcClientesMovimientosComponent implements OnInit {
   public relaciones: any[];  // Relaciones venta_propia = cheques
   public chequeSeleccionado: any;
 
+  // Cobros
+  public recibo_cobro: any = null;
+  public recibo_ventas: any[] = [];
+  public recibo_cheques: any[] = [];
+
+  // Otros
+  public origen = 'cobro';
+
   // Filtrado
   public filtro = {
     activo: 'true',
@@ -70,6 +82,9 @@ export class CcClientesMovimientosComponent implements OnInit {
   constructor(
              private movimientosService: CcClientesMovimientosService,
              private activatedRoute: ActivatedRoute,
+             private cobrosService: RecibosCobroService,
+             private recibosCobroVentaService: RecibosCobroVentaService,
+             private recibosCobroChequeService: RecibosCobroChequeService,
              private cuentaCorrienteService: CcClientesService,
              private ventasPropiasService: VentasPropiasService,
              private ventasPropiasChequesService: VentasPropiasChequesService,
@@ -281,28 +296,129 @@ export class CcClientesMovimientosComponent implements OnInit {
   }
 
   // Abrir detalles de venta
-  abrirDetallesVenta(): void {
-    this.showModalDetalles = false;
-    this.showModalDetallesVenta = true;
+  abrirDetallesVenta(origen: string, venta_propia = ''): void {
+
+    this.alertService.loading();
+
+    this.origen = origen;
+
+    this.ventasPropiasService.getVenta(venta_propia !== '' ? venta_propia : this.movimientoSeleccionado.venta_propia).subscribe({
+      next: ({ venta }) => {
+        this.ventaPropia = venta;
+
+        this.ventasPropiasProductosService.listarProductos({ venta: venta._id }).subscribe({
+          next: ({ productos }) => {
+            this.productos = productos;
+
+            this.ventasPropiasChequesService.listarRelaciones({ venta_propia: venta._id }).subscribe({
+              next: ({ relaciones }) => {
+
+                this.relaciones = relaciones;
+                this.showModalDetalles = false;
+                this.showModalDetallesCobro = false;
+                this.showModalDetallesVenta = true;
+                this.alertService.close();
+
+              }, error: ({ error }) => this.alertService.errorApi(error.message)
+            })
+
+          }, error: ({ error }) => this.alertService.errorApi(error.message)
+        })
+
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
   }
 
   // Cerrar detalles de venta
   cerrarDetallesVenta(): void {
-    this.showModalDetallesVenta = false;
-    this.showModalDetalles = true;
+
+    if(this.origen === ''){
+      this.showModalDetallesVenta = false;
+      this.showModalDetalles = true;
+    }else if(this.origen === 'cobro'){
+      this.showModalDetallesVenta = false;
+      this.showModalDetallesCobro = true;      
+    }
+
   }
 
   // Abrir detalles de cheque
-  abrirDetallesCheque(cheque: any): void {
+  abrirDetallesCheque(cheque: any, origen: string): void {
+
+    console.log(origen)
+
     this.chequeSeleccionado = cheque;
-    this.showModalDetallesVenta = false;
-    this.showModalDetallesCheque = true;
+    this.origen = origen;
+
+    if (this.origen === '') {
+
+      this.showModalDetallesVenta = false;
+      this.showModalDetallesCheque = true;
+
+    } else if (this.origen === 'cobro') {
+
+      this.showModalDetallesCobro = false;
+      this.showModalDetallesCheque = true;
+
+    }
   }
 
   // Cerrar el detalles del cheque
   cerrarDetallesCheque(): void {
-    this.showModalDetallesCheque = false;
-    this.showModalDetallesVenta = true;
+
+    if (this.origen === '') {
+
+      this.showModalDetallesVenta = true;
+      this.showModalDetallesCheque = false;
+
+    } else if (this.origen === 'cobro') {
+
+      this.showModalDetallesCobro = true;
+      this.showModalDetallesCheque = false;
+
+    }
+
+  }
+
+  // Abrir detalles de cobro
+  abrirDetallesCobro(): void {
+
+    this.alertService.loading();
+
+    // RECIBO DE COBRO
+    this.cobrosService.getRecibo(this.movimientoSeleccionado.recibo_cobro).subscribe({
+      next: ({ recibo }) => {
+        this.recibo_cobro = recibo;
+
+        // RELACION -> RECIBO - VENTAS
+        this.recibosCobroVentaService.listarRelaciones({ recibo_cobro: this.recibo_cobro._id }).subscribe({
+          next: ({ relaciones }) => {
+            this.recibo_ventas = relaciones;
+
+            // RELACION -> RECIBO - CHEQUES
+            this.recibosCobroChequeService.listarRelaciones({ recibo_cobro: this.recibo_cobro._id }).subscribe({
+              next: ({ relaciones }) => {
+                this.recibo_cheques = relaciones;
+                console.log(relaciones);
+                this.showModalDetalles = false;
+                this.showModalDetallesCobro = true;
+                this.alertService.close();
+              }, error: ({ error }) => this.alertService.errorApi(error.message)
+            })
+
+          }, error: ({ error }) => this.alertService.errorApi(error.message)
+        })
+
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
+  }
+
+  // Cerrar detalles de cobro
+  cerrarDetallesCobro(): void {
+    this.showModalDetallesCobro = false;
+    this.showModalDetalles = true;
   }
 
   // Filtrar Activo/Inactivo

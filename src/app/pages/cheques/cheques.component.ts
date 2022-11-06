@@ -3,6 +3,7 @@ import { add, format } from 'date-fns';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { BancosService } from 'src/app/services/bancos.service';
+import { CajasService } from 'src/app/services/cajas.service';
 import { ChequesService } from 'src/app/services/cheques.service';
 import { DataService } from 'src/app/services/data.service';
 
@@ -14,166 +15,174 @@ import { DataService } from 'src/app/services/data.service';
 })
 export class ChequesComponent implements OnInit {
 
- // Permisos de usuarios login
- public permisos = { all: false };
+  // Permisos de usuarios login
+  public permisos = { all: false };
 
- // Total en cheques activos
- public total: number = 0;
+  // Total en cheques activos
+  public total: number = 0;
 
- // Bancos
- public bancos: any[] = [];
+  // Bancos
+  public bancos: any[] = [];
 
- // Modal
- public showModalCheque = false;
+  // Modal
+  public showModalCheque = false;
+  public showModalCobrandoCheque = false;
 
- // Estado formulario 
- public estadoFormulario = 'crear';
+  // Estado formulario 
+  public estadoFormulario = 'crear';
 
- // Cheque
- public idCheque: string = '';
- public cheques: any = [];
- public chequeSeleccionado: any;
+  // Cheque
+  public idCheque: string = '';
+  public cheques: any = [];
+  public chequeSeleccionado: any;
 
- // Date
- public nro_cheque: string = '';
- public importe: number = null;
- public emisor: string = '';
- public banco: string = '';
- public fecha_cobro: string = '';
+  // Date
+  public nro_cheque: string = '';
+  public importe: number = null;
+  public emisor: string = '';
+  public banco: string = '';
+  public fecha_cobro: string = '';
 
- // Paginacion
- public paginaActual: number = 1;
- public cantidadItems: number = 10;
+  // Cajas
+  public cajaSeleccionada: string = '';
+  public cajas: any[] = [];
 
- // Filtrado
- public filtro = {
-   activo: 'true',
-   parametro: ''
- }
+  // Paginacion
+  public paginaActual: number = 1;
+  public cantidadItems: number = 10;
 
- // Ordenar
- public ordenar = {
-   direccion: 1,  // Asc (1) | Desc (-1)
-   columna: 'fecha_cobro'
- }
+  // Filtrado
+  public filtro = {
+    activo: 'Creado',
+    parametro: ''
+  }
 
- constructor(private chequesService: ChequesService,
-             private authService: AuthService,
-             private bancosService: BancosService,
-             private alertService: AlertService,
-             private dataService: DataService) { }
+  // Ordenar
+  public ordenar = {
+    direccion: 1,  // Asc (1) | Desc (-1)
+    columna: 'fecha_cobro'
+  }
 
-   ngOnInit(): void {
-     this.dataService.ubicacionActual = 'Dashboard - Cheques'; 
-     this.permisos.all = this.permisosUsuarioLogin();
-     this.alertService.loading();
-     this.cargaInicial();
-   }
+  constructor(private chequesService: ChequesService,
+    private authService: AuthService,
+    private cajasService: CajasService,
+    private bancosService: BancosService,
+    private alertService: AlertService,
+    private dataService: DataService) { }
 
-   cargaInicial(): void {
+  ngOnInit(): void {
+    this.dataService.ubicacionActual = 'Dashboard - Cheques';
+    this.permisos.all = this.permisosUsuarioLogin();
+    this.alertService.loading();
+    this.cargaInicial();
+  }
+
+  cargaInicial(): void {
     this.alertService.loading();
     this.bancosService.listarBancos().subscribe({
-      next: ({bancos}) => {
+      next: ({ bancos }) => {
         this.bancos = bancos;
         this.listarCheques();
       }, error: ({ error }) => this.alertService.errorApi(error.message)
-    }) 
-   }
+    })
+  }
 
-   // Asignar permisos de usuario login
-   permisosUsuarioLogin(): boolean {
-     return this.authService.usuario.permisos.includes('TESORERIA_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
-   }
+  // Asignar permisos de usuario login
+  permisosUsuarioLogin(): boolean {
+    return this.authService.usuario.permisos.includes('TESORERIA_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
+  }
 
-   // Abrir modal
-   abrirModal(estado: string, cheque: any = null): void {
-     window.scrollTo(0,0);
-     this.nro_cheque = '';
-     this.importe = null;
-     this.emisor = '';
-     this.banco = '';
-     this.fecha_cobro = '';
-     this.idCheque = '';
-     
-     if(estado === 'editar') this.getCheque(cheque);
-     else this.showModalCheque = true;
+  // Abrir modal
+  abrirModal(estado: string, cheque: any = null): void {
+    window.scrollTo(0, 0);
+    this.nro_cheque = '';
+    this.importe = null;
+    this.emisor = '';
+    this.banco = '';
+    this.fecha_cobro = '';
+    this.idCheque = '';
 
-     this.estadoFormulario = estado;  
-   }
+    if (estado === 'editar') this.getCheque(cheque);
+    else this.showModalCheque = true;
 
-   // Traer datos de cheque
-   getCheque(cheque: any): void {
-     this.alertService.loading();
-     this.idCheque = cheque._id;
-     this.chequeSeleccionado = cheque;
-     this.chequesService.getCheque(cheque._id).subscribe(({cheque}) => {
-       this.nro_cheque = cheque.nro_cheque;
-       this.importe = cheque.importe;
-       this.emisor = cheque.emisor;
-       this.banco = cheque.banco;
-       this.fecha_cobro = format(new Date(cheque.fecha_cobro),'yyyy-MM-dd');
-       this.alertService.close();
-       this.showModalCheque = true;
-     },({error})=>{
-       this.alertService.errorApi(error);
-     });
-   }
+    this.estadoFormulario = estado;
+  }
 
-   // Listar cheques
-   listarCheques(): void {
-     const parametros = {
-       direccion: this.ordenar.direccion,
-       columna: this.ordenar.columna
-     }
-     this.chequesService.listarCheques(parametros)
-     .subscribe( ({ cheques }) => {
-       this.cheques = cheques;
-       this.showModalCheque = false;
-       this.calcularTotal();
-       this.alertService.close();
-     }, (({error}) => {
-       this.alertService.errorApi(error.msg);
-     }));
-   }
+  // Traer datos de cheque
+  getCheque(cheque: any): void {
+    this.alertService.loading();
+    this.idCheque = cheque._id;
+    this.chequeSeleccionado = cheque;
+    this.chequesService.getCheque(cheque._id).subscribe(({ cheque }) => {
+      this.chequeSeleccionado = cheque;
+      this.nro_cheque = cheque.nro_cheque;
+      this.importe = cheque.importe;
+      this.emisor = cheque.emisor;
+      this.banco = cheque.banco._id;
+      this.fecha_cobro = format(new Date(cheque.fecha_cobro), 'yyyy-MM-dd');
+      this.alertService.close();
+      this.showModalCheque = true;
+    }, ({ error }) => {
+      this.alertService.errorApi(error);
+    });
+  }
 
-   // Calcular total
-   calcularTotal(): void {
+  // Listar cheques
+  listarCheques(): void {
+    const parametros = {
+      direccion: this.ordenar.direccion,
+      columna: this.ordenar.columna
+    }
+    this.chequesService.listarCheques(parametros)
+      .subscribe(({ cheques }) => {
+        this.cheques = cheques;
+        this.showModalCheque = false;
+        this.showModalCobrandoCheque = false;
+        this.calcularTotal();
+        this.alertService.close();
+      }, (({ error }) => {
+        this.alertService.errorApi(error.msg);
+      }));
+  }
+
+  // Calcular total
+  calcularTotal(): void {
     let totalTMP = 0;
-    this.cheques.map( cheque => {
-      if(cheque.activo) totalTMP += cheque.importe;
+    this.cheques.map(cheque => {
+      if (cheque.activo) totalTMP += cheque.importe;
     })
     this.total = totalTMP
-   }
+  }
 
-   // Nuevo cheque
-   nuevoCheque(): void {
+  // Nuevo cheque
+  nuevoCheque(): void {
 
     // Verificacion: Numero de cheque vacio
-    if(this.nro_cheque.trim() === ""){
+    if (this.nro_cheque.trim() === "") {
       this.alertService.info('Debes colocar un número de cheque');
       return;
     }
-    
+
     // Verificacion: importe vacio
-    if(!this.importe || this.importe < 0){
+    if (!this.importe || this.importe < 0) {
       this.alertService.info('Debes colocar un importe válido');
       return;
     }
 
     // Verificacion: emisor vacio
-    if(this.emisor.trim() === ''){
+    if (this.emisor.trim() === '') {
       this.alertService.info('Debes colocar un emisor');
       return;
     }
 
     // Verificacion: banco vacio
-    if(this.banco.trim() === ''){
+    if (this.banco.trim() === '') {
       this.alertService.info('Debes colocar un banco');
       return;
     }
 
     // Verificacion: fecha de cobro vacia
-    if(this.fecha_cobro.trim() === ''){
+    if (this.fecha_cobro.trim() === '') {
       this.alertService.info('Debes colocar una fecha de cobro');
       return;
     }
@@ -192,41 +201,41 @@ export class ChequesComponent implements OnInit {
 
     this.chequesService.nuevoCheque(data).subscribe(() => {
       this.listarCheques();
-    },({error})=>{
-      this.alertService.errorApi(error.message);  
+    }, ({ error }) => {
+      this.alertService.errorApi(error.message);
     });
-    
-   }
 
-   // Actualizar cheque
-   actualizarCheque(): void {
+  }
 
-        // Verificacion: Numero de cheque vacio
-    if(this.nro_cheque.trim() === ""){
+  // Actualizar cheque
+  actualizarCheque(): void {
+
+    // Verificacion: Numero de cheque vacio
+    if (this.nro_cheque.trim() === "") {
       this.alertService.info('Debes colocar un número de cheque');
       return;
     }
-    
+
     // Verificacion: importe vacio
-    if(!this.importe || this.importe < 0){
+    if (!this.importe || this.importe < 0) {
       this.alertService.info('Debes colocar un importe válido');
       return;
     }
 
     // Verificacion: emisor vacio
-    if(this.emisor.trim() === ''){
+    if (this.emisor.trim() === '') {
       this.alertService.info('Debes colocar un emisor');
       return;
     }
 
     // Verificacion: banco vacio
-    if(this.banco.trim() === ''){
+    if (this.banco.trim() === '') {
       this.alertService.info('Debes colocar un banco');
       return;
     }
 
     // Verificacion: fecha de cobro vacia
-    if(this.fecha_cobro.trim() === ''){
+    if (this.fecha_cobro.trim() === '') {
       this.alertService.info('Debes colocar una fecha de cobro');
       return;
     }
@@ -244,73 +253,115 @@ export class ChequesComponent implements OnInit {
 
     this.chequesService.actualizarCheque(this.idCheque, data).subscribe(() => {
       this.listarCheques();
-    },({error})=>{
+    }, ({ error }) => {
       this.alertService.errorApi(error.message);
     });
-   
+
   }
 
   // Actualizar estado Activo/Inactivo
   actualizarEstado(cheque: any): void {
-    
+
     const { _id, activo } = cheque;
-    
-    if(!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
+
+    if (!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
 
     this.alertService.question({ msg: '¿Quieres actualizar el estado?', buttonText: 'Actualizar' })
-        .then(({isConfirmed}) => {  
-          if (isConfirmed) {
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.chequesService.actualizarCheque(_id, { activo: !activo }).subscribe(() => {
             this.alertService.loading();
-            this.chequesService.actualizarCheque(_id, {activo: !activo}).subscribe(() => {
-              this.alertService.loading();
-              this.listarCheques();
-            }, ({error}) => {
-              this.alertService.close();
-              this.alertService.errorApi(error.message);
-            });
-          }
-        });
+            this.listarCheques();
+          }, ({ error }) => {
+            this.alertService.close();
+            this.alertService.errorApi(error.message);
+          });
+        }
+      });
 
   }
 
   // Eliminar cheque
   eliminarCheque(cheque: any): void {
-  
-    if(!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
+
+    if (!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
 
     this.alertService.question({ msg: '¿Quieres eliminar este cheque?', buttonText: 'Eliminar' })
-        .then(({isConfirmed}) => {  
-          if (isConfirmed) {
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.chequesService.eliminarCheque(cheque._id).subscribe(() => {
             this.alertService.loading();
-            this.chequesService.eliminarCheque(cheque._id).subscribe(() => {
-              this.alertService.loading();
-              this.listarCheques();
-            }, ({error}) => {
-              this.alertService.close();
-              this.alertService.errorApi(error.message);
-            });
-          }
-        });
+            this.listarCheques();
+          }, ({ error }) => {
+            this.alertService.close();
+            this.alertService.errorApi(error.message);
+          });
+        }
+      });
 
   }
 
+  // Cobrar cheque
+  cobrarCheque(): void {
+
+    // Verificacion: Caja destino no seleccionada
+    if(this.cajaSeleccionada.trim() === ''){
+      this.alertService.info('Debe seleccionar una caja destino');
+      return;
+    }
+
+    this.alertService.question({ msg: 'Cobrando cheque', buttonText: 'Cobrar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.chequesService.actualizarCheque(this.chequeSeleccionado._id, {
+            caja: this.cajaSeleccionada,
+            estado: 'Cobrado', 
+            activo: false,
+            updatorUser: this.authService.usuario.userId
+          }).subscribe({
+            next: () => {
+              this.listarCheques();
+            }, error: ({error}) => this.alertService.errorApi(error.message)
+        })
+      }
+    });
+
+  }
+
+  // Abrir modal cobrando cheque
+  abrirModalCobrandoCheque(cheque: any){
+    this.alertService.loading();
+    this.cajaSeleccionada = '';
+    this.chequeSeleccionado = cheque;
+    this.cajasService.listarCajas().subscribe({
+      next: ({cajas}) => {
+        this.cajas = cajas.filter( caja => caja.activo && caja._id !== '222222222222222222222222' );
+        this.chequeSeleccionado = cheque;
+        this.showModalCobrandoCheque = true;
+        this.alertService.close();
+      },error: ({error}) => this.alertService.errorApi(error.message)
+    })
+  }
 
   // Filtrar Activo/Inactivo
-  filtrarActivos(activo: any): void{
+  filtrarActivos(activo: any): void {
     this.paginaActual = 1;
     this.filtro.activo = activo;
   }
 
   // Filtrar por Parametro
-  filtrarParametro(parametro: string): void{
+  filtrarParametro(parametro: string): void {
     this.paginaActual = 1;
     this.filtro.parametro = parametro;
   }
 
   // Ordenar por columna
-  ordenarPorColumna(columna: string){
+  ordenarPorColumna(columna: string) {
     this.ordenar.columna = columna;
-    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1; 
+    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
     this.alertService.loading();
     this.listarCheques();
   }
