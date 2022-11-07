@@ -37,7 +37,8 @@ export class RecibosCobroVentaService {
       params: {
         direccion: parametros?.direccion || 1,
         columna: parametros?.columna || 'descripcion',
-        recibo_cobro: parametros?.recibo_cobro || ''
+        recibo_cobro: parametros?.recibo_cobro || '',
+        venta_propia: parametros?.venta_propia || '',
       },
       headers: this.getToken
     });

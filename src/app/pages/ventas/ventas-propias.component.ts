@@ -3,6 +3,7 @@ import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { ProductosService } from 'src/app/services/productos.service';
+import { RecibosCobroVentaService } from 'src/app/services/recibos-cobro-venta.service';
 import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
 import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
@@ -59,6 +60,9 @@ export class VentasPropiasComponent implements OnInit {
   public showProductos = false;
   public todosProductos: any[];
 
+  // Recibos de cobro
+  public recibosCobro: any[] = [];
+
   // Paginacion
   public paginaActual: number = 1;
   public cantidadItems: number = 10;
@@ -70,6 +74,7 @@ export class VentasPropiasComponent implements OnInit {
   // Filtrado
   public filtro = {
     activo: 'true',
+    estado: '',
     parametro: '',
     parametroProductos: ''
   }
@@ -87,6 +92,7 @@ export class VentasPropiasComponent implements OnInit {
   public cantidadItemsProductos: number = 10;
 
   constructor(private ventasPropiasService: VentasPropiasService,
+              private recibosCobroVentaService: RecibosCobroVentaService,
               private ventasPropiasChequesService: VentasPropiasChequesService,
               private productosService: ProductosService,
               private ventasPropiasProductosService: VentasPropiasProductosService,
@@ -317,11 +323,22 @@ export class VentasPropiasComponent implements OnInit {
         this.ventasPropiasChequesService.listarRelaciones({ venta_propia: venta._id }).subscribe({
           next: ({relaciones}) => {
             this.cheques_venta = relaciones;
-            console.log(relaciones);
-            window.scroll(0,0);
-            this.calcularPagoTotal();
-            this.showModalEditarVenta = true;
-            this.alertService.close();
+
+            // Se obtienen los recibos de cobro
+            this.recibosCobroVentaService.listarRelaciones({ venta_propia: venta._id }).subscribe({
+              next: ({ relaciones }) => {
+
+                console.log(relaciones);
+
+                this.recibosCobro = relaciones;
+
+                window.scroll(0,0);
+                this.calcularPagoTotal();
+                this.showModalEditarVenta = true;
+                this.alertService.close();
+              }, error: ({error}) => this.alertService.errorApi(error.message)
+            })
+
           },
           error: ({error}) => this.alertService.errorApi(error.message)
         })
