@@ -101,7 +101,7 @@ export class VentasPropiasComponent implements OnInit {
               private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.ubicacionActual = 'Dashboard - Ventas directas'; 
+    this.dataService.ubicacionActual = 'Dashboard - Ventas propias'; 
     this.permisos.all = this.permisosUsuarioLogin();
     this.alertService.loading();
     this.listarVentas();
