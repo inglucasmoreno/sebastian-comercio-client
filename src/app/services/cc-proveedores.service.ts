@@ -36,8 +36,12 @@ export class CcProveedoresService {
   listarCuentasCorrientes(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/cc-proveedores`, {
       params: {
+        columna: parametros?.columna || 'descripcion',
         direccion: parametros?.direccion || 1,
-        columna: parametros?.columna || 'descripcion'
+        desde: parametros?.desde || 0,
+        registerpp: parametros?.cantidadItems || 100000,
+        activo: parametros?.activo || '',
+        parametro: parametros?.parametro || '',
       },
       headers: this.getToken
     });

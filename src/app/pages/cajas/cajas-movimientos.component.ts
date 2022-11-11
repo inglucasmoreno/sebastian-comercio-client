@@ -52,8 +52,10 @@ export class CajasMovimientosComponent implements OnInit {
   public monto: number = null;
 
   // Paginacion
+  public totalItems: number;
   public paginaActual: number = 1;
   public cantidadItems: number = 10;
+  public desde: number = 0;
 
   // Venta propia
   public ventaPropia: any;
@@ -154,11 +156,15 @@ export class CajasMovimientosComponent implements OnInit {
     const parametros = {
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
+      desde: this.desde,
+      cantidadItems: this.cantidadItems,
+      parametro: this.filtro.parametro,
       caja: this.idCaja
     }
     this.movimientosService.listarMovimientos(parametros)
-      .subscribe(({ movimientos }) => {
+      .subscribe(({ movimientos, totalItems }) => {
         this.movimientos = movimientos;
+        this.totalItems = totalItems;
         this.showModalMovimiento = false;
         this.alertService.close();
       }, (({ error }) => {
@@ -425,6 +431,20 @@ export class CajasMovimientosComponent implements OnInit {
   ordenarPorColumna(columna: string) {
     this.ordenar.columna = columna;
     this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
+    this.alertService.loading();
+    this.listarMovimientos();
+  }
+
+  // Cambiar cantidad de items
+  cambiarCantidadItems(): void {
+    this.paginaActual = 1
+    this.cambiarPagina(1);
+  }
+
+  // Paginacion - Cambiar pagina
+  cambiarPagina(nroPagina): void {
+    this.paginaActual = nroPagina;
+    this.desde = (this.paginaActual - 1) * this.cantidadItems;
     this.alertService.loading();
     this.listarMovimientos();
   }

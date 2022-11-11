@@ -39,7 +39,7 @@ export class ProductosService {
         columna: parametros?.columna || 'descripcion',
         direccion: parametros?.direccion || 1,
         desde: parametros?.desde || 0,
-        registerpp: parametros?.registerpp || 10,
+        registerpp: parametros?.cantidadItems || 100000,
         activo: parametros?.activo || '',
         parametro: parametros?.parametro || '',
         alerta_stock: parametros?.alerta_stock || false   

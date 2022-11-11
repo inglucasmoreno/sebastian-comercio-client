@@ -37,7 +37,11 @@ export class ChequesService {
     return this.http.get(`${base_url}/cheques`, {
       params: {
         direccion: parametros?.direccion || 1,
-        columna: parametros?.columna || 'descripcion'
+        columna: parametros?.columna || 'descripcion',
+        desde: parametros?.desde || 0,
+        registerpp: parametros?.cantidadItems || 100000,
+        estado: parametros?.estado || '',
+        parametro: parametros?.parametro || '',
       },
       headers: this.getToken
     });

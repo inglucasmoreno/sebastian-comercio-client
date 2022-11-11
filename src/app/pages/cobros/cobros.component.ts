@@ -48,8 +48,10 @@ export class CobrosComponent implements OnInit {
   public productos: any[] = [];
 
   // Paginacion
+  public totalItems: number;
   public paginaActual: number = 1;
   public cantidadItems: number = 10;
+  public desde: number = 0;
 
   // Otros
   public origen = 'cobro';
@@ -108,11 +110,16 @@ export class CobrosComponent implements OnInit {
   listarRecibos(): void {
     const parametros = {
       direccion: this.ordenar.direccion,
-      columna: this.ordenar.columna
+      columna: this.ordenar.columna,
+      desde: this.desde,
+      cantidadItems: this.cantidadItems,
+      activo: this.filtro.activo,
+      parametro: this.filtro.parametro
     }
     this.recibosService.listarRecibos(parametros)
-      .subscribe(({ recibos }) => {
+      .subscribe(({ recibos, totalItems }) => {
         this.recibos = recibos;
+        this.totalItems = totalItems;
         this.alertService.close();
       }, (({ error }) => {
         this.alertService.errorApi(error.msg);
@@ -213,14 +220,14 @@ export class CobrosComponent implements OnInit {
   }
 
   abrirDetallesCheque(cheque: any, origen: any): void {
-    
+
     this.chequeSeleccionado = cheque;
     this.origen = origen;
 
-    if(origen === 'cobro'){
+    if (origen === 'cobro') {
       this.showModalRecibo = false;
       this.showModalDetallesCheque = true;
-    }else if(origen === 'venta'){
+    } else if (origen === 'venta') {
       this.showModalDetallesVenta = false;
       this.showModalDetallesCheque = true;
     }
@@ -230,10 +237,10 @@ export class CobrosComponent implements OnInit {
   // Cerrar el detalles del cheque
   cerrarDetallesCheque(): void {
 
-    if(this.origen === 'cobro'){
+    if (this.origen === 'cobro') {
       this.showModalRecibo = true;
       this.showModalDetallesCheque = false;
-    }else if(this.origen === 'venta'){
+    } else if (this.origen === 'venta') {
       this.showModalDetallesVenta = true;
       this.showModalDetallesCheque = false;
     }
@@ -275,7 +282,7 @@ export class CobrosComponent implements OnInit {
   // Cerrar detalles de venta
   cerrarDetallesVenta(): void {
     this.showModalRecibo = true;
-    this.showModalDetallesVenta = false;   
+    this.showModalDetallesVenta = false;
   }
 
   // Generar PDF
@@ -311,6 +318,20 @@ export class CobrosComponent implements OnInit {
   ordenarPorColumna(columna: string) {
     this.ordenar.columna = columna;
     this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
+    this.alertService.loading();
+    this.listarRecibos();
+  }
+
+  // Cambiar cantidad de items
+  cambiarCantidadItems(): void {
+    this.paginaActual = 1
+    this.cambiarPagina(1);
+  }
+
+  // Paginacion - Cambiar pagina
+  cambiarPagina(nroPagina): void {
+    this.paginaActual = nroPagina;
+    this.desde = (this.paginaActual - 1) * this.cantidadItems;
     this.alertService.loading();
     this.listarRecibos();
   }

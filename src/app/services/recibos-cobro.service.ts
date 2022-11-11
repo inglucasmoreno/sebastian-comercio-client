@@ -35,8 +35,12 @@ export class RecibosCobroService {
   listarRecibos(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/recibos-cobro`, {
       params: {
+        columna: parametros?.columna || 'descripcion',
         direccion: parametros?.direccion || 1,
-        columna: parametros?.columna || 'descripcion'
+        desde: parametros?.desde || 0,
+        registerpp: parametros?.cantidadItems || 100000,
+        activo: parametros?.activo || '',
+        parametro: parametros?.parametro || '',
       },
       headers: this.getToken
     });

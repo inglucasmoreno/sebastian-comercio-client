@@ -61,7 +61,7 @@ export class NuevoPresupuestoComponent implements OnInit {
 
   // Presupuesto
   public precio_total = 0;
-  public observacion:string = '';
+  public observacion: string = '';
 
   // Productos
   public productos: any[] = [];
@@ -80,11 +80,17 @@ export class NuevoPresupuestoComponent implements OnInit {
   public desde: number = 0;
   public paginaActualProductos: number = 1;
   public cantidadItemsProductos: number = 10;
-  
+
+  // Paginacion - Clientes
+  public totalItemsClientes: number;
+  public desdeClientes: number = 0;
+  public paginaActualClientes: number = 1;
+  public cantidadItemsClientes: number = 10;
+
   // Filtrado
   public filtro = {
     activo: 'true',
-    parametro: '',
+    parametroCliente: '',
     parametroProductos: ''
   }
 
@@ -95,15 +101,15 @@ export class NuevoPresupuestoComponent implements OnInit {
   }
 
   constructor(private clientesService: ClientesService,
-              private authService: AuthService,
-              private proveedoresService: ProveedoresService,
-              private presupuestosService: PresupuestosService,
-              private productosService: ProductosService,
-              private alertService: AlertService,
-              private dataService: DataService) { }
+    private authService: AuthService,
+    private proveedoresService: ProveedoresService,
+    private presupuestosService: PresupuestosService,
+    private productosService: ProductosService,
+    private alertService: AlertService,
+    private dataService: DataService) { }
 
   ngOnInit(): void {
-    gsap.from('.gsap-contenido', { y:100, opacity: 0, duration: .2 });
+    gsap.from('.gsap-contenido', { y: 100, opacity: 0, duration: .2 });
     this.dataService.ubicacionActual = 'Dashboard - Nuevo presupuesto';
     this.recuperarLocalStorage();
     this.alertService.loading();
@@ -112,7 +118,7 @@ export class NuevoPresupuestoComponent implements OnInit {
         this.proveedores = proveedores;
         this.alertService.close();
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     });
   }
 
@@ -121,10 +127,15 @@ export class NuevoPresupuestoComponent implements OnInit {
     this.alertService.loading();
     this.clientesService.listarClientes({
       direccion: this.ordenar.direccion,
-      columna: this.ordenar.columna
+      columna: this.ordenar.columna,
+      desde: this.desdeClientes,
+      cantidadItems: this.cantidadItemsClientes,
+      parametro: this.filtro.parametroCliente, 
+      activo: true 
     }).subscribe({
-      next: ({ clientes }) => {
+      next: ({ clientes, totalItems }) => {
         this.clientes = clientes;
+        this.totalItemsClientes = totalItems;
         this.alertService.close();
         this.showClientes = true;
       },
@@ -135,18 +146,19 @@ export class NuevoPresupuestoComponent implements OnInit {
   // Listar productos
   listarProductos(): void {
     this.alertService.loading();
-    this.productosService.listarProductos({ 
+    this.productosService.listarProductos({
       desde: this.desde,
       cantidadItems: this.cantidadItems,
-      parametro: this.filtro.parametroProductos, 
-      activo: true }).subscribe({
+      parametro: this.filtro.parametroProductos,
+      activo: true
+    }).subscribe({
       next: ({ productos, totalItems }) => {
         this.totalItems = totalItems;
         this.productos = productos;
         this.alertService.close();
         this.showProductos = true;
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 
@@ -155,7 +167,7 @@ export class NuevoPresupuestoComponent implements OnInit {
     this.cantidad = null;
     this.filtro.parametroProductos = '';
     this.cantidadItemsProductos = 10;
-    this.listarProductos();   
+    this.listarProductos();
   }
 
   // Seleccionar cliente
@@ -167,40 +179,40 @@ export class NuevoPresupuestoComponent implements OnInit {
   }
 
   // Seleccionar producto
-  seleccionarProducto(producto: any): void { 
-    
+  seleccionarProducto(producto: any): void {
+
     this.cantidad = null;
     this.porcentajeAplicado = false;
     this.porcentajes = '';
     this.productoSeleccionado = producto;
-    
+
     // Se verifica si el producto ya esta cargado
     let cargado = false;
     let productoCargado: any;
 
-    this.productosPresupuesto.map( productoMap => { 
-      if(productoMap.producto === producto._id){
+    this.productosPresupuesto.map(productoMap => {
+      if (productoMap.producto === producto._id) {
         cargado = true;
         productoCargado = productoMap;
       }
     });
-    
+
     cargado ? this.precio = productoCargado.precio_unitario : this.precio = producto.precio;
     this.productoCargado = cargado;
 
-  } 
+  }
 
   // Agregar producto al presupuesto
   agregarProducto(): void {
 
     const { _id, descripcion, unidad_medida } = this.productoSeleccionado;
 
-    if(this.cantidad <= 0){
+    if (this.cantidad <= 0) {
       this.alertService.info('Debes colocar una cantidad');
       return;
     }
 
-    if(this.precio <= 0){
+    if (this.precio <= 0) {
       this.alertService.info('Debes colocar un precio');
       return;
     }
@@ -208,16 +220,16 @@ export class NuevoPresupuestoComponent implements OnInit {
     let repetido = false;
 
     // Se determina si el producto ya esta en la lista
-    this.productosPresupuesto.map( producto => {
-      if(producto.producto === this.productoSeleccionado._id){
+    this.productosPresupuesto.map(producto => {
+      if (producto.producto === this.productoSeleccionado._id) {
         producto.cantidad = this.dataService.redondear(producto.cantidad + this.cantidad, 2);
         producto.precio_total = this.dataService.redondear(producto.cantidad * this.precio, 2);
-        repetido = true;  
+        repetido = true;
       }
     });
 
     // No esta repetido - Se agrega a la lista
-    if(!repetido){              
+    if (!repetido) {
 
       const data = {
         producto: _id,
@@ -231,19 +243,19 @@ export class NuevoPresupuestoComponent implements OnInit {
         creatorUser: this.authService.usuario.userId,
         updatorUser: this.authService.usuario.userId
       }
-  
+
       this.productosPresupuesto.unshift(data);
 
       this.filtro.parametroProductos = '';
       this.listarProductos();
-    
+
     }
 
     this.productoSeleccionado = null;
     this.cantidad = null;
 
     this.calcularPrecio();
-  
+
   }
 
   // Actualizar producto
@@ -251,18 +263,18 @@ export class NuevoPresupuestoComponent implements OnInit {
 
     const { descripcion, unidad_medida } = this.productoSeleccionado;
 
-    if(this.cantidad <= 0){
+    if (this.cantidad <= 0) {
       this.alertService.info('Debes colocar una cantidad');
       return;
     }
 
-    if(this.precio <= 0){
+    if (this.precio <= 0) {
       this.alertService.info('Debes colocar un precio');
       return;
     }
 
-    this.productosPresupuesto.map((producto)=>{
-      if(producto.producto  === this.productoSeleccionado.producto){
+    this.productosPresupuesto.map((producto) => {
+      if (producto.producto === this.productoSeleccionado.producto) {
         producto.cantidad = this.cantidad;
         producto.precio_unitario = this.precio;
         producto.precio_total = this.dataService.redondear(this.cantidad * this.precio, 2);
@@ -271,19 +283,19 @@ export class NuevoPresupuestoComponent implements OnInit {
 
     this.showEditarProducto = false;
     this.calcularPrecio();
-  
+
   }
 
   // Eliminar producto de presupuestoh
   eliminarProductoDePresupuesto(): void {
     this.alertService.question({ msg: '¿Quieres eliminar el producto?', buttonText: 'Eliminar' })
-    .then(({isConfirmed}) => {  
-      if (isConfirmed) {
-        this.productosPresupuesto = this.productosPresupuesto.filter( elemento => elemento.producto !== this.productoSeleccionado.producto);
-        this.showEditarProducto = false;
-        this.calcularPrecio();
-      }
-    });
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.productosPresupuesto = this.productosPresupuesto.filter(elemento => elemento.producto !== this.productoSeleccionado.producto);
+          this.showEditarProducto = false;
+          this.calcularPrecio();
+        }
+      });
   }
 
   // Eliminar cliente seleccionado
@@ -309,7 +321,7 @@ export class NuevoPresupuestoComponent implements OnInit {
   // Calcular precio
   calcularPrecio(): void {
     let precioTMP = 0;
-    this.productosPresupuesto.map( producto => {
+    this.productosPresupuesto.map(producto => {
       precioTMP += producto.precio_total
     });
     this.precio_total = precioTMP;
@@ -318,23 +330,23 @@ export class NuevoPresupuestoComponent implements OnInit {
 
   // Regresar a etapa anterior
   regresar(etapaActual: string): void {
-    if(etapaActual === 'clientes') this.etapa = 'tipo_presupuesto';
-    if(etapaActual === 'productos' && this.tipo_presupuesto === 'cliente') this.etapa = 'cliente';
-    if(etapaActual === 'productos' && this.tipo_presupuesto === 'consumidor_final') this.etapa = 'tipo_presupuesto';
+    if (etapaActual === 'clientes') this.etapa = 'tipo_presupuesto';
+    if (etapaActual === 'productos' && this.tipo_presupuesto === 'cliente') this.etapa = 'cliente';
+    if (etapaActual === 'productos' && this.tipo_presupuesto === 'consumidor_final') this.etapa = 'tipo_presupuesto';
     this.almacenamientoLocalStorage();
   }
 
   // Seleccionando tipo de presupuesto
   seleccionarTipoPresupuesto(): void {
-    if(this.tipo_presupuesto === 'consumidor_final') this.etapa = 'productos';
-    if(this.tipo_presupuesto === 'cliente') this.etapa = 'cliente';
+    if (this.tipo_presupuesto === 'consumidor_final') this.etapa = 'productos';
+    if (this.tipo_presupuesto === 'cliente') this.etapa = 'cliente';
     this.almacenamientoLocalStorage();
   }
 
   // Seleccionar cliente
   seleccionarClientePresupuesto(): void {
     const { descripcion, identificacion } = this.clientesForm;
-    if(descripcion === '' || identificacion === ''){
+    if (descripcion === '' || identificacion === '') {
       this.alertService.info('Debe completar los campos obligatorios');
       return;
     }
@@ -344,8 +356,8 @@ export class NuevoPresupuestoComponent implements OnInit {
 
   // Abrir clientes
   abrirModalClientes(): void {
-    this.filtro.parametro = '';
-    this.cantidadItems = 10;
+    this.filtro.parametroCliente = '';
+    this.cantidadItemsClientes = 10;
     this.listarClientes();
   }
 
@@ -353,56 +365,56 @@ export class NuevoPresupuestoComponent implements OnInit {
   crearPresupuesto(): void {
 
     // Verificacion: Productos
-    if(this.productosPresupuesto.length === 0){
+    if (this.productosPresupuesto.length === 0) {
       this.alertService.info('Debes cargar al menos un producto');
       return;
     }
 
     this.alertService.question({ msg: '¿Quieres generar el presupuesto?', buttonText: 'Generar' })
-    .then(({isConfirmed}) => {  
-      if (isConfirmed) {
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
 
-        this.alertService.loading();
+          this.alertService.loading();
 
-        let dataCliente = '';
+          let dataCliente = '';
 
-        // Adaptando cliente
-        if(this.clienteSeleccionado && this.tipo_presupuesto !== 'consumidor_final'){
-          dataCliente = this.clienteSeleccionado._id;
-        }else if(!this.clienteSeleccionado && this.tipo_presupuesto !== 'consumidor_final'){
-          dataCliente = '';
-        }else if(this.tipo_presupuesto === 'consumidor_final'){
-          dataCliente = '000000000000000000000000'
+          // Adaptando cliente
+          if (this.clienteSeleccionado && this.tipo_presupuesto !== 'consumidor_final') {
+            dataCliente = this.clienteSeleccionado._id;
+          } else if (!this.clienteSeleccionado && this.tipo_presupuesto !== 'consumidor_final') {
+            dataCliente = '';
+          } else if (this.tipo_presupuesto === 'consumidor_final') {
+            dataCliente = '000000000000000000000000'
+          }
+
+          const data = {
+            cliente: dataCliente,
+            tipo_presupuesto: this.tipo_presupuesto,
+            descripcion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.descripcion : 'CONSUMIDOR FINAL',
+            observacion: this.observacion,
+            tipo_identificacion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.tipo_identificacion : 'DNI',
+            identificacion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.identificacion : '',
+            direccion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.direccion : '',
+            telefono: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.telefono : '',
+            correo_electronico: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.correo_electronico : '',
+            condicion_iva: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.condicion_iva : 'Consumidor Final',
+            precio_total: this.precio_total,
+            productos: this.productosPresupuesto,
+            creatorUser: this.authService.usuario.userId,
+            updatorUser: this.authService.usuario.userId,
+          };
+
+          this.presupuestosService.nuevoPresupuesto(data).subscribe({
+            next: () => {
+              this.reiniciarValores();
+              this.alertService.success('Presupuesto generado correctamente');
+              window.open(`${base_url}/pdf/presupuesto.pdf`, '_blank');
+            },
+            error: ({ error }) => this.alertService.errorApi(error.message)
+          });
+
         }
-
-        const data = {
-          cliente: dataCliente,
-          tipo_presupuesto: this.tipo_presupuesto,
-          descripcion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.descripcion : 'CONSUMIDOR FINAL',
-          observacion: this.observacion,
-          tipo_identificacion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.tipo_identificacion : 'DNI',
-          identificacion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.identificacion : '',
-          direccion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.direccion : '',
-          telefono: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.telefono : '',
-          correo_electronico: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.correo_electronico : '',
-          condicion_iva: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.condicion_iva : 'Consumidor Final',
-          precio_total: this.precio_total,
-          productos: this.productosPresupuesto,
-          creatorUser: this.authService.usuario.userId,
-          updatorUser: this.authService.usuario.userId,
-        };
-
-        this.presupuestosService.nuevoPresupuesto(data).subscribe({
-          next: () => {
-            this.reiniciarValores();
-            this.alertService.success('Presupuesto generado correctamente');
-            window.open(`${base_url}/pdf/presupuesto.pdf`, '_blank');   
-          },
-          error: ({error}) => this.alertService.errorApi(error.message)
-        });
-
-      }
-    });    
+      });
   }
 
   // Editar producto
@@ -458,7 +470,7 @@ export class NuevoPresupuestoComponent implements OnInit {
     // Filtrado
     this.filtro = {
       activo: 'true',
-      parametro: '',
+      parametroCliente: '',
       parametroProductos: ''
     }
 
@@ -473,20 +485,20 @@ export class NuevoPresupuestoComponent implements OnInit {
   }
 
   // Filtrar Activo/Inactivo
-  filtrarActivos(activo: any): void{
+  filtrarActivos(activo: any): void {
     this.paginaActual = 1;
     this.filtro.activo = activo;
   }
 
   // Filtrar por Parametro
-  filtrarParametro(): void{
+  filtrarParametro(): void {
     this.paginaActual = 1;
   }
 
   // Ordenar por columna
-  ordenarPorColumna(columna: string){
+  ordenarPorColumna(columna: string) {
     this.ordenar.columna = columna;
-    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1; 
+    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
     this.alertService.loading();
     this.listarClientes();
   }
@@ -496,7 +508,7 @@ export class NuevoPresupuestoComponent implements OnInit {
 
     this.precioResguardo = this.precio;
 
-    if(!Number(this.precio)){
+    if (!Number(this.precio)) {
       this.alertService.info('Primero debe colocar un precio');
       return;
     }
@@ -504,35 +516,35 @@ export class NuevoPresupuestoComponent implements OnInit {
     let error = false;
     let precioTMP = this.precio;
     const porcentajesArray = this.porcentajes.trim().split(' ');
-    
-    porcentajesArray.map( porcentaje => {
-      
+
+    porcentajesArray.map(porcentaje => {
+
       const signo = porcentaje.charAt(0);
-      
-      if(signo === '+'){
+
+      if (signo === '+') {
         const valor = Number(porcentaje);
-        if(!valor){
+        if (!valor) {
           this.alertService.info('Formato incorrecto');
           error = true;
         }
-        precioTMP = (1 + (valor/100)) * precioTMP;
-      
-      }else if(signo === '-'){
+        precioTMP = (1 + (valor / 100)) * precioTMP;
+
+      } else if (signo === '-') {
         const valor = Number(porcentaje);
-        if(!valor){
+        if (!valor) {
           this.alertService.info('Formato incorrecto');
           error = true;
         }
-        precioTMP = (1 + (valor/100)) * precioTMP;
-      
-      }else{
+        precioTMP = (1 + (valor / 100)) * precioTMP;
+
+      } else {
         this.alertService.info('Formato incorrecto');
         error = true;
       }
     });
 
-    if(!error){
-      this.precio =this.dataService.redondear(precioTMP, 2);
+    if (!error) {
+      this.precio = this.dataService.redondear(precioTMP, 2);
       this.porcentajeAplicado = true;
     }
 
@@ -540,57 +552,57 @@ export class NuevoPresupuestoComponent implements OnInit {
 
   // Aplicar porcentajes - Todo los productos
   aplicarPorcentajesTotal(): void {
-  
+
     let error = false;
     const porcentajesArray = this.porcentajesTotal.trim().split(' ');
 
     // Verificacion
-    porcentajesArray.map( porcentaje => {
+    porcentajesArray.map(porcentaje => {
       const signo = porcentaje.charAt(0);
-      if(signo === '+'){
+      if (signo === '+') {
         const valor = Number(porcentaje);
-        if(!valor) error = true;
-      }else if(signo === '-'){
+        if (!valor) error = true;
+      } else if (signo === '-') {
         const valor = Number(porcentaje);
-        if(!valor) error = true;
-      }else{
+        if (!valor) error = true;
+      } else {
         error = true;
       }
     });
 
-    if(error){
+    if (error) {
       this.alertService.info('Formato incorrecto');
       return;
     }
 
     this.porcentajeAplicadoTotal = true;
 
-    this.productosPresupuesto.map( producto => {
-      
+    this.productosPresupuesto.map(producto => {
+
       let precioTMP = producto.precio_unitario;
 
-      porcentajesArray.map( porcentaje => {     
+      porcentajesArray.map(porcentaje => {
         const valor = Number(porcentaje);
-        precioTMP = (1 + (valor/100)) * precioTMP; 
+        precioTMP = (1 + (valor / 100)) * precioTMP;
       });
-      
+
       producto.precio_unitario = this.dataService.redondear(precioTMP, 2);
       producto.precio_total = this.dataService.redondear(precioTMP * producto.cantidad, 2);
-    
+
     });
 
     this.calcularPrecio();
-      
+
   }
 
   eliminarPorcentajesTotal(): void {
-    this.productosPresupuesto.map( producto => {
+    this.productosPresupuesto.map(producto => {
       producto.precio_unitario = producto.precio_original;
       producto.precio_total = this.dataService.redondear(producto.precio_original * producto.cantidad, 2);
     });
     this.porcentajesTotal = '';
     this.porcentajeAplicadoTotal = false;
-    this.calcularPrecio();  
+    this.calcularPrecio();
   }
 
   eliminarPorcentaje(): void {
@@ -620,8 +632,8 @@ export class NuevoPresupuestoComponent implements OnInit {
     this.porcentajeAplicadoTotal = localStorage.getItem('porcentajeAplicadoTotal') ? JSON.parse(localStorage.getItem('porcentajeAplicadoTotal')) : false;
     this.etapa = localStorage.getItem('etapa') ? JSON.parse(localStorage.getItem('etapa')) : 'tipo_presupuesto';
     this.productoCargado = localStorage.getItem('productoCargado') ? JSON.parse(localStorage.getItem('productoCargado')) : false;
-    this.clienteSeleccionado = localStorage.getItem('clienteSeleccionado') ? JSON.parse(localStorage.getItem('clienteSeleccionado')) : null;  
-    this.tipo_presupuesto = localStorage.getItem('tipo_presupuesto') ? JSON.parse(localStorage.getItem('tipo_presupuesto')) : 'consumidor_final';  
+    this.clienteSeleccionado = localStorage.getItem('clienteSeleccionado') ? JSON.parse(localStorage.getItem('clienteSeleccionado')) : null;
+    this.tipo_presupuesto = localStorage.getItem('tipo_presupuesto') ? JSON.parse(localStorage.getItem('tipo_presupuesto')) : 'consumidor_final';
     this.clientesForm = localStorage.getItem('clientesForm') ? JSON.parse(localStorage.getItem('clientesForm')) : {
       descripcion: '',
       tipo_identificacion: 'DNI',
@@ -634,6 +646,20 @@ export class NuevoPresupuestoComponent implements OnInit {
     this.productosPresupuesto = localStorage.getItem('productosPresupuesto') ? JSON.parse(localStorage.getItem('productosPresupuesto')) : [];
     this.precio_total = localStorage.getItem('precio_total') ? JSON.parse(localStorage.getItem('precio_total')) : [];
     this.observacion = localStorage.getItem('observacion') ? JSON.parse(localStorage.getItem('observacion')) : '';
+  }
+
+  // Cambiar cantidad de items - Clientes
+  cambiarCantidadItemsClientes(): void {
+    this.paginaActualClientes = 1
+    this.cambiarPaginaClientes(1);
+  }
+
+  // Paginacion - Cambiar pagina - Clientes
+  cambiarPaginaClientes(nroPagina): void {
+    this.paginaActualClientes = nroPagina;
+    this.desdeClientes = (this.paginaActualClientes - 1) * this.cantidadItemsClientes;
+    this.alertService.loading();
+    this.listarClientes();
   }
 
   // Paginacion - Cambiar pagina

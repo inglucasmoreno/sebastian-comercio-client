@@ -14,7 +14,7 @@ import { DataService } from 'src/app/services/data.service';
 })
 export class CcProveedoresMovimientosComponent implements OnInit {
 
-   // Permisos de usuarios login
+  // Permisos de usuarios login
   public permisos = { all: false };
 
   // Modal
@@ -38,8 +38,10 @@ export class CcProveedoresMovimientosComponent implements OnInit {
   public monto: number = null;
 
   // Paginacion
+  public totalItems: number;
   public paginaActual: number = 1;
   public cantidadItems: number = 10;
+  public desde: number = 0;
 
   // Filtrado
   public filtro = {
@@ -54,29 +56,29 @@ export class CcProveedoresMovimientosComponent implements OnInit {
   }
 
   constructor(
-             private movimientosService: CcProveedoresMovimientosService,
-             private activatedRoute: ActivatedRoute,
-             private cuentaCorrienteService: CcProveedoresService,
-             private authService: AuthService,
-             private alertService: AlertService,
-             private dataService: DataService) { }
+    private movimientosService: CcProveedoresMovimientosService,
+    private activatedRoute: ActivatedRoute,
+    private cuentaCorrienteService: CcProveedoresService,
+    private authService: AuthService,
+    private alertService: AlertService,
+    private dataService: DataService) { }
 
   ngOnInit(): void {
     this.dataService.ubicacionActual = 'Dashboard - Cuenta corriente - Registros';
-    this.activatedRoute.params.subscribe(({id}) => { this.idCuentaCorriente = id; });
+    this.activatedRoute.params.subscribe(({ id }) => { this.idCuentaCorriente = id; });
     this.permisos.all = this.permisosUsuarioLogin();
-    this.calculosIniciales(); 
+    this.calculosIniciales();
   }
 
   // Calculos iniciales
   calculosIniciales(): void {
     this.alertService.loading();
     this.cuentaCorrienteService.getCuentaCorriente(this.idCuentaCorriente).subscribe({
-      next: ({cuenta_corriente}) => {
+      next: ({ cuenta_corriente }) => {
         this.cuentaCorriente = cuenta_corriente;
         this.listarMovimientos();
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 
@@ -87,16 +89,16 @@ export class CcProveedoresMovimientosComponent implements OnInit {
 
   // Abrir modal
   abrirModal(estado: string, movimiento: any = null): void {
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
     this.descripcion = '';
     this.tipo = 'Debe';
     this.monto = null;
     this.idMovimiento = '';
-    
-    if(estado === 'editar') this.getMovimiento(movimiento);
+
+    if (estado === 'editar') this.getMovimiento(movimiento);
     else this.showModalMovimiento = true;
 
-    this.estadoFormulario = estado;  
+    this.estadoFormulario = estado;
   }
 
   // Traer datos de movimiento
@@ -108,7 +110,7 @@ export class CcProveedoresMovimientosComponent implements OnInit {
       this.descripcion = movimiento.descripcion;
       this.alertService.close();
       this.showModalMovimiento = true;
-    },({error})=>{
+    }, ({ error }) => {
       this.alertService.errorApi(error);
     });
   }
@@ -121,29 +123,30 @@ export class CcProveedoresMovimientosComponent implements OnInit {
       cc_proveedor: this.idCuentaCorriente
     }
     this.movimientosService.listarMovimientos(parametros)
-    .subscribe( ({ movimientos }) => {
-      this.movimientos = movimientos;
-      this.showModalMovimiento = false;
-      this.alertService.close();
-    }, (({error}) => {
-      this.alertService.errorApi(error.msg);
-    }));
+      .subscribe(({ movimientos, totalItems }) => {
+        this.movimientos = movimientos;
+        this.totalItems = totalItems;
+        this.showModalMovimiento = false;
+        this.alertService.close();
+      }, (({ error }) => {
+        this.alertService.errorApi(error.msg);
+      }));
   }
 
   // Nuevo movimiento
   nuevoMovimiento(): void {
 
-  // Verificacion: Descripción vacia
-  if(this.descripcion.trim() === ""){
-    this.alertService.info('Debes colocar una descripción');
-    return;
-  }
+    // Verificacion: Descripción vacia
+    if (this.descripcion.trim() === "") {
+      this.alertService.info('Debes colocar una descripción');
+      return;
+    }
 
-  // Verificacion: monto invalido
-  if(this.descripcion.trim() === ""){
-    this.alertService.info('Debes colocar un monto válido');
-    return;
-  }
+    // Verificacion: monto invalido
+    if (this.descripcion.trim() === "") {
+      this.alertService.info('Debes colocar un monto válido');
+      return;
+    }
 
     this.alertService.loading();
 
@@ -160,17 +163,17 @@ export class CcProveedoresMovimientosComponent implements OnInit {
     this.movimientosService.nuevoMovimiento(data).subscribe(({ saldo_nuevo }) => {
       this.cuentaCorriente.saldo = saldo_nuevo;
       this.listarMovimientos();
-    },({error})=>{
-      this.alertService.errorApi(error.message);  
+    }, ({ error }) => {
+      this.alertService.errorApi(error.message);
     });
-    
+
   }
 
   // Actualizar movimiento
   actualizarMovimiento(): void {
 
     // Verificacion: Descripción vacia
-    if(this.descripcion.trim() === ""){
+    if (this.descripcion.trim() === "") {
       this.alertService.info('Debes colocar una descripción');
       return;
     }
@@ -184,50 +187,64 @@ export class CcProveedoresMovimientosComponent implements OnInit {
 
     this.movimientosService.actualizarMovimiento(this.idMovimiento, data).subscribe(() => {
       this.listarMovimientos();
-    },({error})=>{
+    }, ({ error }) => {
       this.alertService.errorApi(error.message);
     });
   }
 
   // Actualizar estado Activo/Inactivo
   actualizarEstado(movimiento: any): void {
-    
+
     const { _id, activo } = movimiento;
-    
-    if(!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
+
+    if (!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
 
     this.alertService.question({ msg: '¿Quieres actualizar el estado?', buttonText: 'Actualizar' })
-        .then(({isConfirmed}) => {  
-          if (isConfirmed) {
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.movimientosService.actualizarMovimiento(_id, { activo: !activo }).subscribe(() => {
             this.alertService.loading();
-            this.movimientosService.actualizarMovimiento(_id, {activo: !activo}).subscribe(() => {
-              this.alertService.loading();
-              this.listarMovimientos();
-            }, ({error}) => {
-              this.alertService.close();
-              this.alertService.errorApi(error.message);
-            });
-          }
-        });
+            this.listarMovimientos();
+          }, ({ error }) => {
+            this.alertService.close();
+            this.alertService.errorApi(error.message);
+          });
+        }
+      });
 
   }
 
   // Filtrar Activo/Inactivo
-  filtrarActivos(activo: any): void{
+  filtrarActivos(activo: any): void {
     this.paginaActual = 1;
     this.filtro.activo = activo;
   }
 
   // Filtrar por Parametro
-  filtrarParametro(parametro: string): void{
+  filtrarParametro(parametro: string): void {
     this.paginaActual = 1;
     this.filtro.parametro = parametro;
   }
 
   // Ordenar por columna
-  ordenarPorColumna(columna: string){
+  ordenarPorColumna(columna: string) {
     this.ordenar.columna = columna;
-    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1; 
+    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
+    this.alertService.loading();
+    this.listarMovimientos();
+  }
+
+  // Cambiar cantidad de items
+  cambiarCantidadItems(): void {
+    this.paginaActual = 1
+    this.cambiarPagina(1);
+  }
+
+  // Paginacion - Cambiar pagina
+  cambiarPagina(nroPagina): void {
+    this.paginaActual = nroPagina;
+    this.desde = (this.paginaActual - 1) * this.cantidadItems;
     this.alertService.loading();
     this.listarMovimientos();
   }

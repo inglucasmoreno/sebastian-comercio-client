@@ -58,8 +58,10 @@ export class PresupuestosComponent implements OnInit {
   public todosProductos: any[];
 
   // Paginacion
+  public totalItems: number;
   public paginaActual: number = 1;
   public cantidadItems: number = 10;
+  public desde: number = 0;
 
   // Estado login
   public observacionActualizadaFlag: boolean = false;
@@ -86,8 +88,8 @@ export class PresupuestosComponent implements OnInit {
   }
 
   // Paginacion - Productos
-  public totalItems: number;
-  public desde: number = 0;
+  public totalItemsProductos: number;
+  public desdeProductos: number = 0;
   public paginaActualProductos: number = 1;
   public cantidadItemsProductos: number = 10;
 
@@ -142,11 +144,16 @@ export class PresupuestosComponent implements OnInit {
   listarPresupuestos(): void {
     const parametros = {
       direccion: this.ordenar.direccion,
-      columna: this.ordenar.columna
+      columna: this.ordenar.columna,
+      desde: this.desde,
+      cantidadItems: this.cantidadItems,
+      activo: this.filtro.activo,
+      parametro: this.filtro.parametro,
     }
     this.presupuestosService.listarPresupuestos(parametros)
-    .subscribe( ({ presupuestos }) => {
+    .subscribe( ({ presupuestos, totalItems }) => {
       this.presupuestos = presupuestos;
+      this.totalItems = totalItems;
       this.showModalPresupuesto = false;
       this.productoSeleccionado = null;
       
@@ -421,12 +428,13 @@ export class PresupuestosComponent implements OnInit {
   listarProductos(): void {
     this.alertService.loading();
     this.productosService.listarProductos({ 
-      desde: this.desde,
-      cantidadItems: this.cantidadItems,
+      desde: this.desdeProductos,
+      cantidadItems: this.cantidadItemsProductos,
       parametro: this.filtro.parametroProductos, 
-      activo: true }).subscribe({
+      activo: true 
+    }).subscribe({
       next: ({ productos, totalItems }) => {
-        this.totalItems = totalItems;
+        this.totalItemsProductos = totalItems;
         this.todosProductos = productos;
         this.alertService.close();
         this.showModalEditarPresupuesto = false;
@@ -817,13 +825,13 @@ export class PresupuestosComponent implements OnInit {
 
   // Filtrar Activo/Inactivo
   filtrarActivos(activo: any): void{
-    this.paginaActual = 1;
+    this.paginaActualProductos = 1;
     this.filtro.activo = activo;
   }
 
   // Filtrar por Parametro
   filtrarParametro(parametro: string): void{
-    this.paginaActual = 1;
+    this.paginaActualProductos = 1;
     this.filtro.parametro = parametro;
   }
 
@@ -835,10 +843,24 @@ export class PresupuestosComponent implements OnInit {
     this.listarPresupuestos();
   }
 
+  // Cambiar cantidad de items
+  cambiarCantidadItems(): void {
+    this.paginaActual = 1
+    this.cambiarPagina(1);
+  }
+
   // Paginacion - Cambiar pagina
   cambiarPagina(nroPagina): void {
+    this.paginaActual = nroPagina;
+    this.desde = (this.paginaActual - 1) * this.cantidadItems;
+    this.alertService.loading();
+    this.listarPresupuestos();
+  }
+
+  // Paginacion - Cambiar pagina - Productos
+  cambiarPaginaProductos(nroPagina): void {
     this.paginaActualProductos = nroPagina;
-    this.desde = (this.paginaActualProductos - 1) * this.cantidadItemsProductos;
+    this.desdeProductos = (this.paginaActualProductos - 1) * this.cantidadItemsProductos;
     this.alertService.loading();
     this.listarProductos();
   }

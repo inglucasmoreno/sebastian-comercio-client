@@ -103,6 +103,7 @@ export class NuevoCobroComponent implements OnInit {
     this.alertService.loading();
     this.clientesService.listarClientes().subscribe({
       next: ({ clientes }) => {
+        
         this.clientes = clientes.filter(cliente => cliente.activo);
 
         // Listado de cajas

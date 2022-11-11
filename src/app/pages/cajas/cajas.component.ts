@@ -61,274 +61,277 @@ export class CajasComponent implements OnInit {
   }
 
   constructor(private cajasService: CajasService,
-              private inicializacionService: InicializacionService,
-              private authService: AuthService,
-              private alertService: AlertService,
-              private dataService: DataService) { }
+    private inicializacionService: InicializacionService,
+    private authService: AuthService,
+    private alertService: AlertService,
+    private dataService: DataService) { }
 
-    ngOnInit(): void {
-      this.dataService.ubicacionActual = 'Dashboard - Cajas'; 
-      this.permisos.all = this.permisosUsuarioLogin();
-      this.alertService.loading();
-      this.listarCajas(); 
+  ngOnInit(): void {
+    this.dataService.ubicacionActual = 'Dashboard - Cajas';
+    this.permisos.all = this.permisosUsuarioLogin();
+    this.alertService.loading();
+    this.listarCajas();
+  }
+
+  // Asignar permisos de usuario login
+  permisosUsuarioLogin(): boolean {
+    return this.authService.usuario.permisos.includes('CAJAS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
+  }
+
+  // Abrir modal
+  abrirModal(estado: string, caja: any = null): void {
+    window.scrollTo(0, 0);
+    this.reiniciarFormulario();
+    this.descripcion = '';
+    this.monto = null;
+    this.idCaja = '';
+
+    if (estado === 'editar') this.getCaja(caja);
+    else this.showModalCaja = true;
+
+    this.estadoFormulario = estado;
+  }
+
+  // Traer datos de caja
+  getCaja(caja: any): void {
+    this.alertService.loading();
+    this.idCaja = caja._id;
+    this.cajaSeleccionada = caja;
+    this.cajasService.getCaja(caja._id).subscribe(({ caja }) => {
+      this.descripcion = caja.descripcion;
+      this.monto = caja.saldo;
+      this.alertService.close();
+      this.showModalCaja = true;
+    }, ({ error }) => {
+      this.alertService.errorApi(error);
+    });
+  }
+
+  // Listar cajas
+  listarCajas(): void {
+    const parametros = {
+      direccion: this.ordenar.direccion,
+      columna: this.ordenar.columna
     }
-
-    // Asignar permisos de usuario login
-    permisosUsuarioLogin(): boolean {
-      return this.authService.usuario.permisos.includes('CAJAS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
-    }
-
-    // Abrir modal
-    abrirModal(estado: string, caja: any = null): void {
-      window.scrollTo(0,0);
-      this.reiniciarFormulario();
-      this.descripcion = '';
-      this.monto = null;
-      this.idCaja = '';
-      
-      if(estado === 'editar') this.getCaja(caja);
-      else this.showModalCaja = true;
-
-      this.estadoFormulario = estado;  
-    }
-
-    // Traer datos de caja
-    getCaja(caja: any): void {
-      this.alertService.loading();
-      this.idCaja = caja._id;
-      this.cajaSeleccionada = caja;
-      this.cajasService.getCaja(caja._id).subscribe(({caja}) => {
-        this.descripcion = caja.descripcion;
-        this.monto = caja.saldo;
-        this.alertService.close();
-        this.showModalCaja = true;
-      },({error})=>{
-        this.alertService.errorApi(error);
-      });
-    }
-
-    // Listar cajas
-    listarCajas(): void {
-      const parametros = {
-        direccion: this.ordenar.direccion,
-        columna: this.ordenar.columna
-      }
-      this.cajasService.listarCajas(parametros)
-      .subscribe( ({ cajas }) => {
+    this.cajasService.listarCajas(parametros)
+      .subscribe(({ cajas }) => {
         this.cajas = cajas;
-        this.cajasSelector = cajas.filter( caja => caja.activo && caja._id !== '222222222222222222222222' );
+        this.cajasSelector = cajas.filter(caja => caja.activo && caja._id !== '222222222222222222222222');
         this.showModalCaja = false;
-      
+
         // FLAG - INICIALIZACION
-        if(this.flagInicializacion){
+        if (this.flagInicializacion) {
           this.flagInicializacion = false;
           this.alertService.success('Inicializacion completada');
-        }else{
+        } else {
           this.alertService.close();
         }
 
         // FLAG - MOVIMIENTO INTERNO
-        if(this.flagMovimientoInterno){
+        if (this.flagMovimientoInterno) {
           this.flagMovimientoInterno = false;
           this.alertService.success('Movimiento interno generado corretamente');
-        }else{
+        } else {
           this.alertService.close();
         }
-        
+
         this.showModalMovimientoInterno = false;
-      
-      }, (({error}) => {
+
+      }, (({ error }) => {
         this.alertService.errorApi(error.msg);
       }));
+  }
+
+  // Nueva caja
+  nuevaCaja(): void {
+
+    // Verificacion: Descripción vacia
+    if (this.descripcion.trim() === "") {
+      this.alertService.info('Debes colocar una descripción');
+      return;
     }
 
-    // Nueva caja
-    nuevaCaja(): void {
+    // Verificacion: Monto inicial vacia
+    if (!this.monto) {
+      this.alertService.info('Debes colocar un monto');
+      return;
+    }
 
-      // Verificacion: Descripción vacia
-      if(this.descripcion.trim() === ""){
-        this.alertService.info('Debes colocar una descripción');
-        return;
-      }
+    // Generar movimiento interno
+    this.alertService.question({ msg: 'Estas por crear una caja', buttonText: 'Crear' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
 
-      // Verificacion: Monto inicial vacia
-      if(!this.monto){
-        this.alertService.info('Debes colocar un monto');
-        return;
-      }
+          const data = {
+            descripcion: this.descripcion,
+            saldo: this.dataService.redondear(this.monto, 2),
+            creatorUser: this.authService.usuario.userId,
+            updatorUser: this.authService.usuario.userId,
+          }
 
-      // Generar movimiento interno
-      this.alertService.question({ msg: 'Estas por generar un movimiento', buttonText: 'Generar' })
-          .then(({isConfirmed}) => {  
-            if (isConfirmed) {
-              this.alertService.loading();
-
-              const data = {
-                descripcion: this.descripcion,
-                saldo: this.dataService.redondear(this.monto, 2),
-                creatorUser: this.authService.usuario.userId,
-                updatorUser: this.authService.usuario.userId,
-              }
-        
-              this.cajasService.nuevaCaja(data).subscribe(() => {
-                this.listarCajas();
-              },({error})=>{
-                this.alertService.errorApi(error.message);  
-              });
-            }
+          this.cajasService.nuevaCaja(data).subscribe(() => {
+            this.listarCajas();
+          }, ({ error }) => {
+            this.alertService.errorApi(error.message);
           });
-      
-    }
-
-    // Actualizar caja
-    actualizarCaja(): void {
-
-      // Verificacion: Descripción vacia
-      if(this.descripcion.trim() === ""){
-        this.alertService.info('Debes colocar una descripción');
-        return;
-      }
-
-      // Verificacion: Monto inicial vacia
-      if(!this.monto){
-        this.alertService.info('Debes colocar un monto');
-        return;
-      }
-
-      this.alertService.loading();
-
-      const data = {
-        descripcion: this.descripcion,
-        saldo: this.monto,
-        updatorUser: this.authService.usuario.userId,
-      }
-
-      this.cajasService.actualizarCaja(this.idCaja, data).subscribe(() => {
-        this.listarCajas();
-      },({error})=>{
-        this.alertService.errorApi(error.message);
+        }
       });
+
+  }
+
+  // Actualizar caja
+  actualizarCaja(): void {
+
+    // Verificacion: Descripción vacia
+    if (this.descripcion.trim() === "") {
+      this.alertService.info('Debes colocar una descripción');
+      return;
     }
 
-    // Actualizar estado Activo/Inactivo
-    actualizarEstado(caja: any): void {
-      
-      const { _id, activo } = caja;
-      
-      if(!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
-
-      if(caja._id === '000000000000000000000000' || caja._id === '111111111111111111111111' || caja._id === '222222222222222222222222' || caja._id === '333333333333333333333333'){
-        this.alertService.info('No se puede dar de baja a esta caja');
-        return;
-      }
-
-      this.alertService.question({ msg: '¿Quieres actualizar el estado?', buttonText: 'Actualizar' })
-          .then(({isConfirmed}) => {  
-            if (isConfirmed) {
-              this.alertService.loading();
-              this.cajasService.actualizarCaja(_id, {activo: !activo}).subscribe(() => {
-                this.alertService.loading();
-                this.listarCajas();
-              }, ({error}) => {
-                this.alertService.close();
-                this.alertService.errorApi(error.message);
-              });
-            }
-          });
-
+    // Verificacion: Monto inicial vacia
+    if (!this.monto) {
+      this.alertService.info('Debes colocar un monto');
+      return;
     }
 
-    // Inicializar cajas
-    inicializarCajas(): void {
-      this.alertService.question({ msg: '¿Quieres inicializar las cajas', buttonText: 'Inicializar' })
-          .then(({isConfirmed}) => {  
-            if (isConfirmed) {
-              this.alertService.loading();
-              this.inicializacionService.inicializarCajas(this.authService.usuario.userId).subscribe({
-                next: () => {
-                  this.flagInicializacion = true;
-                  this.listarCajas();
-                },
-                error: ({error}) => this.alertService.errorApi(error.message)
-              })
-            }
-          });
+    this.alertService.loading();
+
+    const data = {
+      descripcion: this.descripcion,
+      saldo: this.monto,
+      updatorUser: this.authService.usuario.userId,
     }
 
-    // Movimiento interno
-    generarMovimientoInterno(): void {
-      
-      // Verificacion: Caja origen
-      if(this.movimientoInterno.caja_origen === ''){
-        this.alertService.info('Debe seleccionar una caja origen');
-        return;
-      }
-
-      // Verificacion: Monto
-      if(this.movimientoInterno.monto < 0){
-        this.alertService.info('Debe colocar un monto correcto');
-        return;
-      }
-
-      // Verificacion: Caja destino
-      if(this.movimientoInterno.caja_destino === ''){
-        this.alertService.info('Debe seleccionar una caja destino');
-        return;
-      }
-
-      // Verificacion: Origen === Destino
-      if(this.movimientoInterno.caja_origen === this.movimientoInterno.caja_destino){
-        this.alertService.info('El origen y el destino deben ser diferentes');
-        return;
-      }
-
-      // Realizar movimiento interno
-      this.alertService.loading();
-      this.cajasService.movimientoInterno(this.movimientoInterno).subscribe({
-        next: () => {
-          this.flagMovimientoInterno = true;
-          this.listarCajas();
-        }, error: ({error}) => this.alertService.errorApi(error.message)
-      })
-
-    }
-
-    // Abrir movimiento interno
-    abrirMovimientoInterno(): void {
-      this.movimientoInterno = {
-        caja_origen: '',
-        monto: null,
-        caja_destino: '',
-        creatorUser: this.authService.usuario.userId,
-        updatorUser: this.authService.usuario.userId,
-      }
-      this.showModalMovimientoInterno = true;
-    }
-
-    // Reiniciando formulario
-    reiniciarFormulario(): void {
-      this.descripcion = '';  
-    }
-
-    // Filtrar Activo/Inactivo
-    filtrarActivos(activo: any): void{
-      this.paginaActual = 1;
-      this.filtro.activo = activo;
-    }
-
-    // Filtrar por Parametro
-    filtrarParametro(parametro: string): void{
-      this.paginaActual = 1;
-      this.filtro.parametro = parametro;
-    }
-
-    // Ordenar por columna
-    ordenarPorColumna(columna: string){
-      this.ordenar.columna = columna;
-      this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1; 
-      this.alertService.loading();
+    this.cajasService.actualizarCaja(this.idCaja, data).subscribe(() => {
       this.listarCajas();
+    }, ({ error }) => {
+      this.alertService.errorApi(error.message);
+    });
+  }
+
+  // Actualizar estado Activo/Inactivo
+  actualizarEstado(caja: any): void {
+
+    const { _id, activo } = caja;
+
+    if (!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
+
+    if (caja._id === '000000000000000000000000' || caja._id === '111111111111111111111111' || caja._id === '222222222222222222222222' || caja._id === '333333333333333333333333') {
+      this.alertService.info('No se puede dar de baja a esta caja');
+      return;
     }
+
+    this.alertService.question({ msg: '¿Quieres actualizar el estado?', buttonText: 'Actualizar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.cajasService.actualizarCaja(_id, { activo: !activo }).subscribe(() => {
+            this.alertService.loading();
+            this.listarCajas();
+          }, ({ error }) => {
+            this.alertService.close();
+            this.alertService.errorApi(error.message);
+          });
+        }
+      });
+
+  }
+
+  // Inicializar cajas
+  inicializarCajas(): void {
+    this.alertService.question({ msg: '¿Quieres inicializar las cajas?', buttonText: 'Inicializar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.inicializacionService.inicializarCajas(this.authService.usuario.userId).subscribe({
+            next: () => {
+              this.flagInicializacion = true;
+              this.listarCajas();
+            },
+            error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
+  }
+
+  // Movimiento interno
+  generarMovimientoInterno(): void {
+
+    // Verificacion: Caja origen
+    if (this.movimientoInterno.caja_origen === '') {
+      this.alertService.info('Debe seleccionar una caja origen');
+      return;
+    }
+
+    // Verificacion: Monto
+    if (this.movimientoInterno.monto < 0) {
+      this.alertService.info('Debe colocar un monto correcto');
+      return;
+    }
+
+    // Verificacion: Caja destino
+    if (this.movimientoInterno.caja_destino === '') {
+      this.alertService.info('Debe seleccionar una caja destino');
+      return;
+    }
+
+    // Verificacion: Origen === Destino
+    if (this.movimientoInterno.caja_origen === this.movimientoInterno.caja_destino) {
+      this.alertService.info('El origen y el destino deben ser diferentes');
+      return;
+    }
+
+    this.alertService.question({ msg: 'Generando movimiento', buttonText: 'Generar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.cajasService.movimientoInterno(this.movimientoInterno).subscribe({
+            next: () => {
+              this.flagMovimientoInterno = true;
+              this.listarCajas();
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
+  }
+
+  // Abrir movimiento interno
+  abrirMovimientoInterno(): void {
+    this.movimientoInterno = {
+      caja_origen: '',
+      monto: null,
+      caja_destino: '',
+      creatorUser: this.authService.usuario.userId,
+      updatorUser: this.authService.usuario.userId,
+    }
+    this.showModalMovimientoInterno = true;
+  }
+
+  // Reiniciando formulario
+  reiniciarFormulario(): void {
+    this.descripcion = '';
+  }
+
+  // Filtrar Activo/Inactivo
+  filtrarActivos(activo: any): void {
+    this.paginaActual = 1;
+    this.filtro.activo = activo;
+  }
+
+  // Filtrar por Parametro
+  filtrarParametro(parametro: string): void {
+    this.paginaActual = 1;
+    this.filtro.parametro = parametro;
+  }
+
+  // Ordenar por columna
+  ordenarPorColumna(columna: string) {
+    this.ordenar.columna = columna;
+    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
+    this.alertService.loading();
+    this.listarCajas();
+  }
 
 
 }

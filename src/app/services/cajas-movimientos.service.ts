@@ -36,8 +36,11 @@ export class CajasMovimientosService {
   listarMovimientos(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/cajas-movimientos`, {
       params: {
-        direccion: parametros?.direccion || 1,
         columna: parametros?.columna || 'descripcion',
+        direccion: parametros?.direccion || 1,
+        desde: parametros?.desde || 0,
+        registerpp: parametros?.cantidadItems || 100000,
+        parametro: parametros?.parametro || '',
         caja: parametros?.caja || '',
       },
       headers: this.getToken

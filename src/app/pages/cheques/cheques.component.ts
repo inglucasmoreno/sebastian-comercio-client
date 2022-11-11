@@ -48,12 +48,14 @@ export class ChequesComponent implements OnInit {
   public cajas: any[] = [];
 
   // Paginacion
+  public totalItems: number;
   public paginaActual: number = 1;
   public cantidadItems: number = 10;
+  public desde: number = 0;
 
   // Filtrado
   public filtro = {
-    activo: 'Creado',
+    estado: 'Creado',
     parametro: ''
   }
 
@@ -131,27 +133,23 @@ export class ChequesComponent implements OnInit {
   listarCheques(): void {
     const parametros = {
       direccion: this.ordenar.direccion,
-      columna: this.ordenar.columna
+      columna: this.ordenar.columna,
+      desde: this.desde,
+      cantidadItems: this.cantidadItems,
+      estado: this.filtro.estado,
+      parametro: this.filtro.parametro   
     }
     this.chequesService.listarCheques(parametros)
-      .subscribe(({ cheques }) => {
+      .subscribe(({ cheques, totalItems, montoTotal }) => {
+        this.total = montoTotal;
         this.cheques = cheques;
+        this.totalItems = totalItems;
         this.showModalCheque = false;
         this.showModalCobrandoCheque = false;
-        this.calcularTotal();
         this.alertService.close();
       }, (({ error }) => {
         this.alertService.errorApi(error.msg);
       }));
-  }
-
-  // Calcular total
-  calcularTotal(): void {
-    let totalTMP = 0;
-    this.cheques.map(cheque => {
-      if (cheque.activo) totalTMP += cheque.importe;
-    })
-    this.total = totalTMP
   }
 
   // Nuevo cheque
@@ -307,7 +305,7 @@ export class ChequesComponent implements OnInit {
   cobrarCheque(): void {
 
     // Verificacion: Caja destino no seleccionada
-    if(this.cajaSeleccionada.trim() === ''){
+    if (this.cajaSeleccionada.trim() === '') {
       this.alertService.info('Debe seleccionar una caja destino');
       return;
     }
@@ -318,38 +316,32 @@ export class ChequesComponent implements OnInit {
           this.alertService.loading();
           this.chequesService.actualizarCheque(this.chequeSeleccionado._id, {
             caja: this.cajaSeleccionada,
-            estado: 'Cobrado', 
+            estado: 'Cobrado',
             activo: false,
             updatorUser: this.authService.usuario.userId
           }).subscribe({
             next: () => {
               this.listarCheques();
-            }, error: ({error}) => this.alertService.errorApi(error.message)
-        })
-      }
-    });
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
 
   }
 
   // Abrir modal cobrando cheque
-  abrirModalCobrandoCheque(cheque: any){
+  abrirModalCobrandoCheque(cheque: any) {
     this.alertService.loading();
     this.cajaSeleccionada = '';
     this.chequeSeleccionado = cheque;
     this.cajasService.listarCajas().subscribe({
-      next: ({cajas}) => {
-        this.cajas = cajas.filter( caja => caja.activo && caja._id !== '222222222222222222222222' );
+      next: ({ cajas }) => {
+        this.cajas = cajas.filter(caja => caja.activo && caja._id !== '222222222222222222222222');
         this.chequeSeleccionado = cheque;
         this.showModalCobrandoCheque = true;
         this.alertService.close();
-      },error: ({error}) => this.alertService.errorApi(error.message)
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
     })
-  }
-
-  // Filtrar Activo/Inactivo
-  filtrarActivos(activo: any): void {
-    this.paginaActual = 1;
-    this.filtro.activo = activo;
   }
 
   // Filtrar por Parametro
@@ -362,6 +354,20 @@ export class ChequesComponent implements OnInit {
   ordenarPorColumna(columna: string) {
     this.ordenar.columna = columna;
     this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
+    this.alertService.loading();
+    this.listarCheques();
+  }
+
+  // Cambiar cantidad de items
+  cambiarCantidadItems(): void {
+    this.paginaActual = 1
+    this.cambiarPagina(1);
+  }
+
+  // Paginacion - Cambiar pagina
+  cambiarPagina(nroPagina): void {
+    this.paginaActual = nroPagina;
+    this.desde = (this.paginaActual - 1) * this.cantidadItems;
     this.alertService.loading();
     this.listarCheques();
   }
