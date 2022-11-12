@@ -50,8 +50,12 @@ export class VentasPropiasService {
   listarVentas(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/ventas-propias`, {
       params: {
-        direccion: parametros?.direccion || 1,
         columna: parametros?.columna || 'descripcion',
+        direccion: parametros?.direccion || 1,
+        desde: parametros?.desde || 0,
+        registerpp: parametros?.cantidadItems || 100000,
+        activo: parametros?.activo || '',
+        parametro: parametros?.parametro || '',
         cliente: parametros?.cliente || '',
         cancelada: parametros?.cancelada || '',
       },

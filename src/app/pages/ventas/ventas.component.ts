@@ -53,10 +53,6 @@ export class VentasComponent implements OnInit {
   public showProductos = false;
   public todosProductos: any[];
 
-  // Paginacion
-  public paginaActual: number = 1;
-  public cantidadItems: number = 10;
-
   // Estado login
   public observacionActualizadaFlag: boolean = false;
   public productoAgregadoFlag: boolean = false;
@@ -74,9 +70,15 @@ export class VentasComponent implements OnInit {
     columna: 'createdAt'
   }
 
-  // Paginacion - Productos
+  // Paginacion
   public totalItems: number;
   public desde: number = 0;
+  public paginaActual: number = 1;
+  public cantidadItems: number = 10;
+
+  // Paginacion - Productos
+  public totalItemsProductos: number;
+  public desdeProductos: number = 0;
   public paginaActualProductos: number = 1;
   public cantidadItemsProductos: number = 10;
 
@@ -117,12 +119,17 @@ export class VentasComponent implements OnInit {
   listarVentas(): void {
     const parametros = {
       direccion: this.ordenar.direccion,
-      columna: this.ordenar.columna
+      columna: this.ordenar.columna,
+      desde: this.desde,
+      cantidadItems: this.cantidadItems,
+      activo: this.filtro.activo,
+      parametro: this.filtro.parametro,
     }
     this.ventasService.listarVentas(parametros)
-    .subscribe( ({ ventas }) => {
+    .subscribe( ({ ventas, totalItems }) => {
       
       this.ventas = ventas;
+      this.totalItems = totalItems;
       this.showModalVenta = false;
       this.productoSeleccionado = null;
       
@@ -416,12 +423,12 @@ export class VentasComponent implements OnInit {
   listarProductos(): void {
     this.alertService.loading();
     this.productosService.listarProductos({ 
-      desde: this.desde,
+      desde: this.desdeProductos,
       cantidadItems: this.cantidadItems,
       parametro: this.filtro.parametroProductos, 
       activo: true }).subscribe({
       next: ({ productos, totalItems }) => {
-        this.totalItems = totalItems;
+        this.totalItemsProductos = totalItems;
         this.todosProductos = productos;
         this.alertService.close();
         this.showModalEditarVenta = false;
@@ -770,11 +777,25 @@ export class VentasComponent implements OnInit {
   }
 
   // Paginacion - Cambiar pagina
-  cambiarPagina(nroPagina): void {
+  cambiarPaginaProductos(nroPagina): void {
     this.paginaActualProductos = nroPagina;
-    this.desde = (this.paginaActualProductos - 1) * this.cantidadItemsProductos;
+    this.desdeProductos = (this.paginaActualProductos - 1) * this.cantidadItemsProductos;
     this.alertService.loading();
     this.listarProductos();
+  }
+
+  // Paginacion - Cambiar pagina
+  cambiarPagina(nroPagina): void {
+    this.paginaActual = nroPagina;
+    this.desde = (this.paginaActual - 1) * this.cantidadItems;
+    this.alertService.loading();
+    this.listarVentas();
+  }
+  
+  // Cambiar cantidad de items
+  cambiarCantidadItems(): void {
+    this.paginaActual = 1
+    this.cambiarPagina(1);
   }
 
 }

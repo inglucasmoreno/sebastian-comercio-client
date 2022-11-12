@@ -79,7 +79,7 @@
         />
       </div>  
       
-      <div class="mt-4 text-sm">
+      <div class="mt-4 text-sm max-h-96 overflow-y-auto">
         <div (click)="seleccionarProducto(producto)" class="border shadow hover:border-secondaryColor cursor-pointer border-gray-400 p-2 w-full my-2" *ngFor="let producto of productos | paginate: {itemsPerPage: cantidadItemsProductos, currentPage: paginaActualProductos, totalItems: totalItems, id: 'productos'}">
           <p class="font-semibold"> {{ producto.descripcion }} </p>  
           <p class="text-gray-600 text-xs"> {{ producto.unidad_medida.descripcion }} </p>
@@ -405,13 +405,15 @@
             <span class="font-semibold"> Precio total: </span> ${{ precio_total | moneda }} 
           </div>
         </div>
-        <div (click)="abrirEditarProducto(producto)" class="border border-gray-400 p-2 hover:border-secondaryColor cursor-pointer flex items-center justify-between shadow m-2" *ngFor="let producto of productosPresupuesto">
-          <div>
-            <p class="font-semibold"> {{ producto.descripcion }} </p>
-            <p class="text-xs"> ${{ producto.precio_unitario | moneda }} x {{ producto.unidad_medida }} </p>
-            <p class="font-semibold"> Cantidad: {{ producto.cantidad }} </p>   
+        <div class="max-h-96 shadow overflow-y-auto border border-gray-300">
+          <div (click)="abrirEditarProducto(producto)" class="border border-gray-400 p-2 hover:border-secondaryColor cursor-pointer flex items-center justify-between shadow m-2" *ngFor="let producto of productosPresupuesto">
+            <div>
+              <p class="font-semibold"> {{ producto.descripcion }} </p>
+              <p class="text-xs"> ${{ producto.precio_unitario | moneda }} x {{ producto.unidad_medida }} </p>
+              <p class="font-semibold"> Cantidad: {{ producto.cantidad }} </p>   
+            </div>
+            <p class="font-semibold"> ${{ producto.precio_total | moneda }} </p>
           </div>
-          <p class="font-semibold"> ${{ producto.precio_total | moneda }} </p>
         </div>
       </div>
     </div>

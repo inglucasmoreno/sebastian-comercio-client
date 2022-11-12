@@ -115,12 +115,14 @@ export class NuevaVentaComponent implements OnInit {
   public precioResguardo: number = null;
 
   // Paginacion - Clientes
-  public paginaActual: number = 1;
-  public cantidadItems: number = 10;
+  public totalItemsClientes: number;
+  public desdeClientes: number = 0;
+  public paginaActualClientes: number = 1;
+  public cantidadItemsClientes: number = 10;
 
   // Paginacion - Productos
-  public totalItems: number;
-  public desde: number = 0;
+  public totalItemsProductos: number;
+  public desdeProductos: number = 0;
   public paginaActualProductos: number = 1;
   public cantidadItemsProductos: number = 10;
   
@@ -157,7 +159,7 @@ export class NuevaVentaComponent implements OnInit {
     this.alertService.loading();
     this.proveedoresService.listarProveedores().subscribe({
       next: ({ proveedores }) => {
-        this.proveedores = proveedores;
+        this.proveedores = proveedores.filter( proveedor => proveedor.activo );
         this.alertService.close();
       },
       error: ({error}) => this.alertService.errorApi(error.message)
@@ -169,10 +171,15 @@ export class NuevaVentaComponent implements OnInit {
     this.alertService.loading();
     this.clientesService.listarClientes({
       direccion: this.ordenar.direccion,
-      columna: this.ordenar.columna
+      columna: this.ordenar.columna,
+      desde: this.desdeClientes,
+      cantidadItems: this.cantidadItemsClientes,
+      activo: this.filtro.activo,
+      parametro: this.filtro.parametro,
     }).subscribe({
-      next: ({ clientes }) => {
+      next: ({ clientes, totalItems }) => {
         this.clientes = clientes;
+        this.totalItemsClientes = totalItems;
         this.alertService.close();
         this.showClientes = true;
       },
@@ -184,12 +191,12 @@ export class NuevaVentaComponent implements OnInit {
   listarProductos(): void {
     this.alertService.loading();
     this.productosService.listarProductos({ 
-      desde: this.desde,
-      cantidadItems: this.cantidadItems,
+      desde: this.desdeProductos,
+      cantidadItems: this.cantidadItemsProductos,
       parametro: this.filtro.parametroProductos, 
       activo: true }).subscribe({
       next: ({ productos, totalItems }) => {
-        this.totalItems = totalItems;
+        this.totalItemsProductos = totalItems;
         this.productos = productos;
         this.alertService.close();
         this.showProductos = true;
@@ -417,7 +424,7 @@ export class NuevaVentaComponent implements OnInit {
   // Abrir clientes
   abrirModalClientes(): void {
     this.filtro.parametro = '';
-    this.cantidadItems = 10;
+    this.cantidadItemsClientes = 10;
     this.listarClientes();
   }
 
@@ -990,13 +997,13 @@ export class NuevaVentaComponent implements OnInit {
 
   // Filtrar Activo/Inactivo
   filtrarActivos(activo: any): void{
-    this.paginaActual = 1;
+    this.paginaActualClientes = 1;
     this.filtro.activo = activo;
   }
 
   // Filtrar por Parametro
   filtrarParametro(): void{
-    this.paginaActual = 1;
+    this.paginaActualClientes = 1;
   }
 
   // Ordenar por columna
@@ -1160,11 +1167,25 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   // Paginacion - Cambiar pagina
-  cambiarPagina(nroPagina): void {
+  cambiarPaginaProductos(nroPagina): void {
     this.paginaActualProductos = nroPagina;
-    this.desde = (this.paginaActualProductos - 1) * this.cantidadItemsProductos;
+    this.desdeProductos = (this.paginaActualProductos - 1) * this.cantidadItemsProductos;
     this.alertService.loading();
     this.listarProductos();
+  }
+
+  // Paginacion - Cambiar pagina
+  cambiarPaginaClientes(nroPagina): void {
+    this.paginaActualClientes = nroPagina;
+    this.desdeClientes = (this.paginaActualClientes - 1) * this.cantidadItemsClientes;
+    this.alertService.loading();
+    this.listarClientes();
+  }
+
+  // Cambiar cantidad de items
+  cambiarCantidadItems(): void {
+    this.paginaActualClientes = 1
+    this.cambiarPaginaClientes(1);
   }
 
 }

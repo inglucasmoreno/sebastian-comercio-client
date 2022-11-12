@@ -36,8 +36,12 @@ export class CcClientesMovimientosService {
   listarMovimientos(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/cc-clientes-movimientos`, {
       params: {
-        direccion: parametros?.direccion || 1,
         columna: parametros?.columna || 'descripcion',
+        direccion: parametros?.direccion || 1,
+        desde: parametros?.desde || 0,
+        registerpp: parametros?.cantidadItems || 100000,
+        activo: parametros?.activo || '',
+        parametro: parametros?.parametro || '',
         cc_cliente: parametros?.cc_cliente || '',
       },
       headers: this.getToken

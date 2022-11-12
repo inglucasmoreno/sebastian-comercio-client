@@ -63,10 +63,6 @@ export class VentasPropiasComponent implements OnInit {
   // Recibos de cobro
   public recibosCobro: any[] = [];
 
-  // Paginacion
-  public paginaActual: number = 1;
-  public cantidadItems: number = 10;
-
   // Estado login
   public observacionActualizadaFlag: boolean = false;
   public productoAgregadoFlag: boolean = false;
@@ -74,7 +70,7 @@ export class VentasPropiasComponent implements OnInit {
   // Filtrado
   public filtro = {
     activo: 'true',
-    estado: '',
+    cancelada: '',
     parametro: '',
     parametroProductos: ''
   }
@@ -86,10 +82,16 @@ export class VentasPropiasComponent implements OnInit {
   }
 
   // Paginacion - Productos
-  public totalItems: number;
-  public desde: number = 0;
+  public totalItemsProductos: number;
+  public desdeProductos: number = 0;
   public paginaActualProductos: number = 1;
   public cantidadItemsProductos: number = 10;
+
+  // Paginacion - Presupuestos
+  public totalItems: number;
+  public desde: number = 0;
+  public paginaActual: number = 1;
+  public cantidadItems: number = 10;
 
   constructor(private ventasPropiasService: VentasPropiasService,
               private recibosCobroVentaService: RecibosCobroVentaService,
@@ -130,12 +132,18 @@ export class VentasPropiasComponent implements OnInit {
   listarVentas(): void {
     const parametros = {
       direccion: this.ordenar.direccion,
-      columna: this.ordenar.columna
+      columna: this.ordenar.columna,
+      desde: this.desde,
+      cantidadItems: this.cantidadItems,
+      activo: this.filtro.activo,
+      parametro: this.filtro.parametro,
+      cancelada: this.filtro.cancelada,
     }
     this.ventasPropiasService.listarVentas(parametros)
-    .subscribe( ({ ventas }) => {
+    .subscribe( ({ ventas, totalItems }) => {
       
       this.ventas = ventas;
+      this.totalItems = totalItems;
       this.showModalVenta = false;
       this.productoSeleccionado = null;
       
@@ -461,12 +469,12 @@ export class VentasPropiasComponent implements OnInit {
   listarProductos(): void {
     this.alertService.loading();
     this.productosService.listarProductos({ 
-      desde: this.desde,
+      desde: this.desdeProductos,
       cantidadItems: this.cantidadItems,
       parametro: this.filtro.parametroProductos, 
       activo: true }).subscribe({
       next: ({ productos, totalItems }) => {
-        this.totalItems = totalItems;
+        this.totalItemsProductos = totalItems;
         this.todosProductos = productos;
         this.alertService.close();
         this.showModalEditarVenta = false;
@@ -815,11 +823,25 @@ export class VentasPropiasComponent implements OnInit {
   }
 
   // Paginacion - Cambiar pagina
-  cambiarPagina(nroPagina): void {
+  cambiarPaginaProductos(nroPagina): void {
     this.paginaActualProductos = nroPagina;
-    this.desde = (this.paginaActualProductos - 1) * this.cantidadItemsProductos;
+    this.desdeProductos = (this.paginaActualProductos - 1) * this.cantidadItemsProductos;
     this.alertService.loading();
     this.listarProductos();
+  }
+
+  // Paginacion - Cambiar pagina
+  cambiarPagina(nroPagina): void {
+    this.paginaActual = nroPagina;
+    this.desde = (this.paginaActual - 1) * this.cantidadItems;
+    this.alertService.loading();
+    this.listarVentas();
+  }
+  
+  // Cambiar cantidad de items
+  cambiarCantidadItems(): void {
+    this.paginaActual = 1
+    this.cambiarPagina(1);
   }
 
 }

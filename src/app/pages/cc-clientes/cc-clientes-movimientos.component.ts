@@ -49,8 +49,10 @@ export class CcClientesMovimientosComponent implements OnInit {
   public monto: number = null;
 
   // Paginacion
+  public totalItems: number;
   public paginaActual: number = 1;
   public cantidadItems: number = 10;
+  public desde: number = 0;
 
   // Venta propia
   public ventaPropia: any;
@@ -80,35 +82,35 @@ export class CcClientesMovimientosComponent implements OnInit {
   }
 
   constructor(
-             private movimientosService: CcClientesMovimientosService,
-             private activatedRoute: ActivatedRoute,
-             private cobrosService: RecibosCobroService,
-             private recibosCobroVentaService: RecibosCobroVentaService,
-             private recibosCobroChequeService: RecibosCobroChequeService,
-             private cuentaCorrienteService: CcClientesService,
-             private ventasPropiasService: VentasPropiasService,
-             private ventasPropiasChequesService: VentasPropiasChequesService,
-             private ventasPropiasProductosService: VentasPropiasProductosService,
-             private authService: AuthService,
-             private alertService: AlertService,
-             private dataService: DataService) { }
+    private movimientosService: CcClientesMovimientosService,
+    private activatedRoute: ActivatedRoute,
+    private cobrosService: RecibosCobroService,
+    private recibosCobroVentaService: RecibosCobroVentaService,
+    private recibosCobroChequeService: RecibosCobroChequeService,
+    private cuentaCorrienteService: CcClientesService,
+    private ventasPropiasService: VentasPropiasService,
+    private ventasPropiasChequesService: VentasPropiasChequesService,
+    private ventasPropiasProductosService: VentasPropiasProductosService,
+    private authService: AuthService,
+    private alertService: AlertService,
+    private dataService: DataService) { }
 
   ngOnInit(): void {
     this.dataService.ubicacionActual = 'Dashboard - Cuenta corriente - Registros';
-    this.activatedRoute.params.subscribe(({id}) => { this.idCuentaCorriente = id; });
+    this.activatedRoute.params.subscribe(({ id }) => { this.idCuentaCorriente = id; });
     this.permisos.all = this.permisosUsuarioLogin();
-    this.calculosIniciales(); 
+    this.calculosIniciales();
   }
 
   // Calculos iniciales
   calculosIniciales(): void {
     this.alertService.loading();
     this.cuentaCorrienteService.getCuentaCorriente(this.idCuentaCorriente).subscribe({
-      next: ({cuenta_corriente}) => {
+      next: ({ cuenta_corriente }) => {
         this.cuentaCorriente = cuenta_corriente;
         this.listarMovimientos();
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 
@@ -119,16 +121,16 @@ export class CcClientesMovimientosComponent implements OnInit {
 
   // Abrir modal
   abrirModal(estado: string, movimiento: any = null): void {
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
     this.descripcion = '';
     this.tipo = 'Debe';
     this.monto = null;
     this.idMovimiento = '';
-    
-    if(estado === 'editar') this.getMovimiento(movimiento);
+
+    if (estado === 'editar') this.getMovimiento(movimiento);
     else this.showModalMovimiento = true;
 
-    this.estadoFormulario = estado;  
+    this.estadoFormulario = estado;
   }
 
   // Traer datos de movimiento
@@ -140,7 +142,7 @@ export class CcClientesMovimientosComponent implements OnInit {
       this.descripcion = movimiento.descripcion;
       this.alertService.close();
       this.showModalMovimiento = true;
-    },({error})=>{
+    }, ({ error }) => {
       this.alertService.errorApi(error);
     });
   }
@@ -150,32 +152,37 @@ export class CcClientesMovimientosComponent implements OnInit {
     const parametros = {
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
+      desde: this.desde,
+      cantidadItems: this.cantidadItems,
+      activo: this.filtro.activo,
+      parametro: this.filtro.parametro, 
       cc_cliente: this.idCuentaCorriente
     }
     this.movimientosService.listarMovimientos(parametros)
-    .subscribe( ({ movimientos }) => {
-      this.movimientos = movimientos;
-      this.showModalMovimiento = false;
-      this.alertService.close();
-    }, (({error}) => {
-      this.alertService.errorApi(error.msg);
-    }));
+      .subscribe(({ movimientos, totalItems }) => {
+        this.movimientos = movimientos;
+        this.totalItems = totalItems;
+        this.showModalMovimiento = false;
+        this.alertService.close();
+      }, (({ error }) => {
+        this.alertService.errorApi(error.msg);
+      }));
   }
 
   // Nuevo movimiento
   nuevoMovimiento(): void {
 
-  // Verificacion: Descripción vacia
-  if(this.descripcion.trim() === ""){
-    this.alertService.info('Debes colocar una descripción');
-    return;
-  }
+    // Verificacion: Descripción vacia
+    if (this.descripcion.trim() === "") {
+      this.alertService.info('Debes colocar una descripción');
+      return;
+    }
 
-  // Verificacion: monto invalido
-  if(this.descripcion.trim() === ""){
-    this.alertService.info('Debes colocar un monto válido');
-    return;
-  }
+    // Verificacion: monto invalido
+    if (this.descripcion.trim() === "") {
+      this.alertService.info('Debes colocar un monto válido');
+      return;
+    }
 
     this.alertService.loading();
 
@@ -192,17 +199,17 @@ export class CcClientesMovimientosComponent implements OnInit {
     this.movimientosService.nuevoMovimiento(data).subscribe(({ saldo_nuevo }) => {
       this.cuentaCorriente.saldo = saldo_nuevo;
       this.listarMovimientos();
-    },({error})=>{
-      this.alertService.errorApi(error.message);  
+    }, ({ error }) => {
+      this.alertService.errorApi(error.message);
     });
-    
+
   }
 
   // Actualizar movimiento
   actualizarMovimiento(): void {
 
     // Verificacion: Descripción vacia
-    if(this.descripcion.trim() === ""){
+    if (this.descripcion.trim() === "") {
       this.alertService.info('Debes colocar una descripción');
       return;
     }
@@ -216,50 +223,50 @@ export class CcClientesMovimientosComponent implements OnInit {
 
     this.movimientosService.actualizarMovimiento(this.idMovimiento, data).subscribe(() => {
       this.listarMovimientos();
-    },({error})=>{
+    }, ({ error }) => {
       this.alertService.errorApi(error.message);
     });
   }
 
   // Actualizar estado Activo/Inactivo
   actualizarEstado(movimiento: any): void {
-    
+
     const { _id, activo } = movimiento;
-    
-    if(!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
+
+    if (!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
 
     this.alertService.question({ msg: '¿Quieres actualizar el estado?', buttonText: 'Actualizar' })
-        .then(({isConfirmed}) => {  
-          if (isConfirmed) {
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.movimientosService.actualizarMovimiento(_id, { activo: !activo }).subscribe(() => {
             this.alertService.loading();
-            this.movimientosService.actualizarMovimiento(_id, {activo: !activo}).subscribe(() => {
-              this.alertService.loading();
-              this.listarMovimientos();
-            }, ({error}) => {
-              this.alertService.close();
-              this.alertService.errorApi(error.message);
-            });
-          }
-        });
+            this.listarMovimientos();
+          }, ({ error }) => {
+            this.alertService.close();
+            this.alertService.errorApi(error.message);
+          });
+        }
+      });
 
   }
 
   // Abrir modal - Detalles de movimientos
-  abrirDetallesMovimientos(movimiento: any): void { 
-    if(movimiento.venta_propia !== ''){
+  abrirDetallesMovimientos(movimiento: any): void {
+    if (movimiento.venta_propia !== '') {
       this.alertService.loading();
       this.ventasPropiasService.getVenta(movimiento.venta_propia).subscribe({
-        next: ({venta}) => {
+        next: ({ venta }) => {
           this.ventaPropia = venta;
           console.log(this.ventaPropia);
 
-          this.ventasPropiasProductosService.listarProductos({venta: venta._id}).subscribe({
-            next: ({productos}) => {
+          this.ventasPropiasProductosService.listarProductos({ venta: venta._id }).subscribe({
+            next: ({ productos }) => {
               this.productos = productos;
               console.log(this.productos);
-          
-              this.ventasPropiasChequesService.listarRelaciones({venta_propia: venta._id}).subscribe({
-                next: ({relaciones}) => {
+
+              this.ventasPropiasChequesService.listarRelaciones({ venta_propia: venta._id }).subscribe({
+                next: ({ relaciones }) => {
 
                   this.relaciones = relaciones;
                   console.log(this.relaciones);
@@ -269,15 +276,15 @@ export class CcClientesMovimientosComponent implements OnInit {
 
                   this.alertService.close();
 
-                }, error: ({error}) => this.alertService.errorApi(error.message)
-              })            
-            
-            }, error: ({error}) => this.alertService.errorApi(error.message)
+                }, error: ({ error }) => this.alertService.errorApi(error.message)
+              })
+
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
           })
 
-        }, error: ({error}) => this.alertService.errorApi(error.message)
+        }, error: ({ error }) => this.alertService.errorApi(error.message)
       })
-    }else{
+    } else {
       this.movimientoSeleccionado = movimiento;
       this.showModalDetalles = true;
     }
@@ -333,12 +340,12 @@ export class CcClientesMovimientosComponent implements OnInit {
   // Cerrar detalles de venta
   cerrarDetallesVenta(): void {
 
-    if(this.origen === ''){
+    if (this.origen === '') {
       this.showModalDetallesVenta = false;
       this.showModalDetalles = true;
-    }else if(this.origen === 'cobro'){
+    } else if (this.origen === 'cobro') {
       this.showModalDetallesVenta = false;
-      this.showModalDetallesCobro = true;      
+      this.showModalDetallesCobro = true;
     }
 
   }
@@ -422,21 +429,35 @@ export class CcClientesMovimientosComponent implements OnInit {
   }
 
   // Filtrar Activo/Inactivo
-  filtrarActivos(activo: any): void{
+  filtrarActivos(activo: any): void {
     this.paginaActual = 1;
     this.filtro.activo = activo;
   }
 
   // Filtrar por Parametro
-  filtrarParametro(parametro: string): void{
+  filtrarParametro(parametro: string): void {
     this.paginaActual = 1;
     this.filtro.parametro = parametro;
   }
 
   // Ordenar por columna
-  ordenarPorColumna(columna: string){
+  ordenarPorColumna(columna: string) {
     this.ordenar.columna = columna;
-    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1; 
+    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
+    this.alertService.loading();
+    this.listarMovimientos();
+  }
+
+  // Cambiar cantidad de items
+  cambiarCantidadItems(): void {
+    this.paginaActual = 1
+    this.cambiarPagina(1);
+  }
+
+  // Paginacion - Cambiar pagina
+  cambiarPagina(nroPagina): void {
+    this.paginaActual = nroPagina;
+    this.desde = (this.paginaActual - 1) * this.cantidadItems;
     this.alertService.loading();
     this.listarMovimientos();
   }

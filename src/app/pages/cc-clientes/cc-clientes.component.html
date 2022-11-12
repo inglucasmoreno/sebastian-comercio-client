@@ -63,7 +63,7 @@
                       <h2 class="text-xl md:text-2xl leading-tight">
                           Cuentas corrientes de clientes
                       </h2>
-                      <p> Total de cuentas: {{ cuentasCorrientes.length }} </p>
+                      <p> Total de cuentas: {{ totalItems }} </p>
                   </div>
                   <div *ngIf="permisos.all">
                     <button title="Nueva cuenta corriente" (click)="abrirModal('crear')" class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
@@ -77,7 +77,7 @@
                   <div class="my-2 flex sm:flex-row flex-col">
                       <div class="flex flex-row mb-1 sm:mb-0">
                           <div class="relative">
-                              <select #txtActivo (change)="filtrarActivos(txtActivo.value)" class="h-full text-sm rounded-r border-t border-l rounded-l sm:rounded-r-none sm:border-r-0 border-r border-b block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500">
+                              <select [(ngModel)]="filtro.activo" (change)="cambiarPagina(1)" class="h-full text-sm rounded-r border-t border-l rounded-l sm:rounded-r-none sm:border-r-0 border-r border-b block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500">
                                   <option value='true'> Activos </option>
                                   <option value='false'> Inactivos </option>
                                   <option value=''> Todos </option>
@@ -97,10 +97,10 @@
                                   </path>
                               </svg>
                           </span>
-                          <input #txtParametro placeholder="Buscar" (keyup)="filtrarParametro(txtParametro.value)" class="appearance-none rounded-r rounded-l sm:rounded-l-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+                          <input placeholder="Buscar" (change)="cambiarPagina(1)" [(ngModel)]="filtro.parametro" class="appearance-none rounded-r rounded-l sm:rounded-l-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
                           />
                       </div>
-                      <select (change)="paginaActual = 1" class="bg-white text-sm focus:outline-none w-max px-2 py-2 md:py-0 md:ml-2 mt-2 md:mt-0 border text-gray-600 border-gray-400 rounded" [(ngModel)]="cantidadItems">
+                      <select (change)="cambiarCantidadItems()" class="bg-white text-sm focus:outline-none w-max px-2 py-2 md:py-0 md:ml-2 mt-2 md:mt-0 border text-gray-600 border-gray-400 rounded" [(ngModel)]="cantidadItems">
                           <option value="10"> 10 elementos </option>
                           <option value="20"> 20 elementos </option>
                           <option value="50"> 50 elementos </option>
@@ -109,7 +109,7 @@
                   </div>
               </div>
               <div class="px-4 py-2 overflow-x-auto">
-                  <div class="inline-block max-h-screen overflow-y-auto min-w-full overflow-hidden pb-5">
+                  <div class="inline-block max-h-96 overflow-y-auto min-w-full pb-5">
                       <table class="min-w-full leading-normal">
                           <thead>
                               <tr class="border">
@@ -163,7 +163,7 @@
                               </tr>
                           </thead>
                           <tbody *ngIf="cuentasCorrientes">
-                              <tr class="animate__animated animate__fadeIn" *ngFor="let cuentaCorriente of cuentasCorrientes | filtroCcClientes:filtro.parametro:filtro.activo | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual}">
+                              <tr class="animate__animated animate__fadeIn" *ngFor="let cuentaCorriente of cuentasCorrientes | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual, totalItems: totalItems}">
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
                                       <p class="text-gray-900 w-max whitespace-no-wrap">
                                           {{ cuentaCorriente.cliente.descripcion }}
@@ -202,9 +202,11 @@
                   </div>
               </div>
           </div>
-          <div *ngIf="cuentasCorrientes.length > cantidadItems" class="px-5 text-sm py-5 mt-4 bg-white border-t flex shadow flex-col xs:flex-row items-center xs:justify-between">
-              <pagination-controls nextLabel="Siguiente" previousLabel="Anterior" (pageChange)="paginaActual = $event"></pagination-controls>
-          </div>
+          <div
+          class="px-5 py-5 text-sm mt-4 bg-white border-t flex shadow flex-col xs:flex-row items-center xs:justify-between">
+          <pagination-controls nextLabel="Siguiente" previousLabel="Anterior"
+              (pageChange)="cambiarPagina($event)"></pagination-controls>
+      </div>
       </div>
     </app-tarjeta-lista>
 </div>
