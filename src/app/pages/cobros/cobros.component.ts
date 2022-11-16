@@ -203,6 +203,8 @@ export class CobrosComponent implements OnInit {
 
     this.totalEnVentas = 0;
 
+    this.alertService.loading();
+
     // Se obtienen las relaciones RECIBO - CHEQUE
     this.chequesService.listarRelaciones({ recibo_cobro: recibo._id }).subscribe({
       next: ({ relaciones }) => {
@@ -211,10 +213,10 @@ export class CobrosComponent implements OnInit {
         // Se obtienen las relaciones RECIBO - VENTAS
         this.recibosVentasService.listarRelaciones({ recibo_cobro: recibo._id }).subscribe({
           next: ({ relaciones }) => {
-            console.log(relaciones);
             this.relaciones_ventas = relaciones;
             this.reciboSeleccionado = recibo;
             relaciones.map( relacion => this.totalEnVentas += relacion.monto_cobrado );
+            this.alertService.close();
             this.showModalRecibo = true;
           }, error: ({ error }) => this.alertService.errorApi(error.message)
         })
