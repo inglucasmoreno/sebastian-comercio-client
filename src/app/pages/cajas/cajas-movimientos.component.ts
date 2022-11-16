@@ -67,6 +67,7 @@ export class CajasMovimientosComponent implements OnInit {
   public recibo_cobro: any = null;
   public recibo_ventas: any[] = [];
   public recibo_cheques: any[] = [];
+  public totalEnVentas: any = 0;
 
   // Otros
   public origen: string = '';
@@ -364,6 +365,8 @@ export class CajasMovimientosComponent implements OnInit {
   // Abrir detalles de cobro
   abrirDetallesCobro(): void {
 
+    this.totalEnVentas = 0;
+
     this.alertService.loading();
 
     // RECIBO DE COBRO
@@ -375,6 +378,7 @@ export class CajasMovimientosComponent implements OnInit {
         this.recibosCobroVentaService.listarRelaciones({ recibo_cobro: this.recibo_cobro._id }).subscribe({
           next: ({ relaciones }) => {
             this.recibo_ventas = relaciones;
+            relaciones.map( relacion => this.totalEnVentas += relacion.monto_cobrado );
 
             // RELACION -> RECIBO - CHEQUES
             this.recibosCobroChequeService.listarRelaciones({ recibo_cobro: this.recibo_cobro._id }).subscribe({

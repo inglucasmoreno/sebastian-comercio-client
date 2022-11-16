@@ -55,6 +55,8 @@ export class NuevaVentaComponent implements OnInit {
   // Flags
   public etapa = 'tipo_venta';
   public productoCargado = false;
+  public flagCC = false;
+  public montoFijo = false;
 
   // Formulario de cliente
   public clientesForm: any = {
@@ -424,6 +426,8 @@ export class NuevaVentaComponent implements OnInit {
   // Abrir clientes
   abrirModalClientes(): void {
     this.filtro.parametro = '';
+    this.paginaActualClientes = 1;
+    this.desdeClientes = 0;
     this.cantidadItemsClientes = 10;
     this.listarClientes();
   }
@@ -521,9 +525,6 @@ export class NuevaVentaComponent implements OnInit {
       return;
     }
 
-    console.log(this.precio_total);
-    console.log(this.totalPagado);
-
     // Verificacion: Cuenta corriente
     if(this.incrementoCC && (!this.cuenta_corriente || !this.cuenta_corriente?.activo)){
       this.alertService.info('Se necesita una cuenta corriente para el saldo a favor');
@@ -588,8 +589,15 @@ export class NuevaVentaComponent implements OnInit {
 
   // Forma de pago seleccionada
   seleccionandoFormaPago(): void {
-    console.log(this.forma_pago);
-    if(this.forma_pago.trim() === '') return;
+    if(this.forma_pago === 'cuenta_corriente'){
+      this.montoFijo = true;
+      this.forma_pago_monto = this.precio_total
+    }else if(this.forma_pago.trim() === ''){
+      this.montoFijo = false;
+      return;
+    }else{
+      this.montoFijo = false;
+    }
   }
 
   // Seleccionar banco
@@ -623,6 +631,7 @@ export class NuevaVentaComponent implements OnInit {
 
     // Calculo de deuda
     if(this.forma_pago === 'cuenta_corriente'){
+      this.flagCC = true;
       if((this.cuenta_corriente.saldo < this.forma_pago_monto) && (this.cuenta_corriente.saldo > 0)){
         this.deuda_monto = this.forma_pago_monto - this.cuenta_corriente.saldo;
         this.cancelada = false;
@@ -684,6 +693,8 @@ export class NuevaVentaComponent implements OnInit {
 
     // Se reinician los valores de deuda
     if(forma_pago.descripcion === 'CUENTA CORRIENTE'){
+      this.flagCC = false;
+      this.montoFijo = false;
       this.cancelada = true;
       this.deuda_monto = 0;
     }
@@ -737,6 +748,8 @@ export class NuevaVentaComponent implements OnInit {
                   }
 
                   this.forma_pago = '';
+                  this.montoFijo = false;
+                  this.flagCC = false;
                   this.forma_pago_monto = this.precio_total;
                   this.formas_pago = [];
                   this.showFormaPago = true;

@@ -357,6 +357,8 @@ export class NuevoPresupuestoComponent implements OnInit {
   // Abrir clientes
   abrirModalClientes(): void {
     this.filtro.parametroCliente = '';
+    this.paginaActualClientes = 1;
+    this.desdeClientes = 0;
     this.cantidadItemsClientes = 10;
     this.listarClientes();
   }

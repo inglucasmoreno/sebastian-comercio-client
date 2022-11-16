@@ -138,6 +138,7 @@ export class NuevoCobroComponent implements OnInit {
 
       const dataVenta = {
         venta: venta._id,
+        total_deuda: venta.deuda_monto,
         monto_cobrado: venta.deuda_monto,
         monto_deuda: 0,
         cancelada: true,
@@ -407,17 +408,16 @@ export class NuevoCobroComponent implements OnInit {
           const data = {
             cliente: this.cliente,
             formas_pago: this.formas_pago,
-            cobro_total: this.montoTotal,
+            cobro_total: this.montoTotalCobrado,
             carro_pago: this.carro_pago,
             cheques: this.cheques,
             creatorUser: this.authService.usuario.userId,
             updatorUser: this.authService.usuario.userId,
           };
 
-          console.log(data);
-
           this.cobrosService.nuevoRecibo(data).subscribe({
             next: () => {
+              window.open(`${base_url}/pdf/recibo_cobro.pdf`, '_blank');
               this.reiniciarSeccion();
               this.alertService.close();
             }, error: ({ error }) => this.alertService.errorApi(error.message)
@@ -472,13 +472,13 @@ export class NuevoCobroComponent implements OnInit {
 
     const dataVenta = {
       venta: this.ventaSeleccionada._id,
+      total_deuda: this.ventaSeleccionada.deuda_monto,
       monto_cobrado: this.montoParcial,
       monto_deuda: this.ventaSeleccionada.deuda_monto - this.montoParcial,
       cancelada: false,
     }
 
     this.carro_pago.unshift(dataVenta);
-
 
     this.calculoMontoTotalCobro();
 
@@ -502,8 +502,6 @@ export class NuevoCobroComponent implements OnInit {
           next: ({ relaciones }) => {
 
             this.relaciones = relaciones;
-
-            console.log(this.relaciones);
 
             this.showModalDetallesVenta = true;
 

@@ -64,6 +64,7 @@ export class CcClientesMovimientosComponent implements OnInit {
   public recibo_cobro: any = null;
   public recibo_ventas: any[] = [];
   public recibo_cheques: any[] = [];
+  public totalEnVentas: number = 0;
 
   // Otros
   public origen = 'cobro';
@@ -353,8 +354,6 @@ export class CcClientesMovimientosComponent implements OnInit {
   // Abrir detalles de cheque
   abrirDetallesCheque(cheque: any, origen: string): void {
 
-    console.log(origen)
-
     this.chequeSeleccionado = cheque;
     this.origen = origen;
 
@@ -391,6 +390,8 @@ export class CcClientesMovimientosComponent implements OnInit {
   // Abrir detalles de cobro
   abrirDetallesCobro(): void {
 
+    this.totalEnVentas = 0;
+
     this.alertService.loading();
 
     // RECIBO DE COBRO
@@ -402,12 +403,12 @@ export class CcClientesMovimientosComponent implements OnInit {
         this.recibosCobroVentaService.listarRelaciones({ recibo_cobro: this.recibo_cobro._id }).subscribe({
           next: ({ relaciones }) => {
             this.recibo_ventas = relaciones;
+            relaciones.map( relacion => this.totalEnVentas += relacion.monto_cobrado );
 
             // RELACION -> RECIBO - CHEQUES
             this.recibosCobroChequeService.listarRelaciones({ recibo_cobro: this.recibo_cobro._id }).subscribe({
               next: ({ relaciones }) => {
                 this.recibo_cheques = relaciones;
-                console.log(relaciones);
                 this.showModalDetalles = false;
                 this.showModalDetallesCobro = true;
                 this.alertService.close();

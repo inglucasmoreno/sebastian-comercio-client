@@ -13,7 +13,7 @@
       <div class="mt-2">
         <p> <span class="font-semibold"> Cliente: </span> {{ recibo_cobro?.cliente.descripcion }} </p>
       </div>  
-      <div class="mt-2">
+      <div *ngIf="recibo_ventas && recibo_ventas.length > 0" class="mt-2">
         <h2 class="p-1 bg-gray-100 font-semibold rounded w-full border border-gray-300"> Facturas pagadas </h2>
         <div (click)="abrirDetallesVenta('cobro', venta.venta_propia._id)" title="Detalles de venta" class="flex cursor-pointer hover:bg-secondaryColor hover:text-white p-2 items-center justify-between border-b border-gray-300 pb-2" *ngFor="let venta of recibo_ventas">
           <div> 
@@ -23,9 +23,14 @@
           <p class="font-semibold"> ${{ venta.monto_cobrado | moneda }} </p>
         </div>
         <div class="p-2 flex items-center justify-between">
-          <p class="font-semibold"> TOTAL </p>
-          <p class="font-semibold"> ${{ recibo_cobro?.cobro_total | moneda }} </p>
+          <p class="font-semibold"> TOTAL FACTURAS </p>
+          <p class="font-semibold"> ${{ totalEnVentas | moneda }} </p>
         </div>
+      </div>
+      <div *ngIf="!recibo_ventas || recibo_ventas.length === 0" class="my-4">
+        <span class="p-2 bg-green-100 text-green-700 border text-xs border-green-300 font-semibold rounded">
+          RECIBO DE ANTICIPO
+        </span>
       </div>
       <div class="mt-2">
         <h2 class="p-1 bg-gray-100 font-semibold rounded w-full border border-gray-300"> Formas de pago </h2>
@@ -51,8 +56,14 @@
             <p class="font-semibold pr-2"> ${{ relacion.cheque.importe | moneda }} </p>
           </div>
           <div class="p-2 flex items-center justify-between">
-            <p class="font-semibold"> TOTAL </p>
+            <p class="font-semibold"> TOTAL COBRADO </p>
             <p class="font-semibold"> ${{ recibo_cobro?.cobro_total | moneda }} </p>
+          </div>
+          <div class="px-2">
+            <p *ngIf="(recibo_cobro?.cobro_total - totalEnVentas > 0) && recibo_ventas.length > 0" class="p-2 font-semibold rounded outline-none bg-green-100 text-green-800 border border-green-300 flex items-center justify-between">
+              <span> ANTICIPO </span>
+              <span> ${{ recibo_cobro?.cobro_total - totalEnVentas | moneda }} </span>
+            </p>
           </div>
         </div>
       </div>
@@ -202,6 +213,7 @@
                   <p class="mt-1 font-semibold"> {{ movimientoSeleccionado?.descripcion }} </p>
                   <p> <span class="font-semibold"> Fecha: </span> {{ movimientoSeleccionado?.createdAt | fecha }} </p>
               </div>
+              <p class="mt-2"> <span class="font-semibold"> Número de movimiento: </span> {{ movimientoSeleccionado?.nro }} </p>
               <p class="mt-2"> <span class="font-semibold"> Tipo de movimiento: </span> {{ movimientoSeleccionado?.tipo }} </p>
               <p *ngIf="movimientoSeleccionado?.observacion.trim() !== ''" class="mt-2"> <span class="font-semibold"> Observación: </span> {{ movimientoSeleccionado?.observacion }} </p>
               <p class="mt-2"> 
@@ -353,6 +365,18 @@
                                     </span>
                                 </div>
                               </th>
+                              <th class="px-5 border-b-2 border-gray-200 bg-gray-100 text-sm font-semibold text-gray-900 tracking-wider">
+                                <div (click)="ordenarPorColumna('nro')" class="cursor-pointer w-max flex items-center justify-center focus:outline-none">
+                                    <span>
+                                        Número                                               
+                                    </span>
+                                    <span class="ml-2">
+                                        <svg *ngIf="ordenar.columna == 'nro' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                                   
+                                        <svg *ngIf="ordenar.columna == 'nro' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                        <svg *ngIf="ordenar.columna != 'nro'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                    </span>
+                                </div>
+                              </th>
                               <th class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-900 tracking-wider">
                                     <div (click)="ordenarPorColumna('descripcion')" class="cursor-pointer flex items-center focus:outline-none">
                                         <span> Descripción </span>
@@ -407,6 +431,11 @@
                                     <p class="text-gray-900 whitespace-no-wrap">
                                         {{ movimiento.createdAt | fecha }}
                                     </p>
+                                </td>
+                                <td class="px-5 py-2 border-b border-gray-200 text-xs">
+                                  <p class="text-gray-900 w-max whitespace-no-wrap">
+                                      {{ movimiento.nro }}
+                                  </p>
                                 </td>
                                 <td class="px-5 py-2 border-b border-gray-200 text-xs">
                                     <p class="text-gray-900 w-max whitespace-no-wrap">

@@ -142,7 +142,7 @@ export class CcProveedoresComponent implements OnInit {
     }
 
     // Verificacion: Saldo incorrecto
-    if (!this.saldo || this.saldo < 0) {
+    if (this.saldo < 0) {
       this.alertService.info('Debes colocar un saldo correcto');
       return;
     }

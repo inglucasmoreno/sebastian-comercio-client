@@ -31,6 +31,13 @@ export class RecibosCobroService {
     });
   };
 
+  // Generar PDF
+  generarPDF(data: any): Observable<any> {
+    return this.http.post(`${base_url}/recibos-cobro/generarPDF`, data, {
+      headers: this.getToken
+    });
+  };
+
   // Listar recibos de cobro
   listarRecibos(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/recibos-cobro`, {

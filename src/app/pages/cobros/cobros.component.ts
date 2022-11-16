@@ -37,6 +37,7 @@ export class CobrosComponent implements OnInit {
   public reciboSeleccionado: any;
   public descripcion: string = '';
   public chequeSeleccionado: any;
+  public totalEnVentas: number = 0;
 
   // Cheques
   public relaciones_cheques: any[] = [];
@@ -200,6 +201,8 @@ export class CobrosComponent implements OnInit {
   // Abrir detalles de recibo
   abrirDetallesRecibo(recibo: any): void {
 
+    this.totalEnVentas = 0;
+
     // Se obtienen las relaciones RECIBO - CHEQUE
     this.chequesService.listarRelaciones({ recibo_cobro: recibo._id }).subscribe({
       next: ({ relaciones }) => {
@@ -208,8 +211,10 @@ export class CobrosComponent implements OnInit {
         // Se obtienen las relaciones RECIBO - VENTAS
         this.recibosVentasService.listarRelaciones({ recibo_cobro: recibo._id }).subscribe({
           next: ({ relaciones }) => {
+            console.log(relaciones);
             this.relaciones_ventas = relaciones;
             this.reciboSeleccionado = recibo;
+            relaciones.map( relacion => this.totalEnVentas += relacion.monto_cobrado );
             this.showModalRecibo = true;
           }, error: ({ error }) => this.alertService.errorApi(error.message)
         })
@@ -286,11 +291,12 @@ export class CobrosComponent implements OnInit {
   }
 
   // Generar PDF
-  generarPDF(venta: any): void {
+  generarPDF(recibo: any): void {
+    console.log('Generando PDF')
     this.alertService.loading();
-    this.ventasPropiasService.generarPDF({ venta: venta._id }).subscribe({
+    this.recibosService.generarPDF({ recibo: recibo._id }).subscribe({
       next: () => {
-        window.open(`${base_url}/pdf/venta-propia.pdf`, '_blank');
+        window.open(`${base_url}/pdf/recibo_cobro.pdf`, '_blank');
         this.alertService.close();
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
