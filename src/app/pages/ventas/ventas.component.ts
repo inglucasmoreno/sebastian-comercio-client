@@ -374,10 +374,6 @@ export class VentasComponent implements OnInit {
         })
         this.ventaSeleccionada.precio_total = precio_total_venta;
 
-        console.log(this.ventaSeleccionada.precio_total);
-
-        console.log(precio_total_venta);
-
         // Se actualiza el precio total de la venta
         this.ventasService.actualizarVenta(this.ventaSeleccionada._id, { precio_total: precio_total_venta }).subscribe({
           next: () => this.listarVentas(),

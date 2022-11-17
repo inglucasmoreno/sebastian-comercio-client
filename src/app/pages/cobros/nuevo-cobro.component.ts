@@ -10,6 +10,7 @@ import gsap from 'gsap';
 import { environment } from 'src/environments/environment';
 import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
 import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
+import { format } from 'date-fns';
 
 const base_url = environment.base_url;
 
@@ -20,6 +21,8 @@ const base_url = environment.base_url;
   ]
 })
 export class NuevoCobroComponent implements OnInit {
+
+  public fecha_cobro: string = format(new Date(),'yyyy-MM-dd');
 
   // MODALS
   public showModalCobro = false;
@@ -188,6 +191,7 @@ export class NuevoCobroComponent implements OnInit {
 
   // ** ABRIR MODAL -> COMPLETANDO COBRO
   abrirModalCobro(): void {
+    this.fecha_cobro = format(new Date(),'yyyy-MM-dd');
     this.formas_pago = [];
     this.cheques = [];
     this.forma_pago = '';
@@ -407,6 +411,7 @@ export class NuevoCobroComponent implements OnInit {
 
           const data = {
             cliente: this.cliente,
+            fecha_cobro: this.fecha_cobro,
             formas_pago: this.formas_pago,
             cobro_total: this.montoTotalCobrado,
             carro_pago: this.carro_pago,

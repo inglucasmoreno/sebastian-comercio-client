@@ -8,7 +8,7 @@
     <div class="p-2">
       <div class="flex items-center justify-between">
         <p> <span class="font-semibold"> Código de recibo: </span> {{ recibo_cobro?.nro | codigoReciboCobro }} </p>
-        <p> <span class="font-semibold"> Fecha: </span> {{ recibo_cobro?.createdAt | fecha }} </p>    
+        <p> <span class="font-semibold"> Fecha: </span> {{ recibo_cobro?.fecha_cobro ? (recibo_cobro?.fecha_cobro | fecha) : (recibo_cobro?.createdAt | fecha) }} </p>   
       </div>
       <div class="mt-2">
         <p> <span class="font-semibold"> Cliente: </span> {{ recibo_cobro?.cliente.descripcion }} </p>
@@ -130,7 +130,7 @@
   <div class="p-2 text-sm">
     <div class="w-full flex items-center justify-between">
       <p> <span class="font-semibold"> Código de venta: </span> {{ ventaPropia?.nro | codigoVentasPropias }} </p>
-      <p> <span class="font-semibold"> Fecha: </span>  {{ ventaPropia?.createdAt | fecha }} </p>
+      <p> <span class="font-semibold"> Fecha de venta: </span>  {{ ventaPropia?.fecha_venta ? (ventaPropia?.fecha_venta | fecha) : (ventaPropia?.createdAt | fecha) }} </p>
     </div>
     <p class="mt-2"> <span class="font-semibold"> Precio total: </span>  ${{ ventaPropia?.precio_total | moneda }} </p>
     <p class="mt-2"> <span class="font-semibold"> Cliente: </span> {{ ventaPropia?.cliente.descripcion }} </p>

@@ -294,7 +294,6 @@ export class CobrosComponent implements OnInit {
 
   // Generar PDF
   generarPDF(recibo: any): void {
-    console.log('Generando PDF')
     this.alertService.loading();
     this.recibosService.generarPDF({ recibo: recibo._id }).subscribe({
       next: () => {

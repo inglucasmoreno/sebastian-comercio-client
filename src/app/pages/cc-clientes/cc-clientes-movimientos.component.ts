@@ -259,18 +259,15 @@ export class CcClientesMovimientosComponent implements OnInit {
       this.ventasPropiasService.getVenta(movimiento.venta_propia).subscribe({
         next: ({ venta }) => {
           this.ventaPropia = venta;
-          console.log(this.ventaPropia);
 
           this.ventasPropiasProductosService.listarProductos({ venta: venta._id }).subscribe({
             next: ({ productos }) => {
               this.productos = productos;
-              console.log(this.productos);
 
               this.ventasPropiasChequesService.listarRelaciones({ venta_propia: venta._id }).subscribe({
                 next: ({ relaciones }) => {
 
                   this.relaciones = relaciones;
-                  console.log(this.relaciones);
 
                   this.movimientoSeleccionado = movimiento;
                   this.showModalDetalles = true;

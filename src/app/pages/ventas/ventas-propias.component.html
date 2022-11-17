@@ -151,7 +151,7 @@
   <div class="p-2 text-sm">
     <div class="w-full flex items-center justify-between">
       <p> <span class="font-semibold"> Código de venta: </span> {{ ventaSeleccionada?.nro | codigoVentasPropias }} </p>
-      <p> <span class="font-semibold"> Fecha: </span>  {{ ventaSeleccionada?.createdAt | fecha }} </p>
+      <p> <span class="font-semibold"> Fecha de venta: </span>  {{ ventaSeleccionada?.fecha_venta ? (ventaSeleccionada?.fecha_venta | fecha) : (ventaSeleccionada?.createdAt | fecha) }} </p>
     </div>
     <p class="mt-2"> <span class="font-semibold"> Precio total: </span>  ${{ ventaSeleccionada?.precio_total | moneda }}
       <span class="text-green-700 font-semibold" *ngIf="precioConPorcentaje">
@@ -384,17 +384,29 @@
                                     </div>
                                   </th>
                                   <th class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-900 tracking-wider">
-                                      <div (click)="ordenarPorColumna('createdAt')" class="cursor-pointer w-max flex items-center focus:outline-none">
+                                      <div (click)="ordenarPorColumna('fecha_venta')" class="cursor-pointer w-max flex items-center focus:outline-none">
                                           <span>
                                             Fecha de venta
                                           </span>
                                           <span class="ml-2 text-gray-600">
-                                              <svg *ngIf="ordenar.columna == 'createdAt' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                                              <svg *ngIf="ordenar.columna == 'createdAt' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>
-                                              <svg *ngIf="ordenar.columna != 'createdAt'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                              <svg *ngIf="ordenar.columna == 'fecha_venta' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                              <svg *ngIf="ordenar.columna == 'fecha_venta' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                              <svg *ngIf="ordenar.columna != 'fecha_venta'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                           </span>
                                       </div>
                                   </th>
+                                  <th class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-900 tracking-wider">
+                                    <div (click)="ordenarPorColumna('createdAt')" class="cursor-pointer w-max flex items-center focus:outline-none">
+                                        <span>
+                                          Fecha de carga
+                                        </span>
+                                        <span class="ml-2 text-gray-600">
+                                            <svg *ngIf="ordenar.columna == 'createdAt' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                            <svg *ngIf="ordenar.columna == 'createdAt' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                            <svg *ngIf="ordenar.columna != 'createdAt'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                        </span>
+                                    </div>
+                                </th>
                                   <th class="px-5 border-b-2 border-gray-200 bg-gray-100 text-center text-sm font-semibold text-gray-900 tracking-wider">
                                       <div (click)="ordenarPorColumna('cliente.descripcion')" class="cursor-pointer flex items-center focus:outline-none">
                                           <span>
@@ -448,6 +460,11 @@
                                 <td class="px-5 py-2 border-b border-gray-200 text-xs">
                                     <p class="text-gray-900 whitespace-no-wrap">
                                         {{ venta.nro | codigoVentasPropias }}
+                                    </p>
+                                  </td>
+                                  <td class="px-5 py-2 border-b border-gray-200 text-xs">
+                                    <p class="text-gray-900 whitespace-no-wrap">
+                                        {{ venta.fecha_venta ? (venta.fecha_venta | fecha) : (venta.createdAt | fecha) }}
                                     </p>
                                   </td>
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">

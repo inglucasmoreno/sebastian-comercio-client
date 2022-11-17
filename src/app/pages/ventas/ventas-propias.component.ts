@@ -336,8 +336,6 @@ export class VentasPropiasComponent implements OnInit {
             this.recibosCobroVentaService.listarRelaciones({ venta_propia: venta._id }).subscribe({
               next: ({ relaciones }) => {
 
-                console.log(relaciones);
-
                 this.recibosCobro = relaciones;
 
                 window.scroll(0,0);
@@ -419,10 +417,6 @@ export class VentasPropiasComponent implements OnInit {
           precio_total_venta += producto.precio_total;
         })
         this.ventaSeleccionada.precio_total = precio_total_venta;
-
-        console.log(this.ventaSeleccionada.precio_total);
-
-        console.log(precio_total_venta);
 
         // Se actualiza el precio total de la venta
         this.ventasPropiasService.actualizarVenta(this.ventaSeleccionada._id, { precio_total: precio_total_venta }).subscribe({

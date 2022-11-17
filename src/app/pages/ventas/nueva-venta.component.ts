@@ -12,6 +12,7 @@ import { CajasService } from 'src/app/services/cajas.service';
 import { CcClientesService } from 'src/app/services/cc-clientes.service';
 import { BancosService } from 'src/app/services/bancos.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
+import { format } from 'date-fns';
 
 const base_url = environment.base_url;
 
@@ -76,6 +77,7 @@ export class NuevaVentaComponent implements OnInit {
   public observacion:string = '';
 
   // Venta propia
+  public fecha_venta: string = format(new Date(),'yyyy-MM-dd');
   public incrementoCC: boolean = false;
   public totalPagado: number = 0;
   public cancelada: boolean = true;
@@ -435,6 +437,12 @@ export class NuevaVentaComponent implements OnInit {
   // Crear venta - DIRECTA
   crearVentaDirecta(): void {
 
+    // Verificacion: Fecha
+    if(!this.fecha_venta){
+      this.alertService.info('Debes colocar una fecha válida');
+      return;
+    }
+
     // Verificacion: Productos
     if(this.productosVenta.length === 0){
       this.alertService.info('Debes cargar al menos un producto');
@@ -476,6 +484,7 @@ export class NuevaVentaComponent implements OnInit {
           nro_factura: this.nro_factura,
           tipo_cliente: this.tipo_cliente,
           tipo_venta: this.tipo_venta,
+          fecha_venta: this.fecha_venta,
           cliente_descripcion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.descripcion : 'CONSUMIDOR FINAL',
           observacion: this.observacion,
           cliente_tipo_identificacion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.tipo_identificacion : 'DNI',
@@ -506,6 +515,12 @@ export class NuevaVentaComponent implements OnInit {
 
   // Crear venta - PROPIA
   crearVentaPropia(): void {
+    
+    // Verificacion: Fecha
+    if(!this.fecha_venta){
+      this.alertService.info('Debes colocar una fecha válida');
+      return;
+    }
 
     // Verificacion: Productos
     if(this.productosVenta.length === 0){
@@ -567,6 +582,7 @@ export class NuevaVentaComponent implements OnInit {
           cliente_condicion_iva: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.condicion_iva : 'Consumidor Final',
           precio_total: this.precio_total,
           productos: this.productosVenta,
+          fecha_venta: this.fecha_venta,
           creatorUser: this.authService.usuario.userId,
           updatorUser: this.authService.usuario.userId,
         };
@@ -731,8 +747,6 @@ export class NuevaVentaComponent implements OnInit {
 
               this.datosCliente = cliente;
 
-              console.log(cliente._id);
-
               // Se busca la cuenta corriente del cliente
               this.ccClientesService.getCuentaCorrientePorCliente(cliente._id).subscribe({
 
@@ -748,6 +762,7 @@ export class NuevaVentaComponent implements OnInit {
                   }
 
                   this.forma_pago = '';
+                  this.fecha_venta = format(new Date(), 'yyyy-MM-dd');
                   this.montoFijo = false;
                   this.flagCC = false;
                   this.forma_pago_monto = this.precio_total;
@@ -951,6 +966,7 @@ export class NuevaVentaComponent implements OnInit {
     }
 
     // Venta
+    this.fecha_venta = format(new Date(),'yyyy-MM-dd');
     this.precio_total = 0;
     this.observacion = '';
     this.nro_factura = '';

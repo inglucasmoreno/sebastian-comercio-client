@@ -13,7 +13,7 @@
     <div class="p-2 text-sm">
       <div class="w-full flex items-center justify-between">
         <p> <span class="font-semibold"> Código de venta: </span> {{ ventaPropia?.nro | codigoVentasPropias }} </p>
-        <p> <span class="font-semibold"> Fecha: </span>  {{ ventaPropia?.createdAt | fecha }} </p>
+        <p> <span class="font-semibold"> Fecha de venta: </span>  {{ ventaPropia?.fecha_venta ? (ventaPropia?.fecha_venta | fecha) : (ventaPropia?.createdAt | fecha) }} </p>
       </div>
       <p class="mt-2"> <span class="font-semibold"> Precio total: </span>  ${{ ventaPropia?.precio_total | moneda }} </p>
       <p class="mt-2"> <span class="font-semibold"> Cliente: </span> {{ ventaPropia?.cliente.descripcion }} </p>
@@ -139,7 +139,7 @@
       <div class="p-2">
         <div class="flex items-center justify-between">
           <p> <span class="font-semibold"> Código de recibo: </span> {{ reciboSeleccionado?.nro | codigoReciboCobro }} </p>
-          <p> <span class="font-semibold"> Fecha: </span> {{ reciboSeleccionado?.createdAt | fecha }} </p>    
+          <p> <span class="font-semibold"> Fecha: </span> {{ reciboSeleccionado?.fecha_cobro ? (reciboSeleccionado?.fecha_cobro | fecha) : (reciboSeleccionado?.createdAt | fecha) }} </p>    
         </div>
         <div class="mt-2">
           <p> <span class="font-semibold"> Cliente: </span> {{ reciboSeleccionado?.cliente.descripcion }} </p>
@@ -264,9 +264,21 @@
                                       </div>
                                   </th>
                                   <th class="px-5 border-b-2 border-gray-200 bg-gray-100 text-sm font-semibold text-gray-900 tracking-wider">
+                                    <div (click)="ordenarPorColumna('fecha_cobro')" class="cursor-pointer w-max flex items-center justify-center focus:outline-none">
+                                        <span>
+                                            Fecha de cobro                                               
+                                        </span>
+                                        <span class="ml-2">
+                                            <svg *ngIf="ordenar.columna == 'fecha_cobro' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                                   
+                                            <svg *ngIf="ordenar.columna == 'fecha_cobro' && ordenar.direccion == -1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                            <svg *ngIf="ordenar.columna != 'fecha_cobro'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                        </span>
+                                    </div>
+                                </th>
+                                  <th class="px-5 border-b-2 border-gray-200 bg-gray-100 text-sm font-semibold text-gray-900 tracking-wider">
                                       <div (click)="ordenarPorColumna('createdAt')" class="cursor-pointer w-max flex items-center justify-center focus:outline-none">
                                           <span>
-                                              Fecha de cobro                                               
+                                              Fecha de carga                                               
                                           </span>
                                           <span class="ml-2">
                                               <svg *ngIf="ordenar.columna == 'createdAt' && ordenar.direccion == 1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                                   
@@ -321,6 +333,11 @@
                                       <p class="text-gray-900 w-max whitespace-no-wrap">
                                           {{ recibo.nro | codigoReciboCobro }}
                                       </p>
+                                  </td>
+                                  <td class="px-5 py-2 border-b border-gray-200 text-xs">
+                                    <p class="text-gray-900 whitespace-no-wrap">
+                                        {{ recibo.fecha_cobro ? (recibo.fecha_cobro | fecha) : (recibo.createdAt | fecha) }}
+                                    </p>
                                   </td>
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
                                       <p class="text-gray-900 whitespace-no-wrap">
