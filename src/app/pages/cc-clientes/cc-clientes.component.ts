@@ -4,6 +4,9 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CcClientesService } from 'src/app/services/cc-clientes.service';
 import { ClientesService } from 'src/app/services/clientes.service';
 import { DataService } from 'src/app/services/data.service';
+import { environment } from 'src/environments/environment';
+
+const base_url = environment.base_url;
 
 @Component({
   selector: 'app-cc-clientes',
@@ -180,6 +183,23 @@ export class CcClientesComponent implements OnInit {
         }
       });
 
+  }
+
+  // Reporte - Excel
+  reporteExcel(): void{
+    this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
+    .then(({isConfirmed}) => {  
+      if (isConfirmed) {
+        this.alertService.loading();
+        this.ccClientesService.generarExcel().subscribe({
+          next: () => {
+            window.open(`${base_url}/excel/cuentas_corrientes.xlsx`, '_blank');
+            this.alertService.close();
+          },
+          error: ({error}) => this.alertService.errorApi(error.message)
+        });
+      }
+    });
   }
 
   // Reiniciando formulario

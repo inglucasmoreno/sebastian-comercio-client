@@ -61,4 +61,11 @@ export class CcClientesService {
     });
   }  
 
+  // Generar Excel
+  generarExcel(): Observable<any> {
+    return this.http.get(`${base_url}/cc-clientes/reporte/excel`, {
+      headers: this.getToken
+    });
+  };
+
 }
