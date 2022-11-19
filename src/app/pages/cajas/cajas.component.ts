@@ -282,9 +282,21 @@ export class CajasComponent implements OnInit {
       return;
     }
 
+    // Verificacion: Saldo de caja inicial insuficiente
+    let saldoCajaInicial = 0;
+
+    this.cajas.map( elemento => {
+      if(String(elemento._id) === String(this.movimientoInterno.caja_origen))saldoCajaInicial = elemento.saldo;  
+    });
+
+    if(this.movimientoInterno.monto > saldoCajaInicial){
+      this.alertService.info('Saldo de caja origen insuficiente');
+      return;   
+    }
+
     this.alertService.question({ msg: 'Generando movimiento', buttonText: 'Generar' })
-      .then(({ isConfirmed }) => {
-        if (isConfirmed) {
+    .then(({ isConfirmed }) => {
+      if (isConfirmed) {
           this.alertService.loading();
           this.cajasService.movimientoInterno(this.movimientoInterno).subscribe({
             next: () => {

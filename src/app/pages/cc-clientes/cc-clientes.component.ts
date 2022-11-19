@@ -142,12 +142,6 @@ export class CcClientesComponent implements OnInit {
       return;
     }
 
-    // Verificacion: Saldo incorrecto
-    if (this.saldo < 0) {
-      this.alertService.info('Debes colocar un saldo correcto');
-      return;
-    }
-
     this.alertService.loading();
 
     const data = {
