@@ -68,6 +68,13 @@ export class VentasPropiasService {
     return this.http.put(`${base_url}/ventas-propias/${id}`, data, {
       headers: this.getToken
     });
-  }    
+  }   
+  
+  // Alta/Baja de venta propia
+  altaBajaVenta(id:string, data: any): Observable<any> {
+    return this.http.put(`${base_url}/ventas-propias/alta-baja/${id}`, data, {
+      headers: this.getToken
+    });
+  }   
 
 }
