@@ -222,7 +222,11 @@ export class VentasPropiasComponent implements OnInit {
           if (isConfirmed) {
             this.alertService.loading();
             const estado = activo ? 'Baja' : 'Alta';
-            this.ventasPropiasService.altaBajaVenta(_id, {estado}).subscribe(() => {
+            this.ventasPropiasService.altaBajaVenta(_id, {
+              estado, 
+              creatorUser: this.authService.usuario.userId,
+              updatorUser: this.authService.usuario.userId
+            }).subscribe(() => {
               this.alertService.loading();
               this.listarVentas();
             }, ({error}) => {
