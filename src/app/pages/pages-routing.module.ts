@@ -35,6 +35,8 @@ import { VentasPropiasComponent } from './ventas/ventas-propias.component';
 import { CajasMovimientosComponent } from './cajas/cajas-movimientos.component';
 import { CobrosComponent } from './cobros/cobros.component';
 import { NuevoCobroComponent } from './cobros/nuevo-cobro.component';
+import { GastosComponent } from './gastos/gastos.component';
+import { GastosTiposComponent } from './gastos/gastos-tipos.component';
 
 const routes: Routes = [
     {
@@ -93,6 +95,10 @@ const routes: Routes = [
 
             // Cheques
             { path: 'cheques', data: { permisos: 'CHEQUES_NAV' }, canActivate: [PermisosGuard], component: ChequesComponent },
+
+            // Gastos
+            { path: 'gastos', data: { permisos: 'GASTOS_NAV' }, canActivate: [PermisosGuard], component: GastosComponent },
+            { path: 'tipos-gastos', data: { permisos: 'GASTOS_NAV' }, canActivate: [PermisosGuard], component: GastosTiposComponent },
 
             // Compras
             { path: 'cc-proveedores', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: CcProveedoresComponent },

@@ -13,7 +13,7 @@
                 <div *ngIf="usuarioLogin.role === 'USER_ROLE'" class="bg-orange-100 mr-auto ml-auto flex items-center justify-center w-24 h-24 rounded-full shadow border border-orange-200">
                     <p class="text-4xl font-semibold text-orange-500"> E </p>
                 </div>
-                <p [ngClass]="{'text-orange-700':usuarioLogin.role === 'USER_ROLE'}" class="mt-1 text-sm text-primaryColor"> {{ usuarioLogin.role === 'ADMIN_ROLE' ? 'Usuario administrador' : 'Usuario empleado' }} </p>
+                <p [ngClass]="{'text-orange-700':usuarioLogin.role === 'USER_ROLE'}" class="mt-1 text-sm text-blue-800"> {{ usuarioLogin.role === 'ADMIN_ROLE' ? 'Usuario administrador' : 'Usuario empleado' }} </p>
             </div>
 
             <!-- Datos de usuario -->

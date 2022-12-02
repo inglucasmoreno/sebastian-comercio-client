@@ -11,6 +11,7 @@ import { itemsCompras } from './items-compras';
 import { itemsCobros } from './items-cobros';
 import { itemsTesoreria } from './items-tesoreria';
 import { itemsTerceros } from './items-terceros';
+import { itemsGastos } from './items-gastos';
 
 @Component({
   selector: 'app-header',
@@ -31,6 +32,7 @@ export class HeaderComponent implements OnInit {
   public itemsTesoreria: any[];
   public itemsTerceros: any[];
   public itemsConfiguraciones: any[];
+  public itemsGastos: any[];
  
   // Flags - Navegacion
   public administrador = false;
@@ -43,6 +45,7 @@ export class HeaderComponent implements OnInit {
   public showTesoreria = false;
   public showTerceros = false;
   public showConfiguraciones = false;
+  public showGastos = false;
 
   // Permisos para navegacion
   public permiso_usuarios = true;
@@ -61,6 +64,7 @@ export class HeaderComponent implements OnInit {
     this.itemsTesoreria = itemsTesoreria;
     this.itemsTerceros = itemsTerceros;
     this.itemsConfiguraciones = itemsConfiguraciones;
+    this.itemsGastos = itemsGastos;
   }
   
   // Habilitacion de navegacion

@@ -1,3 +1,20 @@
+<!-- Detalles de gasto -->
+<app-modal [showModal]="showModalDetallesGasto">
+  <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
+    <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de gasto </h1>
+    <svg (click)="cerrarDetallesGasto()" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </div>  
+  <div class="p-2 text-sm">
+    <div class="flex items-center justify-between border-b-2 pb-1">
+      <p> <span class="font-semibold"> Número de gasto: </span> <span> {{ gastoSeleccionado?.numero }} </span> </p>  
+      <p> <span class="font-semibold"> Fecha: </span> <span> {{  gastoSeleccionado?.fecha_gasto | fecha }} </span> </p>  
+    </div>
+    <p class="mt-2"> <span class="font-semibold"> Monto: </span> <span> ${{  gastoSeleccionado?.monto | moneda }} </span> </p> 
+    <p class="mt-2"> <span class="font-semibold"> Tipo de gasto: </span> <span> {{  gastoSeleccionado?.tipo_gasto.descripcion }} </span> </p> 
+    <p *ngIf="gastoSeleccionado?.observacion.trim() !== ''" class="mt-2"> <span class="font-semibold"> Observación: </span> <span> {{ gastoSeleccionado?.observacion }} </span> </p> 
+  </div>
+</app-modal>
+
 <!-- Detalles de recibo de cobro -->
 <app-modal [showModal]="showModalDetallesCobro">
   <div class="text-sm"t>
@@ -233,6 +250,9 @@
             </button>
             <button (click)="abrirDetallesChequeDesdeMovimiento()" *ngIf="movimientoSeleccionado?.cheque && movimientoSeleccionado?.cheque !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
               Detalles de cheque
+            </button>
+            <button (click)="abrirDetallesGasto()" *ngIf="movimientoSeleccionado?.gasto && movimientoSeleccionado?.gasto !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
+              Detalles de gasto
           </button>
           </div>
       </div>

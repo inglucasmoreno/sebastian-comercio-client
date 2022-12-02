@@ -36,6 +36,8 @@ import { VentasPropiasComponent } from './ventas/ventas-propias.component';
 import { CajasMovimientosComponent } from './cajas/cajas-movimientos.component';
 import { CobrosComponent } from './cobros/cobros.component';
 import { NuevoCobroComponent } from './cobros/nuevo-cobro.component';
+import { GastosComponent } from './gastos/gastos.component';
+import { GastosTiposComponent } from './gastos/gastos-tipos.component';
 
 
 @NgModule({
@@ -69,6 +71,8 @@ import { NuevoCobroComponent } from './cobros/nuevo-cobro.component';
     CajasMovimientosComponent,
     CobrosComponent,
     NuevoCobroComponent,
+    GastosComponent,
+    GastosTiposComponent,
   ],
   imports: [
     CommonModule,

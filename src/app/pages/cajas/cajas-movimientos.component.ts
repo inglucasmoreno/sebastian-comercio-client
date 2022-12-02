@@ -6,6 +6,7 @@ import { CajasMovimientosService } from 'src/app/services/cajas-movimientos.serv
 import { CajasService } from 'src/app/services/cajas.service';
 import { ChequesService } from 'src/app/services/cheques.service';
 import { DataService } from 'src/app/services/data.service';
+import { GastosService } from 'src/app/services/gastos.service';
 import { RecibosCobroChequeService } from 'src/app/services/recibos-cobro-cheque.service';
 import { RecibosCobroVentaService } from 'src/app/services/recibos-cobro-venta.service';
 import { RecibosCobroService } from 'src/app/services/recibos-cobro.service';
@@ -33,6 +34,7 @@ export class CajasMovimientosComponent implements OnInit {
   public showModalDetallesCobro = false;
   public showModalDetallesVenta = false;
   public showModalDetallesCheque = false;
+  public showModalDetallesGasto = false;
 
   // Estado formulario 
   public estadoFormulario = 'crear';
@@ -69,6 +71,9 @@ export class CajasMovimientosComponent implements OnInit {
   public recibo_cheques: any[] = [];
   public totalEnVentas: any = 0;
 
+  // Gastos
+  public gastoSeleccionado: any = null;
+
   // Otros
   public origen: string = '';
 
@@ -93,6 +98,7 @@ export class CajasMovimientosComponent implements OnInit {
     private ventasPropiasService: VentasPropiasService,
     private ventasPropiasChequesService: VentasPropiasChequesService,
     private ventasPropiasProductosService: VentasPropiasProductosService,
+    private gastosService: GastosService,
     private activatedRoute: ActivatedRoute,
     private cajasService: CajasService,
     private authService: AuthService,
@@ -311,14 +317,37 @@ export class CajasMovimientosComponent implements OnInit {
   // Cerrar detalles de venta
   cerrarDetallesVenta(): void {
 
-    if(this.origen === 'venta'){
+    if (this.origen === 'venta') {
       this.showModalDetallesVenta = false;
       this.showModalDetalles = true;
-    }else if(this.origen === 'cobro'){
+    } else if (this.origen === 'cobro') {
       this.showModalDetallesVenta = false;
-      this.showModalDetallesCobro = true;      
+      this.showModalDetallesCobro = true;
     }
 
+  }
+
+  // Abrir detalles de gasto
+  abrirDetallesGasto(): void {
+
+    this.alertService.loading();
+    this.gastosService.getGasto(this.movimientoSeleccionado.gasto).subscribe({
+      next: ({ gasto }) => {
+        this.gastoSeleccionado = gasto;
+        this.showModalDetallesGasto = true;
+        this.showModalDetalles = false;
+        this.alertService.close();
+      }, error: ({error}) => this.alertService.errorApi(error.message)
+    })
+
+
+  }
+
+
+  // Cerrar detalles de gasto
+  cerrarDetallesGasto(): void {
+    this.showModalDetallesGasto = false;
+    this.showModalDetalles = true;
   }
 
   // Abrir detalles de cheque
@@ -353,11 +382,11 @@ export class CajasMovimientosComponent implements OnInit {
       this.showModalDetallesCobro = true;
       this.showModalDetallesCheque = false;
 
-    } else if (this.origen === 'movimiento'){
-      
+    } else if (this.origen === 'movimiento') {
+
       this.showModalDetalles = true;
       this.showModalDetallesCheque = false;
-    
+
     }
 
   }
@@ -378,7 +407,7 @@ export class CajasMovimientosComponent implements OnInit {
         this.recibosCobroVentaService.listarRelaciones({ recibo_cobro: this.recibo_cobro._id }).subscribe({
           next: ({ relaciones }) => {
             this.recibo_ventas = relaciones;
-            relaciones.map( relacion => this.totalEnVentas += relacion.monto_cobrado );
+            relaciones.map(relacion => this.totalEnVentas += relacion.monto_cobrado);
 
             // RELACION -> RECIBO - CHEQUES
             this.recibosCobroChequeService.listarRelaciones({ recibo_cobro: this.recibo_cobro._id }).subscribe({
@@ -403,12 +432,12 @@ export class CajasMovimientosComponent implements OnInit {
     this.showModalDetalles = false;
     this.alertService.loading();
     this.chequesService.getCheque(this.movimientoSeleccionado.cheque).subscribe({
-      next:({cheque}) => {
+      next: ({ cheque }) => {
         this.origen = 'movimiento';
         this.chequeSeleccionado = cheque;
         this.showModalDetallesCheque = true;
         this.alertService.close();
-      }, error: ({error}) => this.alertService.errorApi(error.message)
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
     })
     this.showModalDetallesCheque = true;
   }
