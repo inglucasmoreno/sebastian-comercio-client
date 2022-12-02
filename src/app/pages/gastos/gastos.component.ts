@@ -88,7 +88,6 @@ export class GastosComponent implements OnInit {
           }, error: ({error}) => this.alertService.errorApi(error.message)
         })
 
-        this.alertService.close();
       }, error: ({error}) => this.alertService.errorApi(error.message)
     })
   }
