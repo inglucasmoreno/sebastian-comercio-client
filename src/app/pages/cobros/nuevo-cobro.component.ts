@@ -389,7 +389,7 @@ export class NuevoCobroComponent implements OnInit {
 
   //** GENERANDO COBRO
   generarCobro(): void {
-
+    
     // Verificacion: No hay formas de pago agregada
     if (this.formas_pago.length === 0 && this.cheques.length === 0) {
       this.alertService.info('Se debe agregar al menos una forma de pago');

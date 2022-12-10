@@ -7,7 +7,7 @@
         </div>
         <div class="text-sm p-2">
             <p class="font-semibold"> Caja destino </p>
-            <select [(ngModel)]="cajaSeleccionada" class="p-2 w-full border focus:outline-none mt-2 border-gray-300 rounded">
+            <select [(ngModel)]="cajaSeleccionada" class="p-2 w-full border focus:outline-none mt-2 border-gray-400 rounded">
                 <option value=""> Seleccionar caja </option>
                 <option *ngFor="let caja of cajas" [value]="caja._id"> {{ caja.descripcion }} </option>
             </select>

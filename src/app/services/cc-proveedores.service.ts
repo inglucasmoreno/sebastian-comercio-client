@@ -16,7 +16,7 @@ export class CcProveedoresService {
     };
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Nueva cuenta corriente
   nuevaCuentaCorriente(data: any): Observable<any> {
@@ -27,7 +27,14 @@ export class CcProveedoresService {
 
   // Cuenta corriente por ID
   getCuentaCorriente(id: string): Observable<any> {
-    return this.http.get(`${base_url}/cc-proveedores/${ id }`,{ 
+    return this.http.get(`${base_url}/cc-proveedores/${id}`, {
+      headers: this.getToken
+    });
+  };
+
+  // Cuenta corriente por proveedor
+  getCuentaCorrientePorProveedor(idProveedor: string): Observable<any> {
+    return this.http.get(`${base_url}/cc-proveedores/proveedor/${idProveedor}`, {
       headers: this.getToken
     });
   };
@@ -48,11 +55,11 @@ export class CcProveedoresService {
   }
 
   // Actualizar cuenta corriente
-  actualizarCuentaCorriente(id:string, data: any): Observable<any> {
+  actualizarCuentaCorriente(id: string, data: any): Observable<any> {
     return this.http.put(`${base_url}/cc-proveedores/${id}`, data, {
       headers: this.getToken
     });
-  }  
+  }
 
 
 }

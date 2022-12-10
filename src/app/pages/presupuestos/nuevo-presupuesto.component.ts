@@ -25,7 +25,6 @@ export class NuevoPresupuestoComponent implements OnInit {
   public porcentajeAplicadoTotal = false;
   public porcentajesTotal = '';
 
-
   // Permisos de usuarios login
   public permisos = { all: false };
 
@@ -615,28 +614,28 @@ export class NuevoPresupuestoComponent implements OnInit {
 
   // Alamcenamiento en localstorage
   almacenamientoLocalStorage(): void {
-    localStorage.setItem('etapa', JSON.stringify(this.etapa));
-    localStorage.setItem('porcentajesTotal', JSON.stringify(this.porcentajesTotal));
-    localStorage.setItem('porcentajeAplicadoTotal', JSON.stringify(this.porcentajeAplicadoTotal));
-    localStorage.setItem('productoCargado', JSON.stringify(this.productoCargado));
-    localStorage.setItem('tipo_presupuesto', JSON.stringify(this.tipo_presupuesto));
-    localStorage.setItem('clienteSeleccionado', JSON.stringify(this.clienteSeleccionado));
-    localStorage.setItem('clientesForm', JSON.stringify(this.clientesForm));
-    localStorage.setItem('productosPresupuesto', JSON.stringify(this.productosPresupuesto));
-    localStorage.setItem('precio_total', JSON.stringify(this.precio_total));
-    localStorage.setItem('observacion', JSON.stringify(this.observacion));
+    localStorage.setItem('presupuestos-etapa', JSON.stringify(this.etapa));
+    localStorage.setItem('presupuestos-porcentajesTotal', JSON.stringify(this.porcentajesTotal));
+    localStorage.setItem('presupuestos-porcentajeAplicadoTotal', JSON.stringify(this.porcentajeAplicadoTotal));
+    localStorage.setItem('presupuestos-productoCargado', JSON.stringify(this.productoCargado));
+    localStorage.setItem('presupuestos-tipo_presupuesto', JSON.stringify(this.tipo_presupuesto));
+    localStorage.setItem('presupuestos-clienteSeleccionado', JSON.stringify(this.clienteSeleccionado));
+    localStorage.setItem('presupuestos-clientesForm', JSON.stringify(this.clientesForm));
+    localStorage.setItem('presupuestos-productosPresupuesto', JSON.stringify(this.productosPresupuesto));
+    localStorage.setItem('presupuestos-precio_total', JSON.stringify(this.precio_total));
+    localStorage.setItem('presupuestos-observacion', JSON.stringify(this.observacion));
   }
 
   // recupearar localstorage
   recuperarLocalStorage(): void {
-    this.etapa = localStorage.getItem('etapa') ? JSON.parse(localStorage.getItem('etapa')) : 'tipo_presupuesto';
-    this.porcentajesTotal = localStorage.getItem('porcentajesTotal') ? JSON.parse(localStorage.getItem('porcentajesTotal')) : '';
-    this.porcentajeAplicadoTotal = localStorage.getItem('porcentajeAplicadoTotal') ? JSON.parse(localStorage.getItem('porcentajeAplicadoTotal')) : false;
-    this.etapa = localStorage.getItem('etapa') ? JSON.parse(localStorage.getItem('etapa')) : 'tipo_presupuesto';
-    this.productoCargado = localStorage.getItem('productoCargado') ? JSON.parse(localStorage.getItem('productoCargado')) : false;
-    this.clienteSeleccionado = localStorage.getItem('clienteSeleccionado') ? JSON.parse(localStorage.getItem('clienteSeleccionado')) : null;
-    this.tipo_presupuesto = localStorage.getItem('tipo_presupuesto') ? JSON.parse(localStorage.getItem('tipo_presupuesto')) : 'consumidor_final';
-    this.clientesForm = localStorage.getItem('clientesForm') ? JSON.parse(localStorage.getItem('clientesForm')) : {
+    this.etapa = localStorage.getItem('presupuestos-etapa') ? JSON.parse(localStorage.getItem('presupuestos-etapa')) : 'tipo_presupuesto';
+    this.porcentajesTotal = localStorage.getItem('presupuestos-porcentajesTotal') ? JSON.parse(localStorage.getItem('presupuestos-porcentajesTotal')) : '';
+    this.porcentajeAplicadoTotal = localStorage.getItem('presupuestos-porcentajeAplicadoTotal') ? JSON.parse(localStorage.getItem('presupuestos-porcentajeAplicadoTotal')) : false;
+    this.etapa = localStorage.getItem('presupuestos-etapa') ? JSON.parse(localStorage.getItem('presupuestos-etapa')) : 'tipo_presupuesto';
+    this.productoCargado = localStorage.getItem('presupuestos-productoCargado') ? JSON.parse(localStorage.getItem('presupuestos-productoCargado')) : false;
+    this.clienteSeleccionado = localStorage.getItem('presupuestos-clienteSeleccionado') ? JSON.parse(localStorage.getItem('presupuestos-clienteSeleccionado')) : null;
+    this.tipo_presupuesto = localStorage.getItem('presupuestos-tipo_presupuesto') ? JSON.parse(localStorage.getItem('presupuestos-tipo_presupuesto')) : 'consumidor_final';
+    this.clientesForm = localStorage.getItem('presupuestos-clientesForm') ? JSON.parse(localStorage.getItem('presupuestos-clientesForm')) : {
       descripcion: '',
       tipo_identificacion: 'DNI',
       identificacion: '',
@@ -645,9 +644,9 @@ export class NuevoPresupuestoComponent implements OnInit {
       correo_electronico: '',
       condicion_iva: 'Consumidor Final'
     };
-    this.productosPresupuesto = localStorage.getItem('productosPresupuesto') ? JSON.parse(localStorage.getItem('productosPresupuesto')) : [];
-    this.precio_total = localStorage.getItem('precio_total') ? JSON.parse(localStorage.getItem('precio_total')) : [];
-    this.observacion = localStorage.getItem('observacion') ? JSON.parse(localStorage.getItem('observacion')) : '';
+    this.productosPresupuesto = localStorage.getItem('presupuestos-productosPresupuesto') ? JSON.parse(localStorage.getItem('presupuestos-productosPresupuesto')) : [];
+    this.precio_total = localStorage.getItem('presupuestos-precio_total') ? JSON.parse(localStorage.getItem('presupuestos-precio_total')) : [];
+    this.observacion = localStorage.getItem('presupuestos-observacion') ? JSON.parse(localStorage.getItem('presupuestos-observacion')) : '';
   }
 
   // Cambiar cantidad de items - Clientes

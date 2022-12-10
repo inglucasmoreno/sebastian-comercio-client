@@ -170,7 +170,7 @@
                                       </p>
                                   </td>
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
-                                    <p class="text-gray-900 w-max whitespace-no-wrap">
+                                    <p [ngClass]="{'text-red-700' : cuentaCorriente.saldo < 0}" class="text-gray-900 w-max whitespace-no-wrap">
                                         ${{ cuentaCorriente.saldo | moneda }}
                                     </p>
                                 </td>

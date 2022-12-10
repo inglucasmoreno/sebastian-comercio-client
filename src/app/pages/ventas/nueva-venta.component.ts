@@ -1161,8 +1161,8 @@ export class NuevaVentaComponent implements OnInit {
   almacenamientoLocalStorage(): void {
     localStorage.setItem('venta_etapa', JSON.stringify(this.etapa));
     localStorage.setItem('venta_productoCargado', JSON.stringify(this.productoCargado));
-    localStorage.setItem('porcentajesTotal', JSON.stringify(this.porcentajesTotal));
-    localStorage.setItem('porcentajeAplicadoTotal', JSON.stringify(this.porcentajeAplicadoTotal));
+    localStorage.setItem('venta_porcentajesTotal', JSON.stringify(this.porcentajesTotal));
+    localStorage.setItem('venta_porcentajeAplicadoTotal', JSON.stringify(this.porcentajeAplicadoTotal));
     localStorage.setItem('venta_tipo_cliente', JSON.stringify(this.tipo_cliente));
     localStorage.setItem('venta_tipo_venta', JSON.stringify(this.tipo_venta));
     localStorage.setItem('venta_clienteSeleccionado', JSON.stringify(this.clienteSeleccionado));
@@ -1177,8 +1177,8 @@ export class NuevaVentaComponent implements OnInit {
     this.etapa = localStorage.getItem('venta_etapa') ? JSON.parse(localStorage.getItem('venta_etapa')) : 'tipo_venta';
     this.productoCargado = localStorage.getItem('venta_productoCargado') ? JSON.parse(localStorage.getItem('venta_productoCargado')) : false;
     this.clienteSeleccionado = localStorage.getItem('venta_clienteSeleccionado') ? JSON.parse(localStorage.getItem('venta_clienteSeleccionado')) : null;  
-    this.porcentajesTotal = localStorage.getItem('porcentajesTotal') ? JSON.parse(localStorage.getItem('porcentajesTotal')) : '';
-    this.porcentajeAplicadoTotal = localStorage.getItem('porcentajeAplicadoTotal') ? JSON.parse(localStorage.getItem('porcentajeAplicadoTotal')) : false;
+    this.porcentajesTotal = localStorage.getItem('venta_porcentajesTotal') ? JSON.parse(localStorage.getItem('venta_porcentajesTotal')) : '';
+    this.porcentajeAplicadoTotal = localStorage.getItem('venta_porcentajeAplicadoTotal') ? JSON.parse(localStorage.getItem('venta_porcentajeAplicadoTotal')) : false;
     this.tipo_cliente = localStorage.getItem('venta_tipo_cliente') ? JSON.parse(localStorage.getItem('venta_tipo_cliente')) : 'consumidor_final';
     this.tipo_venta = localStorage.getItem('venta_tipo_venta') ? JSON.parse(localStorage.getItem('venta_tipo_venta')) : 'Directa';  
     this.clientesForm = localStorage.getItem('venta_clientesForm') ? JSON.parse(localStorage.getItem('venta_clientesForm')) : {
