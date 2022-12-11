@@ -15,37 +15,52 @@ export class ComprasProductosService {
       'Authorization': localStorage.getItem('token')
     };
   }
-  
+
   constructor(private http: HttpClient) { }
 
-  // Nueva relacion
-  nuevaRelacion(data: any): Observable<any> {
+  // Nuevo producto
+  nuevoProducto(data: any): Observable<any> {
     return this.http.post(`${base_url}/compras-productos`, data, {
       headers: this.getToken
     });
   };
 
-  // Relacion por ID
-  getRelacion(id: string): Observable<any> {
+  // Producto por ID
+  getProducto(id: string): Observable<any> {
     return this.http.get(`${base_url}/compras-productos/${id}`, {
       headers: this.getToken
     });
   };
 
-  // Listar relaciones
-  listarRelaciones(parametros?: any): Observable<any> {
+  // Listar productos
+  listarProductos(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/compras-productos`, {
       params: {
         direccion: parametros?.direccion || 1,
-        columna: parametros?.columna || 'descripcion'
+        columna: parametros?.columna || 'descripcion',
+        compra: parametros?.compra || ''
       },
       headers: this.getToken
     });
   }
 
-  // Actualizar relacion
-  actualizarRelaciones(id: string, data: any): Observable<any> {
+  // Actualizar producto
+  actualizarProducto(id: string, data: any): Observable<any> {
     return this.http.put(`${base_url}/compras-productos/${id}`, data, {
+      headers: this.getToken
+    });
+  }
+
+  // Actualizar productos
+  actualizarProductos(data: any[]): Observable<any> {
+    return this.http.put(`${base_url}/ventas-propias-productos/actualizar/productos`, data, {
+      headers: this.getToken
+    });
+  } 
+
+  // Eliminar producto
+  eliminarProducto(id: string): Observable<any> {
+    return this.http.delete(`${base_url}/compras-productos/${id}`, {
       headers: this.getToken
     });
   }

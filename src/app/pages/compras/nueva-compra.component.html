@@ -301,7 +301,7 @@
   <div *ngIf="etapa === 'proveedores'" class="flex items-center justify-center">
     <div class="text-center mt-10">
       <div class="text-center">
-        <h1 class="font-semibold text-2xl"> GENERADOR DE COBRO </h1>
+        <h1 class="font-semibold text-2xl"> GENERADOR DE COMPRA </h1>
         <select [(ngModel)]="proveedor"
           class="p-2 border focus:outline-none max-w-xs mt-3 rounded shadow text-sm border-gray-400">
           <option value=""> Seleccionar proveedor </option>
@@ -398,7 +398,7 @@
                 class="border border-gray-400 p-2 hover:border-secondaryColor cursor-pointer flex items-center justify-between shadow m-2"
                 *ngFor="let producto of productosCompra">
                 <div>
-                  <p class="font-semibold"> {{ producto.descripcion }} </p>
+                  <p class="font-semibold"> {{ producto.producto.descripcion }} </p>
                   <p class="text-xs"> ${{ producto.precio_unitario | moneda }} x {{ producto.unidad_medida }} </p>
                   <p class="font-semibold"> Cantidad: {{ producto.cantidad }} </p>
                 </div>

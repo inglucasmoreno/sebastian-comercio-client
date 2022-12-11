@@ -36,8 +36,14 @@ export class ComprasService {
   listarCompras(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/compras`, {
       params: {
+        columna: parametros?.columna || 'descripcion',
         direccion: parametros?.direccion || 1,
-        columna: parametros?.columna || 'descripcion'
+        desde: parametros?.desde || 0,
+        registerpp: parametros?.cantidadItems || 10000000,
+        activo: parametros?.activo || '',
+        parametro: parametros?.parametro || '',
+        cliente: parametros?.cliente || '',
+        cancelada: parametros?.cancelada || '',
       },
       headers: this.getToken
     });
@@ -49,5 +55,19 @@ export class ComprasService {
       headers: this.getToken
     });
   }
+
+  // Alta/Baja de compra
+  altaBajaCompra(id: string, data: any): Observable<any> {
+    return this.http.put(`${base_url}/compras/alta-baja/${id}`, data, {
+      headers: this.getToken
+    });
+  }
+
+  // Generar PDF
+  generarPDF(data: any): Observable<any> {
+    return this.http.post(`${base_url}/compras/generarPDF`, data, {
+      headers: this.getToken
+    });
+  };
 
 }

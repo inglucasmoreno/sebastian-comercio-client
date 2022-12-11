@@ -5,6 +5,9 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CajasMovimientosService } from 'src/app/services/cajas-movimientos.service';
 import { CajasService } from 'src/app/services/cajas.service';
 import { ChequesService } from 'src/app/services/cheques.service';
+import { ComprasChequesService } from 'src/app/services/compras-cheques.service';
+import { ComprasProductosService } from 'src/app/services/compras-productos.service';
+import { ComprasService } from 'src/app/services/compras.service';
 import { DataService } from 'src/app/services/data.service';
 import { GastosService } from 'src/app/services/gastos.service';
 import { RecibosCobroChequeService } from 'src/app/services/recibos-cobro-cheque.service';
@@ -33,6 +36,7 @@ export class CajasMovimientosComponent implements OnInit {
   public showModalDetalles = false;
   public showModalDetallesCobro = false;
   public showModalDetallesVenta = false;
+  public showModalDetallesCompra = false;
   public showModalDetallesCheque = false;
   public showModalDetallesGasto = false;
 
@@ -59,11 +63,14 @@ export class CajasMovimientosComponent implements OnInit {
   public cantidadItems: number = 10;
   public desde: number = 0;
 
-  // Venta propia
+  // Venta propia y compras
+  public compra: any;
   public ventaPropia: any;
   public productos: any[];
   public relaciones: any[];  // Relaciones venta_propia = cheques
   public chequeSeleccionado: any;
+
+
 
   // Cobros
   public recibo_cobro: any = null;
@@ -96,8 +103,11 @@ export class CajasMovimientosComponent implements OnInit {
     private recibosCobroVentaService: RecibosCobroVentaService,
     private recibosCobroChequeService: RecibosCobroChequeService,
     private ventasPropiasService: VentasPropiasService,
+    private comprasService: ComprasService,
     private ventasPropiasChequesService: VentasPropiasChequesService,
+    private comprasChequesService: ComprasChequesService,
     private ventasPropiasProductosService: VentasPropiasProductosService,
+    private comprasProductosService: ComprasProductosService,
     private gastosService: GastosService,
     private activatedRoute: ActivatedRoute,
     private cajasService: CajasService,
@@ -279,6 +289,18 @@ export class CajasMovimientosComponent implements OnInit {
     })
   }
 
+  // Generar PDF compra
+  generarPDFCompra(compra: any): void {
+    this.alertService.loading();
+    this.comprasService.generarPDF({ compra: compra._id }).subscribe({
+      next: () => {
+        window.open(`${base_url}/pdf/compra.pdf`, '_blank');
+        this.alertService.close();
+      },
+      error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+  }
+
   // Abrir detalles de venta
   abrirDetallesVenta(origen: string, venta_propia = ''): void {
 
@@ -327,6 +349,57 @@ export class CajasMovimientosComponent implements OnInit {
 
   }
 
+  // Cerrar detalles de compra
+  cerrarDetallesCompra(): void {
+
+    if (this.origen === 'compra') {
+      this.showModalDetallesCompra = false;
+      this.showModalDetalles = true;
+    } else if (this.origen === 'pago') {
+      this.showModalDetallesCompra = false;
+      // this.showModalDetallesPago = true;
+    }
+
+  }
+
+  // Abrir detalles de compra
+  abrirDetallesCompra(origen: string, compra = ''): void {
+
+    console.log('llega');
+
+    this.alertService.loading();
+
+    this.origen = origen;
+
+    this.comprasService.getCompra(compra !== '' ? compra : this.movimientoSeleccionado.compra).subscribe({
+      next: ({ compra }) => {
+        this.compra = compra;
+
+        this.comprasProductosService.listarProductos({ compra: compra._id }).subscribe({
+          next: ({ productos }) => {
+            this.productos = productos;
+
+            this.comprasChequesService.listarRelaciones({ compra: compra._id }).subscribe({
+              next: ({ relaciones }) => {
+
+                this.relaciones = relaciones;
+                this.showModalDetalles = false;
+                this.showModalDetallesCobro = false;
+                this.showModalDetallesCompra = true;
+                this.alertService.close();
+
+              }, error: ({ error }) => this.alertService.errorApi(error.message)
+            })
+
+          }, error: ({ error }) => this.alertService.errorApi(error.message)
+        })
+
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
+  }
+
+
   // Abrir detalles de gasto
   abrirDetallesGasto(): void {
 
@@ -361,9 +434,9 @@ export class CajasMovimientosComponent implements OnInit {
       this.showModalDetallesVenta = false;
       this.showModalDetallesCheque = true;
 
-    } else if (this.origen === 'cobro') {
+    } else if (this.origen === 'compra') {
 
-      this.showModalDetallesCobro = false;
+      this.showModalDetallesCompra = false;
       this.showModalDetallesCheque = true;
 
     }
@@ -377,9 +450,9 @@ export class CajasMovimientosComponent implements OnInit {
       this.showModalDetallesVenta = true;
       this.showModalDetallesCheque = false;
 
-    } else if (this.origen === 'cobro') {
+    } else if (this.origen === 'compra') {
 
-      this.showModalDetallesCobro = true;
+      this.showModalDetallesCompra = true;
       this.showModalDetallesCheque = false;
 
     } else if (this.origen === 'movimiento') {

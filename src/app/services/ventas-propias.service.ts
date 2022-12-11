@@ -53,7 +53,7 @@ export class VentasPropiasService {
         columna: parametros?.columna || 'descripcion',
         direccion: parametros?.direccion || 1,
         desde: parametros?.desde || 0,
-        registerpp: parametros?.cantidadItems || 100000,
+        registerpp: parametros?.cantidadItems || 1000000,
         activo: parametros?.activo || '',
         parametro: parametros?.parametro || '',
         cliente: parametros?.cliente || '',

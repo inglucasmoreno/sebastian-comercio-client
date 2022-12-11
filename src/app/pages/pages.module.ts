@@ -40,6 +40,8 @@ import { GastosComponent } from './gastos/gastos.component';
 import { GastosTiposComponent } from './gastos/gastos-tipos.component';
 import { ComprasComponent } from './compras/compras.component';
 import { NuevaCompraComponent } from './compras/nueva-compra.component';
+import { PagosComponent } from './pagos/pagos.component';
+import { NuevoPagoComponent } from './pagos/nuevo-pago.component';
 
 
 @NgModule({
@@ -77,6 +79,8 @@ import { NuevaCompraComponent } from './compras/nueva-compra.component';
     GastosTiposComponent,
     ComprasComponent,
     NuevaCompraComponent,
+    PagosComponent,
+    NuevoPagoComponent,
   ],
   imports: [
     CommonModule,

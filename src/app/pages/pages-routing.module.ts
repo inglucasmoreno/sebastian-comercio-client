@@ -39,6 +39,8 @@ import { GastosComponent } from './gastos/gastos.component';
 import { GastosTiposComponent } from './gastos/gastos-tipos.component';
 import { ComprasComponent } from './compras/compras.component';
 import { NuevaCompraComponent } from './compras/nueva-compra.component';
+import { PagosComponent } from './pagos/pagos.component';
+import { NuevoPagoComponent } from './pagos/nuevo-pago.component';
 
 const routes: Routes = [
     {
@@ -107,6 +109,10 @@ const routes: Routes = [
             { path: 'nueva-compra', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: NuevaCompraComponent },
             { path: 'cc-proveedores', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: CcProveedoresComponent },
             { path: 'cc-proveedores-movimientos/:id', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: CcProveedoresMovimientosComponent },
+
+            // Pagos
+            { path: 'pagos', data: { permisos: 'PAGOS_NAV' }, canActivate: [PermisosGuard], component: PagosComponent },
+            { path: 'nuevo-pago', data: { permisos: 'PAGOS_NAV' }, canActivate: [PermisosGuard], component: NuevoPagoComponent },
 
             // Configuraciones
             { path: 'bancos', data: { permisos: 'CONFIGURACIONES_NAV' }, canActivate: [PermisosGuard], component: BancosComponent },

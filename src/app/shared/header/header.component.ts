@@ -12,6 +12,7 @@ import { itemsCobros } from './items-cobros';
 import { itemsTesoreria } from './items-tesoreria';
 import { itemsTerceros } from './items-terceros';
 import { itemsGastos } from './items-gastos';
+import { itemsPagos } from './items-pagos';
 
 @Component({
   selector: 'app-header',
@@ -29,6 +30,7 @@ export class HeaderComponent implements OnInit {
   public itemsCobros: any[];
   public itemsCajas: any[];
   public itemsCompras: any[];
+  public itemsPagos: any[];
   public itemsTesoreria: any[];
   public itemsTerceros: any[];
   public itemsConfiguraciones: any[];
@@ -42,6 +44,7 @@ export class HeaderComponent implements OnInit {
   public showCobros = false;
   public showCajas = false;
   public showCompras = false;
+  public showPagos = false;
   public showTesoreria = false;
   public showTerceros = false;
   public showConfiguraciones = false;
@@ -61,6 +64,7 @@ export class HeaderComponent implements OnInit {
     this.itemsCobros = itemsCobros;
     this.itemsCajas = itemsCajas;
     this.itemsCompras = itemsCompras;
+    this.itemsPagos = itemsPagos;
     this.itemsTesoreria = itemsTesoreria;
     this.itemsTerceros = itemsTerceros;
     this.itemsConfiguraciones = itemsConfiguraciones;

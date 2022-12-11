@@ -145,7 +145,7 @@ export class NuevaCompraComponent implements OnInit {
             formas_pago: this.formas_pago,
             cheques: this.cheques,
             productos: this.productosCompra,
-            estado: this.deuda_monto > 0 ? 'Deuda' : 'Completado',
+            cancelada: this.deuda_monto > 0 ? false : true,
             creatorUser: this.authService.usuario.userId,
             updatorUser: this.authService.usuario.userId,
           };

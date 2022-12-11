@@ -1,3 +1,86 @@
+<!-- Detalles de compra -->
+<app-modal [showModal]="showModalDetallesCompra">
+  <div class="bg-primary-900 text-white flex items-center justify-between p-2 rounded-t">
+    <h1> Detalles de la compra </h1>
+    <button (click)="cerrarDetallesCompra()" class="text-white focus:outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+  <div class="p-2 text-sm">
+    <div class="w-full flex items-center justify-between">
+      <p> <span class="font-semibold"> Código de compra: </span> {{ compra?.nro | codigoCompras }} </p>
+      <p> <span class="font-semibold"> Fecha de compra: </span>  {{ compra?.fecha_compra ? (compra?.fecha_compra | fecha) : (compra?.createdAt | fecha) }} </p>
+    </div>
+    <p class="mt-2"> <span class="font-semibold"> Precio total: </span>  ${{ compra?.precio_total | moneda }} </p>
+    <p class="mt-2"> <span class="font-semibold"> Proveedor: </span> {{ compra?.proveedor.descripcion }} </p>
+    <p class="mt-2"> <span class="font-semibold"> Estado: </span> <span [ngClass]="{'bg-green-100 text-green-800 border-green-400':compra?.cancelada, 'bg-red-100 text-red-800 border-red-400' : !compra?.cancelada}" class="p-1 border rounded text-xs font-semibold"> {{ compra?.cancelada ? 'Completada' : 'Sin cancelar'}} </span> </p>
+    <div class="mt-2 border-t">
+      <div class="mt-2">
+        <p class="font-semibold"> Observacion personalizada </p>
+        <div class="flex items-center">
+            <div [ngClass]="{'text-gray-500':compra?.observacion.trim() === ''}" class="border mt-1 focus:outline-none border-gray-400 p-2 rounded w-full">
+                {{ compra?.observacion.trim() === '' ? 'Sin observación' : compra?.observacion }}
+            </div>
+        </div>
+      </div>
+      <div class="mt-2">
+        <p class="font-semibold p-1 border-t"> Formas de pago </p>
+        <div>
+          <p class="p-1 flex items-center justify-between" *ngFor="let forma of compra?.formas_pago">
+            <span>
+              {{ forma.descripcion }}
+            </span>
+            <span class="font-semibold">
+              ${{ forma.monto | moneda }}
+            </span>
+          </p>
+        </div>
+        <div>
+          <p class="p-1 flex items-center justify-between" *ngFor="let relacion of relaciones">
+            <span class="flex items-center">
+              CHEQUE - #{{ relacion.cheque.nro_cheque }}
+              <button (click)="abrirDetallesCheque(relacion.cheque, 'compra')" class="hover:text-secondaryColor focus:outline-none cursor-pointer ml-1" title="Detalles de cheque">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                </svg>
+              </button>
+            </span>
+            <span class="font-semibold">
+              ${{ relacion.cheque.importe | moneda }}
+            </span>
+          </p>
+        </div>
+        <p class="p-1 mt-1 font-semibold border border-gray-300 bg-gray-50 flex items-center justify-between"> <span> Pago total </span> <span> ${{ compra?.monto_pago | moneda }} </span> </p>
+        <p *ngIf="!compra?.cancelada" class="p-1 mt-2 font-semibold text-red-700 border border-red-300 bg-red-50 flex items-center justify-between"> <span> Monto sin cancelar </span> <span> ${{ compra?.monto_deuda | moneda }} </span> </p>
+        <p *ngIf="compra?.monto_pago > compra?.precio_total" class="p-1 mt-2 font-semibold text-green-700 border border-green-300 bg-green-50 flex items-center justify-between"> <span> A favor </span> <span> ${{ (compra?.monto_pago - compra?.precio_total) | moneda }} </span> </p>
+      </div>
+    </div>
+
+    <div class="pt-2 mt-3 border-t">
+      <h2 class="font-semibold"> Listado de productos </h2>
+      <div class="flex items-center">
+        <input [(ngModel)]="filtro.parametroProducto" type="text" class="p-2 my-2 border focus:outline-none text-sm border-gray-400 rounded" placeholder="Buscar">
+        <button title="Imprimir venta" (click)="generarPDFCompra(compra)" class="border bg-gray-100 border-gray-400 hover:text-secondaryColor focus:outline-none ml-2 rounded p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+          </button>
+      </div>
+
+      <div class="max-h-64 overflow-y-auto">
+        <div class="text-sm border border-gray-400 mt-2 p-2" *ngFor="let producto of productos | filtroProductos:filtro.parametroProducto:''">
+          <h1 class="font-semibold"> {{ producto.descripcion }} </h1>
+          <p class="text-xs text-gray-500"> <span> ${{ producto.precio_unitario | moneda }} </span> x {{ producto.unidad_medida }} </p>
+          <p class="text-xs"> Cantidad: {{ producto.cantidad }} </p>
+          <p class="text-xs font-semibold"> Precio: ${{ producto.precio_total | moneda }} </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-modal>
+
 <!-- Detalles de gasto -->
 <app-modal [showModal]="showModalDetallesGasto">
   <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
@@ -245,6 +328,9 @@
               <button (click)="abrirDetallesVenta('venta')" *ngIf="movimientoSeleccionado?.venta_propia && movimientoSeleccionado?.venta_propia !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
                 Detalles de venta
               </button>
+              <button (click)="abrirDetallesCompra('compra')" *ngIf="movimientoSeleccionado?.compra && movimientoSeleccionado?.compra !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
+                Detalles de compra
+              </button>
               <button (click)="abrirDetallesCobro()" *ngIf="movimientoSeleccionado?.recibo_cobro && movimientoSeleccionado?.recibo_cobro !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
                 Detalles del cobro
             </button>
@@ -254,6 +340,7 @@
             <button (click)="abrirDetallesGasto()" *ngIf="movimientoSeleccionado?.gasto && movimientoSeleccionado?.gasto !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
               Detalles de gasto
           </button>
+
           </div>
       </div>
   </div>

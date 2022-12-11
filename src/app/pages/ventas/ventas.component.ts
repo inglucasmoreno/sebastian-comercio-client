@@ -260,6 +260,12 @@ export class VentasComponent implements OnInit {
 
     this.ventaSeleccionada = null;
     this.productoSeleccionado = null;
+    this.filtro.parametroProductos = '';
+    this.porcentajes = '';
+    this.porcentajesTotal = '';
+    this.porcentajeAplicado = false;
+    this.precioConPorcentaje = false;
+    this.porcentajeAplicadoTotal = false;
     this.observacion = venta.observacion;
     this.nro_factura = venta.nro_factura;
 

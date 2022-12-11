@@ -311,6 +311,7 @@ export class VentasPropiasComponent implements OnInit {
 
     this.ventaSeleccionada = venta;
     this.productoSeleccionado = null;
+    this.filtro.parametroProductos = '';
     this.observacion = venta.observacion;
 
     const parametros = {
