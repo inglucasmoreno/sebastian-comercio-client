@@ -8,6 +8,9 @@ import { ComprasChequesService } from 'src/app/services/compras-cheques.service'
 import { ComprasProductosService } from 'src/app/services/compras-productos.service';
 import { ComprasService } from 'src/app/services/compras.service';
 import { DataService } from 'src/app/services/data.service';
+import { OrdenesPagoChequesService } from 'src/app/services/ordenes-pago-cheques.service';
+import { OrdenesPagoCompraService } from 'src/app/services/ordenes-pago-compra.service';
+import { OrdenesPagoService } from 'src/app/services/ordenes-pago.service';
 import { environment } from 'src/environments/environment';
 
 const base_url = environment.base_url;
@@ -28,6 +31,7 @@ export class CcProveedoresMovimientosComponent implements OnInit {
   public showModalDetalles = false;
   public showModalDetallesCompra = false;
   public showModalDetallesCheque = false;
+  public showModalDetallesPago = false;
 
   // Estado formulario 
   public estadoFormulario = 'crear';
@@ -46,6 +50,13 @@ export class CcProveedoresMovimientosComponent implements OnInit {
   public productos: any[];
   public relaciones: any[];  // Relaciones venta_propia = cheques
   public chequeSeleccionado: any;
+  public ordenesPago: any[];
+
+  // Pagos
+  public orden_pago: any = null;
+  public pago_compras: any[] = [];
+  public pago_cheques: any[] = [];
+  public totalEnCompras: any = 0;
 
   // Otros
   public origen = 'cobro';
@@ -78,8 +89,11 @@ export class CcProveedoresMovimientosComponent implements OnInit {
     private movimientosService: CcProveedoresMovimientosService,
     private activatedRoute: ActivatedRoute,
     private comprasService: ComprasService,
+    private pagosService: OrdenesPagoService,
     private cuentaCorrienteService: CcProveedoresService,
     private comprasProductosService: ComprasProductosService,
+    private ordenesPagoCompraService: OrdenesPagoCompraService,
+    private ordenesPagoChequesService: OrdenesPagoChequesService,
     private comprasChequesService: ComprasChequesService,
     private authService: AuthService,
     private alertService: AlertService,
@@ -240,7 +254,8 @@ export class CcProveedoresMovimientosComponent implements OnInit {
 
   // Abrir modal - Detalles de movimientos
   abrirDetallesMovimientos(movimiento: any): void {
-    if (movimiento.venta_propia !== '') {
+    
+    if (movimiento.compra !== '') {
       this.alertService.loading();
       this.comprasService.getCompra(movimiento.compra).subscribe({
         next: ({ compra }) => {
@@ -255,10 +270,18 @@ export class CcProveedoresMovimientosComponent implements OnInit {
 
                   this.relaciones = relaciones;
 
-                  this.movimientoSeleccionado = movimiento;
-                  this.showModalDetalles = true;
+                  this.ordenesPagoCompraService.listarRelaciones({ compra: compra._id }).subscribe({
+                  
+                    next: ({ relaciones }) => {
 
-                  this.alertService.close();
+                      this.ordenesPago = relaciones;
+                      this.movimientoSeleccionado = movimiento;
+                      this.showModalDetalles = true;
+                      this.alertService.close();
+                  
+                    }, error: ({error}) => this.alertService.errorApi(error.message)
+                  
+                  })
 
                 }, error: ({ error }) => this.alertService.errorApi(error.message)
               })
@@ -272,6 +295,8 @@ export class CcProveedoresMovimientosComponent implements OnInit {
       this.movimientoSeleccionado = movimiento;
       this.showModalDetalles = true;
     }
+  
+  
   }
 
   // Abrir detalles de compra
@@ -291,11 +316,21 @@ export class CcProveedoresMovimientosComponent implements OnInit {
 
             this.comprasChequesService.listarRelaciones({ compra: compra._id }).subscribe({
               next: ({ relaciones }) => {
-
                 this.relaciones = relaciones;
-                this.showModalDetalles = false;
-                this.showModalDetallesCompra = true;
-                this.alertService.close();
+
+                this.ordenesPagoCompraService.listarRelaciones({ compra: compra._id }).subscribe({
+                  
+                  next: ({ relaciones }) => {
+
+                    this.ordenesPago = relaciones;
+                    this.showModalDetalles = false;
+                    this.showModalDetallesPago = false;
+                    this.showModalDetallesCompra = true;
+                    this.alertService.close();
+                
+                  }, error: ({error}) => this.alertService.errorApi(error.message)
+                
+                })
 
               }, error: ({ error }) => this.alertService.errorApi(error.message)
             })
@@ -314,12 +349,51 @@ export class CcProveedoresMovimientosComponent implements OnInit {
     if (this.origen === '') {
       this.showModalDetallesCompra = false;
       this.showModalDetalles = true;
-    } else if (this.origen === 'cobro') {
+    } else if (this.origen === 'pago') {
       this.showModalDetallesCompra = false;
-      // this.showModalDetallesCobro = true;
+      this.showModalDetallesPago = true;
     }
 
   }
+
+  abrirDetallesPago(): void {
+
+    this.totalEnCompras = 0;
+
+    this.alertService.loading();
+
+    // ORDEN DE PAGO
+    this.pagosService.getOrdenPago(this.movimientoSeleccionado.orden_pago).subscribe({
+      next: ({ orden_pago }) => {
+    
+        this.orden_pago = orden_pago;
+
+        // RELACION -> ORDEN PAGO - COMPRAS
+        this.ordenesPagoCompraService.listarRelaciones({ orden_pago: this.orden_pago._id }).subscribe({
+          next: ({ relaciones }) => {
+
+            this.pago_compras = relaciones;
+            
+            relaciones.map(relacion => this.totalEnCompras += relacion.monto_pagado);
+
+            // RELACION -> ORDEN PAGO - CHEQUES
+            this.ordenesPagoChequesService.listarRelaciones({ orden_pago: this.orden_pago._id }).subscribe({
+              next: ({ relaciones }) => {
+                this.pago_cheques = relaciones;
+                this.showModalDetalles = false;
+                this.showModalDetallesPago = true;
+                this.alertService.close();
+              }, error: ({ error }) => this.alertService.errorApi(error.message)
+            })
+
+          }, error: ({ error }) => this.alertService.errorApi(error.message)
+        })
+
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
+  }
+
 
   // Generar PDF
   generarPDF(compra: any): void {
@@ -346,7 +420,7 @@ export class CcProveedoresMovimientosComponent implements OnInit {
 
     } else if (this.origen === 'pago') {
 
-      this.showModalDetallesCompra = false;
+      this.showModalDetallesPago = false;
       this.showModalDetallesCheque = true;
 
     }
@@ -362,11 +436,17 @@ export class CcProveedoresMovimientosComponent implements OnInit {
 
     } else if (this.origen === 'pago') {
 
-      // this.showModalDetallesPago = true;
+      this.showModalDetallesPago = true;
       this.showModalDetallesCheque = false;
 
     }
 
+  }
+
+  // Cerrar detalles de pago
+  cerrarDetallesPago(): void {
+    this.showModalDetallesPago = false;
+    this.showModalDetalles = true;
   }
 
   // Filtrar Activo/Inactivo

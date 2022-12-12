@@ -27,6 +27,8 @@ export class ChequesComponent implements OnInit {
   // Modal
   public showModalCheque = false;
   public showModalCobrandoCheque = false;
+  public showModalChequeTransferido = false;
+  public showModalChequeCobrado = false;
 
   // Estado formulario 
   public estadoFormulario = 'crear';
@@ -35,6 +37,8 @@ export class ChequesComponent implements OnInit {
   public idCheque: string = '';
   public cheques: any = [];
   public chequeSeleccionado: any;
+  public destinoTransferencia: any;
+  public destinoCobro: any;
 
   // Date
   public nro_cheque: string = '';
@@ -96,6 +100,9 @@ export class ChequesComponent implements OnInit {
 
   // Abrir modal
   abrirModal(estado: string, cheque: any = null): void {
+
+    console.log(cheque);
+
     window.scrollTo(0, 0);
     this.nro_cheque = '';
     this.importe = null;
@@ -316,6 +323,7 @@ export class ChequesComponent implements OnInit {
           this.alertService.loading();
           this.chequesService.actualizarCheque(this.chequeSeleccionado._id, {
             caja: this.cajaSeleccionada,
+            destino_caja: this.cajaSeleccionada,
             estado: 'Cobrado',
             activo: false,
             updatorUser: this.authService.usuario.userId
@@ -341,6 +349,34 @@ export class ChequesComponent implements OnInit {
         this.showModalCobrandoCheque = true;
         this.alertService.close();
       }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+  }
+
+  // Abrir detalles de transferencia
+  abrirDetallesTransferencia(cheque: any): void {
+    this.chequeSeleccionado = cheque;
+    this.alertService.loading();
+    this.chequesService.getCheque(cheque._id).subscribe({
+      next: ({ destino }) => {
+        console.log(destino);
+        this.destinoTransferencia = destino;
+        this.showModalChequeTransferido = true;
+        this.alertService.close();
+      }, error: ({error}) => this.alertService.errorApi(error.message)
+    })
+  }
+
+  // Abrir detalles de cobro
+  abrirDetallesCobro(cheque: any): void {
+    this.chequeSeleccionado = cheque;
+    this.alertService.loading();
+    this.chequesService.getCheque(cheque._id).subscribe({
+      next: ({ destino_caja }) => {
+        console.log(destino_caja);
+        this.destinoCobro = destino_caja;
+        this.showModalChequeCobrado = true;
+        this.alertService.close();
+      }, error: ({error}) => this.alertService.errorApi(error.message)
     })
   }
 

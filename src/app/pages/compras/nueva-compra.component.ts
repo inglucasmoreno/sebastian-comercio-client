@@ -10,7 +10,9 @@ import { DataService } from 'src/app/services/data.service';
 import { ProductosService } from 'src/app/services/productos.service';
 import { ProveedoresService } from 'src/app/services/proveedores.service';
 import gsap from 'gsap';
+import { environment } from 'src/environments/environment';
 
+const base_url = environment.base_url;
 
 @Component({
   selector: 'app-nueva-compra',
@@ -163,6 +165,7 @@ export class NuevaCompraComponent implements OnInit {
               this.observacion = '';
               this.showCompletarCompra = false;
               this.almacenamientoLocalStorage();
+              window.open(`${base_url}/pdf/compra.pdf`, '_blank');
               this.alertService.close();
             }, error: ({ error }) => this.alertService.errorApi(error.message)
           })

@@ -59,6 +59,7 @@ export class CcClientesMovimientosComponent implements OnInit {
   public productos: any[];
   public relaciones: any[];  // Relaciones venta_propia = cheques
   public chequeSeleccionado: any;
+  public recibosCobro: any[];
 
   // Cobros
   public recibo_cobro: any = null;
@@ -317,12 +318,20 @@ export class CcClientesMovimientosComponent implements OnInit {
 
             this.ventasPropiasChequesService.listarRelaciones({ venta_propia: venta._id }).subscribe({
               next: ({ relaciones }) => {
-
                 this.relaciones = relaciones;
-                this.showModalDetalles = false;
-                this.showModalDetallesCobro = false;
-                this.showModalDetallesVenta = true;
-                this.alertService.close();
+
+                this.recibosCobroVentaService.listarRelaciones({ venta_propia: venta._id }).subscribe({
+                  next: ({ relaciones }) => {
+    
+                    this.recibosCobro = relaciones;
+    
+                    this.showModalDetalles = false;
+                    this.showModalDetallesCobro = false;
+                    this.showModalDetallesVenta = true;
+                    this.alertService.close();
+
+                  }, error: ({error}) => this.alertService.errorApi(error.message)
+                })
 
               }, error: ({ error }) => this.alertService.errorApi(error.message)
             })

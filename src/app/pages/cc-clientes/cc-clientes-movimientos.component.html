@@ -179,6 +179,19 @@
       </div>
     </div>
 
+    <div *ngIf="recibosCobro?.length > 0" class="pt-2 mt-3 border-t">
+      <div>
+        <h2 class="font-semibold"> Recibos de cobro </h2>
+        <div class="flex flex-wrap items-center">
+          <p class="p-2 border-l-8 border-gray-400 w-max mr-2 hover:border-secondaryColor hover:text-secondaryColor cursor-pointer border mt-2" *ngFor="let relacion of recibosCobro"> 
+            <span>
+              {{ relacion?.recibo_cobro.nro | codigoReciboCobro }} 
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div class="pt-2 mt-3 border-t">
       <h2 class="font-semibold"> Listado de productos </h2>
       <div class="flex items-center">

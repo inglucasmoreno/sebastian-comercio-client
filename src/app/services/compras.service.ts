@@ -42,7 +42,7 @@ export class ComprasService {
         registerpp: parametros?.cantidadItems || 10000000,
         activo: parametros?.activo || '',
         parametro: parametros?.parametro || '',
-        cliente: parametros?.cliente || '',
+        proveedor: parametros?.proveedor || '',
         cancelada: parametros?.cancelada || '',
       },
       headers: this.getToken

@@ -10,6 +10,9 @@ import { ComprasProductosService } from 'src/app/services/compras-productos.serv
 import { ComprasService } from 'src/app/services/compras.service';
 import { DataService } from 'src/app/services/data.service';
 import { GastosService } from 'src/app/services/gastos.service';
+import { OrdenesPagoChequesService } from 'src/app/services/ordenes-pago-cheques.service';
+import { OrdenesPagoCompraService } from 'src/app/services/ordenes-pago-compra.service';
+import { OrdenesPagoService } from 'src/app/services/ordenes-pago.service';
 import { RecibosCobroChequeService } from 'src/app/services/recibos-cobro-cheque.service';
 import { RecibosCobroVentaService } from 'src/app/services/recibos-cobro-venta.service';
 import { RecibosCobroService } from 'src/app/services/recibos-cobro.service';
@@ -35,6 +38,7 @@ export class CajasMovimientosComponent implements OnInit {
   public showModalMovimiento = false;
   public showModalDetalles = false;
   public showModalDetallesCobro = false;
+  public showModalDetallesPago = false;
   public showModalDetallesVenta = false;
   public showModalDetallesCompra = false;
   public showModalDetallesCheque = false;
@@ -69,14 +73,20 @@ export class CajasMovimientosComponent implements OnInit {
   public productos: any[];
   public relaciones: any[];  // Relaciones venta_propia = cheques
   public chequeSeleccionado: any;
-
-
+  public recibosCobro: any[];
 
   // Cobros
   public recibo_cobro: any = null;
   public recibo_ventas: any[] = [];
   public recibo_cheques: any[] = [];
   public totalEnVentas: any = 0;
+  public ordenesPago: any[] = [];
+
+  // Pagos
+  public orden_pago: any = null;
+  public pago_compras: any[] = [];
+  public pago_cheques: any[] = [];
+  public totalEnCompras: any = 0;
 
   // Gastos
   public gastoSeleccionado: any = null;
@@ -100,10 +110,13 @@ export class CajasMovimientosComponent implements OnInit {
   constructor(
     private movimientosService: CajasMovimientosService,
     private cobrosService: RecibosCobroService,
+    private pagosService: OrdenesPagoService,
     private recibosCobroVentaService: RecibosCobroVentaService,
     private recibosCobroChequeService: RecibosCobroChequeService,
     private ventasPropiasService: VentasPropiasService,
     private comprasService: ComprasService,
+    private ordenesPagoCompraService: OrdenesPagoCompraService,
+    private ordenesPagoChequesService: OrdenesPagoChequesService,
     private ventasPropiasChequesService: VentasPropiasChequesService,
     private comprasChequesService: ComprasChequesService,
     private ventasPropiasProductosService: VentasPropiasProductosService,
@@ -320,10 +333,19 @@ export class CajasMovimientosComponent implements OnInit {
               next: ({ relaciones }) => {
 
                 this.relaciones = relaciones;
-                this.showModalDetalles = false;
-                this.showModalDetallesCobro = false;
-                this.showModalDetallesVenta = true;
-                this.alertService.close();
+
+                this.recibosCobroVentaService.listarRelaciones({ venta_propia: venta._id }).subscribe({
+                  next: ({ relaciones }) => {
+    
+                    this.recibosCobro = relaciones;
+    
+                    this.showModalDetalles = false;
+                    this.showModalDetallesCobro = false;
+                    this.showModalDetallesVenta = true;
+                    this.alertService.close();
+
+                  }, error: ({error}) => this.alertService.errorApi(error.message)
+                })
 
               }, error: ({ error }) => this.alertService.errorApi(error.message)
             })
@@ -357,15 +379,13 @@ export class CajasMovimientosComponent implements OnInit {
       this.showModalDetalles = true;
     } else if (this.origen === 'pago') {
       this.showModalDetallesCompra = false;
-      // this.showModalDetallesPago = true;
+      this.showModalDetallesPago = true;
     }
 
   }
 
   // Abrir detalles de compra
   abrirDetallesCompra(origen: string, compra = ''): void {
-
-    console.log('llega');
 
     this.alertService.loading();
 
@@ -383,10 +403,20 @@ export class CajasMovimientosComponent implements OnInit {
               next: ({ relaciones }) => {
 
                 this.relaciones = relaciones;
-                this.showModalDetalles = false;
-                this.showModalDetallesCobro = false;
-                this.showModalDetallesCompra = true;
-                this.alertService.close();
+
+                // Se obtienen las ordenes de pago
+                this.ordenesPagoCompraService.listarRelaciones({ compra: compra._id }).subscribe({
+                  next: ({ relaciones }) => {
+                    
+                    this.ordenesPago = relaciones;
+                    this.showModalDetalles = false;
+                    this.showModalDetallesCobro = false;
+                    this.showModalDetallesPago = false;
+                    this.showModalDetallesCompra = true;
+                    this.alertService.close();
+
+                  }, error: ({ error }) => this.alertService.errorApi(error.message)
+                })
 
               }, error: ({ error }) => this.alertService.errorApi(error.message)
             })
@@ -426,6 +456,8 @@ export class CajasMovimientosComponent implements OnInit {
   // Abrir detalles de cheque
   abrirDetallesCheque(cheque: any, origen: string): void {
 
+    console.log(cheque);
+
     this.chequeSeleccionado = cheque;
     this.origen = origen;
 
@@ -439,7 +471,14 @@ export class CajasMovimientosComponent implements OnInit {
       this.showModalDetallesCompra = false;
       this.showModalDetallesCheque = true;
 
+    } else if (this.origen === 'pago') {
+
+      this.showModalDetallesPago = false;
+      this.showModalDetallesCheque = true;
+
     }
+
+    
   }
 
   // Cerrar el detalles del cheque
@@ -458,6 +497,11 @@ export class CajasMovimientosComponent implements OnInit {
     } else if (this.origen === 'movimiento') {
 
       this.showModalDetalles = true;
+      this.showModalDetallesCheque = false;
+
+    } else if (this.origen === 'pago') {
+
+      this.showModalDetallesPago = true;
       this.showModalDetallesCheque = false;
 
     }
@@ -500,6 +544,46 @@ export class CajasMovimientosComponent implements OnInit {
 
   }
 
+  abrirDetallesPago(): void {
+
+    this.totalEnCompras = 0;
+
+    this.alertService.loading();
+
+    console.log(this.movimientoSeleccionado.orden_pago);
+
+    // ORDEN DE PAGO
+    this.pagosService.getOrdenPago(this.movimientoSeleccionado.orden_pago).subscribe({
+      next: ({ orden_pago }) => {
+    
+        this.orden_pago = orden_pago;
+
+        // RELACION -> ORDEN PAGO - COMPRAS
+        this.ordenesPagoCompraService.listarRelaciones({ orden_pago: this.orden_pago._id }).subscribe({
+          next: ({ relaciones }) => {
+
+            this.pago_compras = relaciones;
+            
+            relaciones.map(relacion => this.totalEnCompras += relacion.monto_pagado);
+
+            // RELACION -> ORDEN PAGO - CHEQUES
+            this.ordenesPagoChequesService.listarRelaciones({ orden_pago: this.orden_pago._id }).subscribe({
+              next: ({ relaciones }) => {
+                this.pago_cheques = relaciones;
+                this.showModalDetalles = false;
+                this.showModalDetallesPago = true;
+                this.alertService.close();
+              }, error: ({ error }) => this.alertService.errorApi(error.message)
+            })
+
+          }, error: ({ error }) => this.alertService.errorApi(error.message)
+        })
+
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
+  }
+
   // Abrir detalles de cheque
   abrirDetallesChequeDesdeMovimiento(): void {
     this.showModalDetalles = false;
@@ -518,6 +602,12 @@ export class CajasMovimientosComponent implements OnInit {
   // Cerrar detalles de cobro
   cerrarDetallesCobro(): void {
     this.showModalDetallesCobro = false;
+    this.showModalDetalles = true;
+  }
+
+  // Cerrar detalles de pago
+  cerrarDetallesPago(): void {
+    this.showModalDetallesPago = false;
     this.showModalDetalles = true;
   }
 

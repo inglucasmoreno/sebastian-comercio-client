@@ -5,6 +5,7 @@ import { ComprasChequesService } from 'src/app/services/compras-cheques.service'
 import { ComprasProductosService } from 'src/app/services/compras-productos.service';
 import { ComprasService } from 'src/app/services/compras.service';
 import { DataService } from 'src/app/services/data.service';
+import { OrdenesPagoCompraService } from 'src/app/services/ordenes-pago-compra.service';
 import { ProductosService } from 'src/app/services/productos.service';
 import { environment } from 'src/environments/environment';
 
@@ -98,6 +99,7 @@ export class ComprasComponent implements OnInit {
     private comprasChequesService: ComprasChequesService,
     private productosService: ProductosService,
     private comprasProductosService: ComprasProductosService,
+    private ordenesPagoCompraService: OrdenesPagoCompraService,
     private authService: AuthService,
     private alertService: AlertService,
     private dataService: DataService) { }
@@ -141,8 +143,6 @@ export class ComprasComponent implements OnInit {
     }
     this.comprasService.listarCompras(parametros)
       .subscribe(({ compras, totalItems }) => {
-
-        console.log(compras);
 
         this.compras = compras;
         this.totalItems = totalItems;
@@ -242,8 +242,6 @@ export class ComprasComponent implements OnInit {
   // Obtener datos de compra
   obtenerCompra(compra: any): void {
 
-    console.log('llega');
-
     const parametros = {
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
@@ -254,7 +252,6 @@ export class ComprasComponent implements OnInit {
 
     this.comprasProductosService.listarProductos(parametros).subscribe({
       next: ({ productos }) => {
-        console.log(productos);
         this.productos = productos;
         window.scroll(0, 0);
         this.compraSeleccionada = compra;
@@ -345,21 +342,16 @@ export class ComprasComponent implements OnInit {
             this.cheques_compra = relaciones;
 
             // Se obtienen las ordenes de pago
-            // this.ordenesPagoComprasService.listarRelaciones({ compra: compra._id }).subscribe({
-            //   next: ({ relaciones }) => {
+            this.ordenesPagoCompraService.listarRelaciones({ compra: compra._id }).subscribe({
+              next: ({ relaciones }) => {
+                this.ordenesPago = relaciones;
+                window.scroll(0, 0);
+                this.calcularPagoTotal();
+                this.showModalEditarCompra = true;
+                this.alertService.close();
+              }, error: ({ error }) => this.alertService.errorApi(error.message)
+            })
 
-            //     this.recibosCobro = relaciones;
-
-            //     window.scroll(0, 0);
-            //     this.calcularPagoTotal();
-            //     this.showModalEditarVenta = true;
-            //     this.alertService.close();
-            //   }, error: ({ error }) => this.alertService.errorApi(error.message)
-            // })
-            window.scroll(0, 0);
-            this.calcularPagoTotal();
-            this.showModalEditarCompra = true;
-            this.alertService.close();
           },
           error: ({ error }) => this.alertService.errorApi(error.message)
         })

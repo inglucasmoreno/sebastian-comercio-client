@@ -343,6 +343,4 @@ export class CobrosComponent implements OnInit {
     this.listarRecibos();
   }
 
-
-
 }

@@ -18,36 +18,47 @@ export class OrdenesPagoService {
   
   constructor(private http: HttpClient) { }
 
-  // Nueva relacion
-  nuevaRelacion(data: any): Observable<any> {
+  // Nuevo orden de pago
+  nuevaOrdenPago(data: any): Observable<any> {
     return this.http.post(`${base_url}/ordenes-pago`, data, {
       headers: this.getToken
     });
   };
 
-  // Relacion por ID
-  getRelacion(id: string): Observable<any> {
+  // Orden de pago por ID
+  getOrdenPago(id: string): Observable<any> {
     return this.http.get(`${base_url}/ordenes-pago/${id}`, {
       headers: this.getToken
     });
   };
 
-  // Listar relaciones
-  listarRelaciones(parametros?: any): Observable<any> {
+  // Generar PDF
+  generarPDF(data: any): Observable<any> {
+    return this.http.post(`${base_url}/ordenes-pago/generarPDF`, data, {
+      headers: this.getToken
+    });
+  };
+
+  // Listar ordenes de pago
+  listarOrdenesPago(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/ordenes-pago`, {
       params: {
+        columna: parametros?.columna || 'descripcion',
         direccion: parametros?.direccion || 1,
-        columna: parametros?.columna || 'descripcion'
+        desde: parametros?.desde || 0,
+        registerpp: parametros?.cantidadItems || 100000,
+        activo: parametros?.activo || '',
+        parametro: parametros?.parametro || '',
       },
       headers: this.getToken
     });
   }
 
-  // Actualizar relacion
-  actualizarRelaciones(id: string, data: any): Observable<any> {
+  // Actualizar orden de pago
+  actualizarOrdenPago(id: string, data: any): Observable<any> {
     return this.http.put(`${base_url}/ordenes-pago/${id}`, data, {
       headers: this.getToken
     });
-  }
+  }  
 
 }
