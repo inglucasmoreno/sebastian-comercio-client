@@ -13,6 +13,7 @@
       <p> <span class="font-semibold"> Código de compra: </span> {{ compra?.nro | codigoCompras }} </p>
       <p> <span class="font-semibold"> Fecha de compra: </span>  {{ compra?.fecha_compra ? (compra?.fecha_compra | fecha) : (compra?.createdAt | fecha) }} </p>
     </div>
+    <p class="mt-2"> <span class="font-semibold"> Número de factura: </span> {{ compra?.nro_factura }} </p>
     <p class="mt-2"> <span class="font-semibold"> Precio total: </span>  ${{ compra?.precio_total | moneda }} </p>
     <p class="mt-2"> <span class="font-semibold"> Proveedor: </span> {{ compra?.proveedor.descripcion }} </p>
     <p class="mt-2"> <span class="font-semibold"> Estado: </span> <span [ngClass]="{'bg-green-100 text-green-800 border-green-400':compra?.cancelada, 'bg-red-100 text-red-800 border-red-400' : !compra?.cancelada}" class="p-1 border rounded text-xs font-semibold"> {{ compra?.cancelada ? 'Completada' : 'Sin cancelar'}} </span> </p>

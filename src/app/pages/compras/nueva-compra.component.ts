@@ -59,6 +59,7 @@ export class NuevaCompraComponent implements OnInit {
   // Compra
   public precio_total = 0;
   public observacion: string = '';
+  public nro_factura: string = '';
   public fecha_compra = '';
   public forma_pago: string = '';
   public forma_pago_monto: number = null;
@@ -125,9 +126,15 @@ export class NuevaCompraComponent implements OnInit {
   // Completar compra
   completarCompra(): void {
 
-    // Verificaciones
+    // Verificaciones - Pago total
     if (this.precio_total > this.totalPagado) {
       this.alertService.info('El monto pagado no puede ser menor al precio total');
+      return;
+    }
+
+    // Verificaciones - Número de factura
+    if (this.nro_factura.trim() === '') {
+      this.alertService.info('Debe colocar un número de factura');
       return;
     }
 
@@ -141,6 +148,7 @@ export class NuevaCompraComponent implements OnInit {
             proveedor: this.proveedorSeleccionado._id,
             observacion: this.observacion,
             fecha_compra: this.fecha_compra,
+            nro_factura: this.nro_factura,
             monto_deuda: this.deuda_monto,
             monto_pago: this.totalPagado,
             precio_total: this.precio_total,
@@ -156,6 +164,7 @@ export class NuevaCompraComponent implements OnInit {
             next: () => {
               this.etapa = 'proveedores';
               this.proveedor = '';
+              this.nro_factura = '';
               this.proveedorSeleccionado = null;
               this.porcentajes = '';
               this.porcentajesTotal = '';
@@ -539,11 +548,11 @@ export class NuevaCompraComponent implements OnInit {
     let excesoMonto = '';
 
     // Verificacion de exceso de monto
-    this.cajas.map( caja => {
-      if(caja._id === this.forma_pago && caja.saldo < this.forma_pago_monto) excesoMonto = caja.descripcion;
+    this.cajas.map(caja => {
+      if (caja._id === this.forma_pago && caja.saldo < this.forma_pago_monto) excesoMonto = caja.descripcion;
     });
 
-    if(excesoMonto.trim() !== ''){
+    if (excesoMonto.trim() !== '') {
       this.alertService.info(`No tienes suficiente saldo en la caja ${excesoMonto}`);
       return;
     }
