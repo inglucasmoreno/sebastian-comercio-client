@@ -154,6 +154,7 @@
       <p> <span class="font-semibold"> Código de compra: </span> {{ compraSeleccionada?.nro | codigoCompras }} </p>
       <p> <span class="font-semibold"> Fecha de compra: </span>  {{ compraSeleccionada?.fecha_compra ? (compraSeleccionada?.fecha_compra | fecha) : (compraSeleccionada?.createdAt | fecha) }} </p>
     </div>
+    <p class="mt-2"> <span class="font-semibold"> Número de factura: </span> {{ compraSeleccionada?.nro_factura }} </p>
     <p class="mt-2"> <span class="font-semibold"> Precio total: </span>  ${{ compraSeleccionada?.precio_total | moneda }}
       <span class="text-green-700 font-semibold" *ngIf="precioConPorcentaje">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20" fill="currentColor">

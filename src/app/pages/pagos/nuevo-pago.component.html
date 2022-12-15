@@ -251,7 +251,7 @@
       <div class="md:w-1/2 mt-2 ml-0 md:ml-2 md:mt-1"></div>
     </div>  
     <div class="p-2 text-sm">
-      <h1 *ngIf="carro_pago.length > 0"> <span class="font-semibold"> Total a pagar: </span>  ${{ montoTotal | moneda }} </h1> 
+      <h1 *ngIf="carro_pago.length > 0" class="bg-gray-100 border border-gray-400 rounded p-2"> <span class="font-semibold"> Total a pagar: </span>  ${{ montoTotal | moneda }} </h1> 
       <h1 *ngIf="carro_pago.length === 0" class="bg-green-100 p-2 w-max rounded text-green-700 text-xs font-semibold border border-green-300"> Generando anticipo </h1>
       <div class="mt-2">
         <h1 class="font-semibold p-1"> Personalización del pago </h1>

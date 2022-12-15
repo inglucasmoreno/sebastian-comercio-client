@@ -39,13 +39,19 @@
       </button>
     </div>
     <div class="p-2 text-sm">
-      <div>
-        <p class="font-semibold"> Fecha de compra </p> 
-        <input [(ngModel)]="fecha_compra" type="date" class="border focus:outline-none border-gray-400 p-2 rounded mt-1">
-      </div>
-      <div class="md:flex md:items-center mt-2 md:justify-between">
-        <p class="font-semibold"> Forma de pago </p>
+      <div class="md:flex md:items-center bg-gray-100 border border-gray-400 p-2 rounded mt-2 md:justify-between">
+        <p class="font-semibold"> Datos de pago </p>
         <p class="mt-2 md:mt-0"> <span class="font-semibold"> Total a pagar: </span> ${{ precio_total | moneda }} </p>
+      </div>
+      <div class="flex items-center mt-2">
+        <div class="w-1/2">
+          <p class="font-semibold"> Fecha de compra </p> 
+          <input [(ngModel)]="fecha_compra" type="date" class="border w-full focus:outline-none border-gray-400 p-2 rounded mt-1">
+        </div>
+        <div class="w-1/2 ml-2">
+          <p class="font-semibold"> <span class="text-red-700"> * </span>  Número de factura </p> 
+          <input [(ngModel)]="nro_factura" placeholder="Colocar número de factura" type="text" class="border w-full focus:outline-none border-gray-400 p-2 rounded mt-1">         
+        </div>
       </div>
       <div class="mt-2 md:flex md:items-center w-full">
         <select [disabled]="flagCC" (change)="seleccionandoFormaPago()" [(ngModel)]="forma_pago" class="p-2 w-full focus:outline-none md:w-1/2 rounded border border-gray-400">
@@ -357,7 +363,7 @@
             Buscar productos
           </button>
           <div class="mt-2" *ngIf="productosCompra.length !== 0">
-            <div class="px-2 md:flex md:items-center">
+            <div class="px-2 md:flex mt-3 md:items-center">
               <div class="md:w-1/2">
                 <p class="font-semibold"> Observación personalizada </p>
                 <input type="text" [(ngModel)]="observacion" placeholder="Agregar observacion"
