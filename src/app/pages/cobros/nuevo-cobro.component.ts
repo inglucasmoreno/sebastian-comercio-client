@@ -568,7 +568,7 @@ export class NuevoCobroComponent implements OnInit {
     this.ventas = [];
 
     // Listado de ventas 
-    this.ventasPropiasService.listarVentas({ cliente: this.clienteSeleccionado._id, cancelada: 'false' }).subscribe({
+    this.ventasPropiasService.listarVentas({ cliente: this.clienteSeleccionado._id, cancelada: 'false', activo: true }).subscribe({
       next: ({ ventas }) => {
         this.ventas = ventas;
         this.alertService.close();

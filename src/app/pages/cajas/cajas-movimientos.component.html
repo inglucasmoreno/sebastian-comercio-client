@@ -1,3 +1,40 @@
+
+<!-- Modal: Detalles de movimiento -->
+<app-modal [showModal]="showModalDetallesMovimientoInterno">
+  <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
+      <h1 class=" text-white px-2 py-1 rounded-t"> Detalles de movimiento </h1>
+      <svg (click)="cerrarDetallesMovimientoInterno()" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </div>
+  <div class="p-2 text-sm">
+      <div class="flex items-center justify-between">
+          <p> <span class="font-semibold"> Movimiento interno número: </span> {{ movimientoInternoSeleccionado?.nro }} </p>
+          <p> <span class="font-semibold"> Fecha: </span> {{ movimientoInternoSeleccionado?.createdAt | fecha }} </p>
+      </div>
+      <p *ngIf="movimientoInternoSeleccionado?.observacion.trim() !== ''" class="mt-2"> <span class="font-semibold"> Observación: </span> <span> {{ movimientoInternoSeleccionado?.observacion.trim() !== '' ? movimientoInternoSeleccionado?.observacion : 'Sin observación' }} </span> </p>
+      <div class="mt-2">
+          <div class="border border-gray-400 border-l-8 p-2">
+              <div class="flex items-center justify-between">
+                  <div>
+                      <p class="font-semibold"> {{ movimientoInternoSeleccionado?.caja_origen.descripcion }} </p>
+                      <p class="text-xs text-gray-500"> Origen </p>
+                  </div>
+                  <p class="w-max p-1 ml-2 mt-1 bg-red-50 font-semibold text-red-700 border border-red-400 rounded"> ${{ movimientoInternoSeleccionado?.monto_origen | moneda }} </p>
+              </div>
+          </div>
+          <div class="border mt-2 border-gray-400 border-l-8 p-2">
+              <div class="flex items-center justify-between">
+                  <div>
+                      <p class="font-semibold"> {{ movimientoInternoSeleccionado?.caja_destino.descripcion }} </p>
+                      <p class="text-xs text-gray-500"> Destino </p>
+                  </div>
+                  <p class="w-max p-1 ml-2 mt-1 bg-green-50 font-semibold text-green-700 border border-green-400 rounded"> ${{ movimientoInternoSeleccionado?.monto_destino | moneda }} </p>
+              </div>
+          </div>
+      </div>
+      <p class="mt-3"> <span class=font-semibold> Generado por: </span> <span> {{ movimientoInternoSeleccionado?.creatorUser.apellido }} {{ movimientoInternoSeleccionado?.creatorUser.nombre }} </span> </p>
+  </div>
+</app-modal>
+
 <!-- Detalles del pago -->
 <app-modal [showModal]="showModalDetallesPago">
   <div class="text-sm"t>
@@ -426,6 +463,11 @@
                   <span class="font-semibold"> Saldo actual: </span> 
                   <span [ngClass]="{'text-red-700':movimientoSeleccionado?.saldo_nuevo < 0}"> ${{ movimientoSeleccionado?.saldo_nuevo | moneda }} </span>                      
               </p>
+              <p class="mt-2"> 
+                <span class="font-semibold"> Generado por: </span> 
+                <span> {{ movimientoSeleccionado?.creatorUser.apellido }} {{ movimientoSeleccionado?.creatorUser.nombre }} </span>                      
+              </p>
+
               <button (click)="abrirDetallesVenta('venta')" *ngIf="movimientoSeleccionado?.venta_propia && movimientoSeleccionado?.venta_propia !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
                 Detalles de venta
               </button>
@@ -435,15 +477,18 @@
               <button (click)="abrirDetallesCobro()" *ngIf="movimientoSeleccionado?.recibo_cobro && movimientoSeleccionado?.recibo_cobro !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
                 Detalles del cobro
             </button>
+            <button (click)="abrirDetallesMovimientoInterno()" *ngIf="movimientoSeleccionado?.movimiento_interno && movimientoSeleccionado?.movimiento_interno !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
+              Detalles de movimiento interno
+            </button>
             <button (click)="abrirDetallesPago()" *ngIf="movimientoSeleccionado?.orden_pago && movimientoSeleccionado?.orden_pago !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
               Detalles del pago
-          </button>
+            </button>
             <button (click)="abrirDetallesChequeDesdeMovimiento()" *ngIf="movimientoSeleccionado?.cheque && movimientoSeleccionado?.cheque !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
               Detalles de cheque
             </button>
             <button (click)="abrirDetallesGasto()" *ngIf="movimientoSeleccionado?.gasto && movimientoSeleccionado?.gasto !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
               Detalles de gasto
-          </button>
+           </button>
 
           </div>
       </div>

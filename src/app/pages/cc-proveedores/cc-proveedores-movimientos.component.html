@@ -239,6 +239,10 @@
                     <span class="font-semibold"> Saldo actual: </span> 
                     <span [ngClass]="{'text-red-700':movimientoSeleccionado?.saldo_nuevo < 0}"> ${{ movimientoSeleccionado?.saldo_nuevo | moneda }} </span>                      
                 </p>
+                <p class="mt-2"> 
+                  <span class="font-semibold"> Generado por: </span> 
+                  <span> {{ movimientoSeleccionado?.creatorUser.apellido }} {{ movimientoSeleccionado?.creatorUser.nombre }} </span>                      
+                </p>
                 <button (click)="abrirDetallesCompra('')" *ngIf="movimientoSeleccionado?.compra !== ''" class="border mt-2 font-semibold focus:outline-none hover:text-secondaryColor border-gray-400 rounded p-1 bg-gray-50 shadow">
                     Detalles de compra
                 </button>

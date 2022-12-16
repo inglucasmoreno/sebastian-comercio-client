@@ -38,8 +38,10 @@ export class CajasComponent implements OnInit {
   // Movimiento interno
   public movimientoInterno = {
     caja_origen: '',
-    monto: null,
     caja_destino: '',
+    observacion: '',
+    monto_origen: null,
+    monto_destino: null,
     creatorUser: this.authService.usuario.userId,
     updatorUser: this.authService.usuario.userId,
   }
@@ -264,15 +266,21 @@ export class CajasComponent implements OnInit {
       return;
     }
 
-    // Verificacion: Monto
-    if (this.movimientoInterno.monto < 0) {
-      this.alertService.info('Debe colocar un monto correcto');
-      return;
-    }
-
     // Verificacion: Caja destino
     if (this.movimientoInterno.caja_destino === '') {
       this.alertService.info('Debe seleccionar una caja destino');
+      return;
+    }
+
+    // Verificacion: Monto origen
+    if (this.movimientoInterno.monto_origen < 0) {
+      this.alertService.info('Debe colocar un monto de origen correcto');
+      return;
+    }
+
+    // Verificacion: Monto destino
+    if (this.movimientoInterno.monto_destino < 0) {
+      this.alertService.info('Debe colocar un monto de destino correcto');
       return;
     }
 
@@ -285,18 +293,18 @@ export class CajasComponent implements OnInit {
     // Verificacion: Saldo de caja inicial insuficiente
     let saldoCajaInicial = 0;
 
-    this.cajas.map( elemento => {
-      if(String(elemento._id) === String(this.movimientoInterno.caja_origen))saldoCajaInicial = elemento.saldo;  
+    this.cajas.map(elemento => {
+      if (String(elemento._id) === String(this.movimientoInterno.caja_origen)) saldoCajaInicial = elemento.saldo;
     });
 
-    if(this.movimientoInterno.monto > saldoCajaInicial){
+    if (this.movimientoInterno.monto_origen > saldoCajaInicial) {
       this.alertService.info('Saldo de caja origen insuficiente');
-      return;   
+      return;
     }
 
     this.alertService.question({ msg: 'Generando movimiento', buttonText: 'Generar' })
-    .then(({ isConfirmed }) => {
-      if (isConfirmed) {
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
           this.alertService.loading();
           this.cajasService.movimientoInterno(this.movimientoInterno).subscribe({
             next: () => {
@@ -312,12 +320,19 @@ export class CajasComponent implements OnInit {
   abrirMovimientoInterno(): void {
     this.movimientoInterno = {
       caja_origen: '',
-      monto: null,
       caja_destino: '',
+      observacion: '',
+      monto_origen: null,
+      monto_destino: null,
       creatorUser: this.authService.usuario.userId,
       updatorUser: this.authService.usuario.userId,
     }
     this.showModalMovimientoInterno = true;
+  }
+
+  // Duplicar monto
+  duplicarMonto(): void {
+    this.movimientoInterno.monto_destino = this.movimientoInterno.monto_origen;
   }
 
   // Reiniciando formulario

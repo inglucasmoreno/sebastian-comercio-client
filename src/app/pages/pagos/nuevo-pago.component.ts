@@ -590,7 +590,7 @@ export class NuevoPagoComponent implements OnInit {
     this.compras = [];
 
     // Listado de compras
-    this.comprasService.listarCompras({ proveedor: this.proveedorSeleccionado._id, cancelada: 'false' }).subscribe({
+    this.comprasService.listarCompras({ proveedor: this.proveedorSeleccionado._id, cancelada: 'false', activo: true }).subscribe({
       next: ({ compras }) => {
         this.compras = compras;
         this.alertService.close();

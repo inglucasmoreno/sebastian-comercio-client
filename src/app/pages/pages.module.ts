@@ -42,6 +42,7 @@ import { ComprasComponent } from './compras/compras.component';
 import { NuevaCompraComponent } from './compras/nueva-compra.component';
 import { PagosComponent } from './pagos/pagos.component';
 import { NuevoPagoComponent } from './pagos/nuevo-pago.component';
+import { MovimientosInternosComponent } from './movimientos-internos/movimientos-internos.component';
 
 
 @NgModule({
@@ -81,6 +82,7 @@ import { NuevoPagoComponent } from './pagos/nuevo-pago.component';
     NuevaCompraComponent,
     PagosComponent,
     NuevoPagoComponent,
+    MovimientosInternosComponent,
   ],
   imports: [
     CommonModule,

@@ -41,6 +41,7 @@ import { ComprasComponent } from './compras/compras.component';
 import { NuevaCompraComponent } from './compras/nueva-compra.component';
 import { PagosComponent } from './pagos/pagos.component';
 import { NuevoPagoComponent } from './pagos/nuevo-pago.component';
+import { MovimientosInternosComponent } from './movimientos-internos/movimientos-internos.component';
 
 const routes: Routes = [
     {
@@ -96,6 +97,9 @@ const routes: Routes = [
             { path: 'tipos-movimientos', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: TiposMovimientosComponent },
             { path: 'movimientos', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: MovimientosComponent },
             { path: 'cajas-movimientos/:id', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: CajasMovimientosComponent },
+
+            // Movimientos internos
+            { path: 'movimientos-internos', data: { permisos: 'TESORERIA_NAV' }, canActivate: [PermisosGuard], component: MovimientosInternosComponent },
 
             // Cheques
             { path: 'cheques', data: { permisos: 'CHEQUES_NAV' }, canActivate: [PermisosGuard], component: ChequesComponent },

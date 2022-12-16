@@ -10,6 +10,7 @@ import { ComprasProductosService } from 'src/app/services/compras-productos.serv
 import { ComprasService } from 'src/app/services/compras.service';
 import { DataService } from 'src/app/services/data.service';
 import { GastosService } from 'src/app/services/gastos.service';
+import { MovimientosInternosService } from 'src/app/services/movimientos-internos.service';
 import { OrdenesPagoChequesService } from 'src/app/services/ordenes-pago-cheques.service';
 import { OrdenesPagoCompraService } from 'src/app/services/ordenes-pago-compra.service';
 import { OrdenesPagoService } from 'src/app/services/ordenes-pago.service';
@@ -37,6 +38,7 @@ export class CajasMovimientosComponent implements OnInit {
   // Modal
   public showModalMovimiento = false;
   public showModalDetalles = false;
+  public showModalDetallesMovimientoInterno = false;
   public showModalDetallesCobro = false;
   public showModalDetallesPago = false;
   public showModalDetallesVenta = false;
@@ -88,6 +90,9 @@ export class CajasMovimientosComponent implements OnInit {
   public pago_cheques: any[] = [];
   public totalEnCompras: any = 0;
 
+  // Movimiento interno
+  public movimientoInternoSeleccionado: any;
+
   // Gastos
   public gastoSeleccionado: any = null;
 
@@ -113,6 +118,7 @@ export class CajasMovimientosComponent implements OnInit {
     private pagosService: OrdenesPagoService,
     private recibosCobroVentaService: RecibosCobroVentaService,
     private recibosCobroChequeService: RecibosCobroChequeService,
+    private movimientosInternosService: MovimientosInternosService,
     private ventasPropiasService: VentasPropiasService,
     private comprasService: ComprasService,
     private ordenesPagoCompraService: OrdenesPagoCompraService,
@@ -582,6 +588,25 @@ export class CajasMovimientosComponent implements OnInit {
       }, error: ({ error }) => this.alertService.errorApi(error.message)
     })
 
+  }
+
+  // Abrir detalles de movimiento interno
+  abrirDetallesMovimientoInterno(): void {
+    this.alertService.loading();
+    this.movimientosInternosService.getMovimiento(this.movimientoSeleccionado.movimiento_interno).subscribe({
+      next: ({ movimiento }) => {
+        this.movimientoInternoSeleccionado = movimiento;
+        this.showModalDetalles = false;
+        this.showModalDetallesMovimientoInterno = true;
+        this.alertService.close();
+      },error: ({error}) => this.alertService.errorApi(error.message)
+    })  
+  }
+
+  // Cerrar detalles de movimiento interno
+  cerrarDetallesMovimientoInterno(): void {
+    this.showModalDetalles = true;
+    this.showModalDetallesMovimientoInterno = false;
   }
 
   // Abrir detalles de cheque
