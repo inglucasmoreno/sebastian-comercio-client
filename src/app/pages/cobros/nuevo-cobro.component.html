@@ -330,7 +330,7 @@
           </div>
         </div>
 
-        <div class="flex text-left items-center mt-4 border border-l-8 border-gray-400 shadow px-4 py-2" *ngIf="clienteSeleccionado">
+        <div class="flex text-left items-center mt-4 w-11/12 mx-auto md:w-full max-w-xl border border-l-8 border-gray-400 shadow pl-4 pr-6 py-2" *ngIf="clienteSeleccionado">
           <img class="w-20" src="assets/avatar-cliente.svg">
           <div class="ml-2">
             <p class="text-sm"> {{ clienteSeleccionado?.descripcion }} </p>
@@ -359,13 +359,13 @@
 
   <!-- ETAPA: PAGO -->
   <div *ngIf="etapa === 'cobro'">
-    <div class="mt-5 justify-center rounded-t shadow border mx-auto border-gray-400 w-11/12 md:w-1/2">
+    <div class="mt-5 justify-center rounded-t shadow border mx-auto border-gray-400 w-11/12 max-w-5xl">
       <div class="text-sm flex items-center justify-between bg-primary-900 p-2 text-white">
         <div class="flex items-center">
           <img src="assets/avatar-cliente.svg" class="w-14">
           <div class="ml-1">
-            <p class="font-semibold text-lg"> {{ this.clienteSeleccionado?.descripcion }} </p>
-            <p> {{ this.clienteSeleccionado?.tipo_identificacion }} {{ this.clienteSeleccionado?.identificacion }} </p>
+            <p class="font-semibold text-lg"> GENERANDO COBRO </p>
+            <p class="text-xs"> {{ this.clienteSeleccionado?.descripcion }} </p>
           </div>
         </div>
         <div class="flex items-center">
@@ -387,8 +387,7 @@
       </div>
       <div *ngIf="ventas?.length === 0" class="px-2 py-3">
         <p class="text-lg flex items-center">
-          <span class="font-semibold"> {{ clienteSeleccionado?.descripcion }} </span>
-          <span class="ml-1"> se encuentra al dia! </span>
+          <span> El cliente se encuentra al dia! </span>
         </p>
         <button (click)="abrirModalCobro()" class="bg-secondaryColor shadow focus:outline-none text-sm text-white rounded p-2 mt-2"> Generar anticipo </button>
       </div>

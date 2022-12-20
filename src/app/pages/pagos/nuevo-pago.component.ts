@@ -140,7 +140,7 @@ export class NuevoPagoComponent implements OnInit {
     this.proveedorSeleccionado = proveedor;
   }
 
-  borrarCliente(): void {
+  borrarProveedor(): void {
     this.proveedorSeleccionado = null;
     this.filtro.parametroProveedor = '';
   }

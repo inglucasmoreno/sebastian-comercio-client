@@ -360,13 +360,13 @@
           </div>
         </div>   
         
-        <div class="flex text-left items-center mt-4 border border-l-8 border-gray-400 shadow px-4 py-2" *ngIf="proveedorSeleccionado">
+        <div class="flex text-left items-center mt-4 border max-w-xl border-l-8 border-gray-400 shadow pl-4 pr-6 py-2" *ngIf="proveedorSeleccionado">
           <img class="w-20" src="assets/avatar-proveedor.svg">
           <div class="ml-2">
             <p class="text-sm"> {{ proveedorSeleccionado?.descripcion }} </p>
             <p *ngIf="proveedorSeleccionado?.identificacion !== ''" class="text-xs text-gray-500"> {{ proveedorSeleccionado?.tipo_identificacion }} {{ proveedorSeleccionado?.identificacion }} </p>
             <p *ngIf="proveedorSeleccionado?.identificacion === ''" class="text-xs text-gray-500"> Sin identificación </p>
-            <p (click)="borrarCliente()" class="font-semibold text-xs hover:text-secondaryColor cursor-pointer"> Cambiar de proveedor </p>
+            <p (click)="borrarProveedor()" class="font-semibold text-xs hover:text-secondaryColor cursor-pointer"> Cambiar de proveedor </p>
           </div>
         </div>
       
@@ -390,14 +390,13 @@
 
   <!-- ETAPA: PAGO -->
   <div *ngIf="etapa === 'pago'">
-    <div class="mt-5 justify-center rounded-t shadow border mx-auto border-gray-400 w-11/12 md:w-1/2">
+    <div class="mt-5 justify-center rounded-t shadow border mx-auto border-gray-400 w-11/12 max-w-5xl">
       <div class="text-sm flex items-center justify-between bg-primary-900 p-2 text-white">
         <div class="flex items-center">
           <img src="assets/avatar-proveedor.svg" class="w-14">
           <div class="ml-1">
-            <p class="font-semibold text-lg"> {{ this.proveedorSeleccionado?.descripcion }} </p>
-            <p *ngIf="this.proveedorSeleccionado?.identificacion !== ''"> {{ this.proveedorSeleccionado?.tipo_identificacion }} {{ this.proveedorSeleccionado?.identificacion }} </p>
-            <p *ngIf="this.proveedorSeleccionado?.identificacion === ''"> Sin identificación </p>
+            <p class="font-semibold text-lg"> GENERANDO PAGO </p>
+            <p class="text-xs"> {{ this.proveedorSeleccionado?.descripcion }} </p>
           </div>
         </div>
         <div class="flex items-center">
@@ -419,10 +418,9 @@
       </div>
       <div *ngIf="compras?.length === 0" class="px-2 py-3">
         <p class="text-lg flex items-center">
-          <span> Te encuentras al dia con </span>
-          <span class="ml-1 font-semibold"> {{ proveedorSeleccionado?.descripcion }} </span>
+          <span> Te encuentras al dia con este proveedor </span>
         </p>
-        <button (click)="abrirModalPago()" class="bg-secondaryColor shadow focus:outline-none text-sm text-white rounded p-2 mt-2"> Generar pago anticipado </button>
+        <button (click)="abrirModalPago()" class="bg-secondaryColor shadow focus:outline-none text-sm text-white rounded p-2 mt-2"> Generar anticipo </button>
       </div>
       <div *ngIf="compras?.length !== 0" class="p-2">
         <h1 class="font-semibold"> LISTADO DE FACTURAS PENDIENTES </h1>

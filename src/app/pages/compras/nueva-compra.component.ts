@@ -24,6 +24,7 @@ export class NuevaCompraComponent implements OnInit {
 
   // Flag
   public showProductos: boolean = false;
+  public showOptions: boolean = false;
   public productoCargado = false;
   public showEditarProducto = false;
   public showCompletarCompra = false;
@@ -77,7 +78,6 @@ export class NuevaCompraComponent implements OnInit {
   public totalTmpCheques: number = 0;
 
   // Proveedores
-  public proveedor: string = '';
   public proveedorSeleccionado: any = null;
   public proveedores: any[] = [];
 
@@ -90,7 +90,8 @@ export class NuevaCompraComponent implements OnInit {
   // Filtrado
   public filtro = {
     activo: 'true',
-    parametroProductos: ''
+    parametroProductos: '',
+    parametroProveedor: ''
   }
 
   constructor(
@@ -163,7 +164,9 @@ export class NuevaCompraComponent implements OnInit {
           this.comprasService.nuevaCompra(data).subscribe({
             next: () => {
               this.etapa = 'proveedores';
-              this.proveedor = '';
+              this.proveedorSeleccionado = null;
+              this.showOptions = false;
+              this.filtro.parametroProveedor = '';
               this.nro_factura = '';
               this.proveedorSeleccionado = null;
               this.porcentajes = '';
@@ -191,13 +194,13 @@ export class NuevaCompraComponent implements OnInit {
 
     } else if (proximaEtapa === 'compra') { // proveedores -> compra
 
-      if (this.proveedor === '') {
+      if (!this.proveedorSeleccionado) {
         this.alertService.info('Debe seleccionar un proveedor');
         return;
       }
 
       // Se selecciona el proveedor
-      this.proveedorSeleccionado = this.proveedores.find(proveedor => proveedor._id === this.proveedor);
+      this.proveedorSeleccionado = this.proveedores.find(proveedor => proveedor._id === this.proveedorSeleccionado._id);
 
     }
 
@@ -766,6 +769,16 @@ export class NuevaCompraComponent implements OnInit {
     this.listaCheques.map(cheque => {
       cheque.seleccionado ? this.totalTmpCheques += cheque.importe : null;
     });
+  }
+
+  seleccionarProveedor(proveedor: any): void {
+    this.proveedorSeleccionado = proveedor;
+    this.almacenamientoLocalStorage();
+  }
+
+  borrarProveedor(): void {
+    this.proveedorSeleccionado = null;
+    this.filtro.parametroProveedor = '';
   }
 
   // Paginacion - Cambiar pagina
