@@ -43,6 +43,7 @@ import { NuevaCompraComponent } from './compras/nueva-compra.component';
 import { PagosComponent } from './pagos/pagos.component';
 import { NuevoPagoComponent } from './pagos/nuevo-pago.component';
 import { MovimientosInternosComponent } from './movimientos-internos/movimientos-internos.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 
 @NgModule({

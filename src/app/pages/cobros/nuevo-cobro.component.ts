@@ -11,14 +11,14 @@ import { environment } from 'src/environments/environment';
 import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
 import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
 import { format } from 'date-fns';
+import { DataService } from 'src/app/services/data.service';
 
 const base_url = environment.base_url;
 
 @Component({
   selector: 'app-nuevo-cobro',
   templateUrl: './nuevo-cobro.component.html',
-  styles: [
-  ]
+  styles: []
 })
 export class NuevoCobroComponent implements OnInit {
 
@@ -35,7 +35,6 @@ export class NuevoCobroComponent implements OnInit {
 
   // CLIENTES
   public clientes: any[] = [];
-  public cliente: string = '';
   public clienteSeleccionado: any = null;
 
   // VENTAS
@@ -67,6 +66,9 @@ export class NuevoCobroComponent implements OnInit {
   public relaciones: any[];  // Relaciones venta_propia = cheques
   public chequeSeleccionadoDetalles: any;
 
+  // SELECT PERSONALIZADO
+  showOptions = false;
+
   public cheque = {
     nro_cheque: '',
     emisor: '',
@@ -77,7 +79,8 @@ export class NuevoCobroComponent implements OnInit {
   }
 
   public filtro = {
-    parametroProducto: ''
+    parametroProducto: '',
+    parametroCliente: ''
   }
 
   // CAJAS
@@ -85,6 +88,7 @@ export class NuevoCobroComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private dataService: DataService,
     private ventasPropiasProductosService: VentasPropiasProductosService,
     private ventasPropiasChequesService: VentasPropiasChequesService,
     private clientesService: ClientesService,
@@ -95,6 +99,7 @@ export class NuevoCobroComponent implements OnInit {
     private alertService: AlertService) { }
 
   ngOnInit(): void {
+    this.dataService.ubicacionActual = 'Dashboard - Nuevo cobro';
     gsap.from('.gsap-contenido', { y: 100, opacity: 0, duration: .2 });
     this.cargaInicial();
   }
@@ -124,9 +129,13 @@ export class NuevoCobroComponent implements OnInit {
   // ? ---------> SECCION CLIENTES
 
   // ** SELECCIONAR CLIENTE
-  seleccionarCliente(): void {
-    if (this.cliente !== '') this.clienteSeleccionado = this.clientes.find(cliente => String(cliente._id) === this.cliente);
-    else this.clienteSeleccionado = null;
+  seleccionarCliente(cliente: any): void {
+    this.clienteSeleccionado = cliente;
+  }
+
+  borrarCliente(): void {
+    this.clienteSeleccionado = null;
+    this.filtro.parametroCliente = '';
   }
 
   // ? ---------? SECCION COBRO
@@ -410,7 +419,7 @@ export class NuevoCobroComponent implements OnInit {
           this.alertService.loading();
 
           const data = {
-            cliente: this.cliente,
+            cliente: this.clienteSeleccionado._id,
             fecha_cobro: this.fecha_cobro,
             formas_pago: this.formas_pago,
             cobro_total: this.montoTotalCobrado,
@@ -436,8 +445,10 @@ export class NuevoCobroComponent implements OnInit {
   // Reiniciar seccion
   reiniciarSeccion(): void {
     this.etapa = 'clientes';
-    this.cliente = '';
+    this.filtro.parametroCliente = '';
+    this.clienteSeleccionado = null;
     this.showModalCobro = false;
+    this.showOptions = false;
   }
 
   // Abrir cobro parcial

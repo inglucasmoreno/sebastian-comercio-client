@@ -329,18 +329,60 @@
   <div *ngIf="etapa === 'proveedores'">
     <div class="flex items-center justify-center">
       <div class="text-center">
+        
         <h1 class="text-3xl font-semibold text-center mt-7"> NUEVO PAGO </h1>
-        <div class="text-center mt-5">
+        
+        <!-- SELECT PERSONALIZADO -->
+
+        <div *ngIf="!proveedorSeleccionado" class="mt-4">
+          <input [(ngModel)]="filtro.parametroProveedor" type="text" (focus)="showOptions = true" class="border shadow border-gray-400 p-2 w-96 focus:outline-none" placeholder="Buscar proveedor">
+          <div class="bg-white border mt-2 border-gray-400 absolute w-96" *ngIf="showOptions">
+            <div class="bg-gray-100 p-2 px-4 flex items-center justify-between border-b border-gray-400">
+              <p class="font-semibold"> Listado de proveedores </p>
+              <button (click)="showOptions = false" class="focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>                
+              </button>
+            </div>
+            <div class="max-h-80 overflow-y-auto">
+              <div (click)="seleccionarProveedor(proveedor)" class="cursor-pointer border-b text-left hover:bg-gray-100 p-2 text-sm" *ngFor="let proveedor of proveedores | filtroProveedores:filtro.parametroProveedor:'true'"> 
+                <div class="flex items-center">
+                  <img class="w-10" src="assets/avatar-proveedor.svg">
+                  <div class="ml-2">
+                    <p> {{ proveedor.descripcion }} </p>
+                    <p *ngIf="proveedor.identificacion !== ''" class="text-xs text-gray-500"> {{ proveedor.tipo_identificacion }} {{ proveedor.identificacion }} </p>
+                    <p *ngIf="proveedor.identificacion === ''" class="text-xs text-gray-500"> Sin identificación </p>                    
+                  </div> 
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>   
+        
+        <div class="flex text-left items-center mt-4 border border-l-8 border-gray-400 shadow px-4 py-2" *ngIf="proveedorSeleccionado">
+          <img class="w-20" src="assets/avatar-proveedor.svg">
+          <div class="ml-2">
+            <p class="text-sm"> {{ proveedorSeleccionado?.descripcion }} </p>
+            <p *ngIf="proveedorSeleccionado?.identificacion !== ''" class="text-xs text-gray-500"> {{ proveedorSeleccionado?.tipo_identificacion }} {{ proveedorSeleccionado?.identificacion }} </p>
+            <p *ngIf="proveedorSeleccionado?.identificacion === ''" class="text-xs text-gray-500"> Sin identificación </p>
+            <p (click)="borrarCliente()" class="font-semibold text-xs hover:text-secondaryColor cursor-pointer"> Cambiar de proveedor </p>
+          </div>
+        </div>
+      
+        <!-- <div class="text-center mt-5">
           <select (change)="seleccionarProveedor()" [(ngModel)]="proveedor"
             class="border text-sm focus:outline-none border-gray-400 p-2 rounded">
             <option value=""> Seleccionar proveedor </option>
             <option *ngFor="let proveedor of proveedores" [value]="proveedor._id"> {{ proveedor.descripcion }} </option>
           </select>
-        </div>
+        </div> -->
+        
         <button (click)="cambioEtapaPago()"
           class="border mt-5 text-sm hover:bg-secondaryColor transition duration-300 focus:outline-none border-gray-400 text-white shodow p-2 rounded bg-gray-900">
           Comenzar
         </button>
+      
       </div>
     </div>
     <img src="assets/pagos.svg" class="w-1/2 md:w-1/4 mx-auto mt-10">
@@ -350,9 +392,13 @@
   <div *ngIf="etapa === 'pago'">
     <div class="mt-5 justify-center rounded-t shadow border mx-auto border-gray-400 w-11/12 md:w-1/2">
       <div class="text-sm flex items-center justify-between bg-primary-900 p-2 text-white">
-        <div>
-          <p class="font-semibold text-lg"> GENERANDO NUEVO PAGO </p>
-          <p> {{ this.proveedorSeleccionado?.descripcion }} </p>
+        <div class="flex items-center">
+          <img src="assets/avatar-proveedor.svg" class="w-14">
+          <div class="ml-1">
+            <p class="font-semibold text-lg"> {{ this.proveedorSeleccionado?.descripcion }} </p>
+            <p *ngIf="this.proveedorSeleccionado?.identificacion !== ''"> {{ this.proveedorSeleccionado?.tipo_identificacion }} {{ this.proveedorSeleccionado?.identificacion }} </p>
+            <p *ngIf="this.proveedorSeleccionado?.identificacion === ''"> Sin identificación </p>
+          </div>
         </div>
         <div class="flex items-center">
           <button (click)="etapa = 'proveedores'" title="Regresar"
@@ -371,12 +417,12 @@
           </button>
         </div>
       </div>
-      <div *ngIf="compras?.length === 0" class="p-2">
+      <div *ngIf="compras?.length === 0" class="px-2 py-3">
         <p class="text-lg flex items-center">
-          <span>
-            Te encuentras al día con este proveedor
-          </span>
+          <span> Te encuentras al dia con </span>
+          <span class="ml-1 font-semibold"> {{ proveedorSeleccionado?.descripcion }} </span>
         </p>
+        <button (click)="abrirModalPago()" class="bg-secondaryColor shadow focus:outline-none text-sm text-white rounded p-2 mt-2"> Generar pago anticipado </button>
       </div>
       <div *ngIf="compras?.length !== 0" class="p-2">
         <h1 class="font-semibold"> LISTADO DE FACTURAS PENDIENTES </h1>

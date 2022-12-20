@@ -12,6 +12,7 @@ import { ProveedoresService } from 'src/app/services/proveedores.service';
 import { environment } from 'src/environments/environment';
 import gsap from 'gsap';
 import { ChequesService } from 'src/app/services/cheques.service';
+import { DataService } from 'src/app/services/data.service';
 
 const base_url = environment.base_url;
 
@@ -25,6 +26,8 @@ export class NuevoPagoComponent implements OnInit {
 
   public fecha_pago: string = format(new Date(), 'yyyy-MM-dd');
 
+  public showOptions = false;
+
   // MODALS
   public showCheques = false;
   public showModalPago = false;
@@ -37,7 +40,6 @@ export class NuevoPagoComponent implements OnInit {
 
   // PROVEEDORES
   public proveedores: any[] = [];
-  public proveedor: string = '';
   public proveedorSeleccionado: any = null;
 
   // COMPRAS
@@ -82,7 +84,8 @@ export class NuevoPagoComponent implements OnInit {
   }
 
   public filtro = {
-    parametroProducto: ''
+    parametroProducto: '',
+    parametroProveedor: ''
   }
 
   // CAJAS
@@ -90,6 +93,7 @@ export class NuevoPagoComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private dataService: DataService,
     private comprasProductosService: ComprasProductosService,
     private comprasChequesService: ComprasChequesService,
     private proveedoresService: ProveedoresService,
@@ -101,6 +105,7 @@ export class NuevoPagoComponent implements OnInit {
     private alertService: AlertService) { }
 
   ngOnInit(): void {
+    this.dataService.ubicacionActual = 'Dashboard - Nuevo pago';
     gsap.from('.gsap-contenido', { y: 100, opacity: 0, duration: .2 });
     this.cargaInicial();
   }
@@ -129,10 +134,15 @@ export class NuevoPagoComponent implements OnInit {
 
   // ? ---------> SECCION PROVEEDORES
 
+
   // ** SELECCIONAR PROVEEDOR
-  seleccionarProveedor(): void {
-    if (this.proveedor !== '') this.proveedorSeleccionado = this.proveedores.find(proveedor => String(proveedor._id) === this.proveedor);
-    else this.proveedorSeleccionado = null;
+  seleccionarProveedor(proveedor: any): void {
+    this.proveedorSeleccionado = proveedor;
+  }
+
+  borrarCliente(): void {
+    this.proveedorSeleccionado = null;
+    this.filtro.parametroProveedor = '';
   }
 
   // ? ---------? SECCION PAGO
@@ -432,7 +442,7 @@ export class NuevoPagoComponent implements OnInit {
           this.alertService.loading();
 
           const data = {
-            proveedor: this.proveedor,
+            proveedor: this.proveedorSeleccionado._id,
             fecha_pago: this.fecha_pago,
             formas_pago: this.formas_pago,
             pago_total: this.montoTotalPagado,
@@ -458,7 +468,9 @@ export class NuevoPagoComponent implements OnInit {
   // Reiniciar seccion
   reiniciarSeccion(): void {
     this.etapa = 'proveedores';
-    this.proveedor = '';
+    this.proveedorSeleccionado = null;
+    this.filtro.parametroProveedor = '';
+    this.showOptions = false;
     this.showModalPago = false;
   }
 
