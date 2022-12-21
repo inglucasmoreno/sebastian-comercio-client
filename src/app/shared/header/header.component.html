@@ -45,7 +45,7 @@
         </ng-container>
 
         <!-- Terceros -->
-        <li *ngIf="authService.usuario.permisos.includes('TERCEROS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
+        <!-- <li *ngIf="authService.usuario.permisos.includes('TERCEROS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
             (click)="showTerceros = !showTerceros"
             class="flex items-center justify-between outline-none cursor-pointer p-2">
 
@@ -70,18 +70,18 @@
                 </svg>
             </div>
 
-        </li>
+        </li> -->
 
-        <div *ngIf="showTerceros && (authService.usuario.permisos.includes('TERCEROS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
+        <!-- <div *ngIf="showTerceros && (authService.usuario.permisos.includes('TERCEROS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
             class="bg-primary-600 rounded pl-2">
             <ng-container *ngFor="let element of itemsTerceros">
                 <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
                     [item]="element.item"></app-items>
             </ng-container>
-        </div>        
+        </div>         -->
 
         <!-- Productos -->
-        <li *ngIf="authService.usuario.permisos.includes('PRODUCTOS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
+        <!-- <li *ngIf="authService.usuario.permisos.includes('PRODUCTOS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
             (click)="showProductos = !showProductos"
             class="flex items-center justify-between outline-none cursor-pointer p-2">
 
@@ -108,15 +108,15 @@
                 </svg>
             </div>
 
-        </li>
-
+        </li> -->
+<!-- 
         <div *ngIf="showProductos && (authService.usuario.permisos.includes('PRODUCTOS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
             class="bg-primary-600 rounded pl-2">
             <ng-container *ngFor="let element of itemsProductos">
                 <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
                     [item]="element.item"></app-items>
             </ng-container>
-        </div>
+        </div> -->
 
         <!-- Ventas -->
         <li *ngIf="authService.usuario.permisos.includes('VENTAS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
@@ -157,7 +157,7 @@
         </div>
 
         <!-- Cobros -->
-        <li *ngIf="authService.usuario.permisos.includes('COBROS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
+        <!-- <li *ngIf="authService.usuario.permisos.includes('COBROS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
             (click)="showCobros = !showCobros"
             class="flex items-center justify-between outline-none cursor-pointer p-2">
 
@@ -182,18 +182,18 @@
                 </svg>
             </div>
 
-        </li>
+        </li> -->
 
-        <div *ngIf="showCobros && (authService.usuario.permisos.includes('COBROS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
+        <!-- <div *ngIf="showCobros && (authService.usuario.permisos.includes('COBROS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
             class="bg-primary-600 rounded pl-2">
             <ng-container *ngFor="let element of itemsCobros">
                 <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
                     [item]="element.item"></app-items>
             </ng-container>
-        </div>
+        </div> -->
 
         <!-- Gastos -->
-        <li *ngIf="authService.usuario.permisos.includes('GASTOS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
+        <!-- <li *ngIf="authService.usuario.permisos.includes('GASTOS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
             (click)="showGastos = !showGastos"
             class="flex items-center justify-between outline-none cursor-pointer p-2">
 
@@ -218,15 +218,15 @@
                 </svg>
             </div>
 
-        </li>
+        </li> -->
 
-        <div *ngIf="showGastos && (authService.usuario.permisos.includes('GASTOS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
+        <!-- <div *ngIf="showGastos && (authService.usuario.permisos.includes('GASTOS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
             class="bg-primary-600 rounded pl-2">
             <ng-container *ngFor="let element of itemsGastos">
                 <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
                     [item]="element.item"></app-items>
             </ng-container>
-        </div>
+        </div> -->
 
         <!-- Compras -->
         <li *ngIf="authService.usuario.permisos.includes('COMPRAS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
@@ -268,7 +268,7 @@
         </div>
 
         <!-- Pagos -->
-        <li *ngIf="authService.usuario.permisos.includes('PAGOS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
+        <!-- <li *ngIf="authService.usuario.permisos.includes('PAGOS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
             (click)="showPagos = !showPagos"
             class="flex items-center justify-between outline-none cursor-pointer p-2">
 
@@ -293,15 +293,15 @@
                 </svg>
             </div>
 
-        </li>
+        </li> -->
 
-        <div *ngIf="showPagos && (authService.usuario.permisos.includes('PAGOS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
+        <!-- <div *ngIf="showPagos && (authService.usuario.permisos.includes('PAGOS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
             class="bg-primary-600 rounded pl-2">
             <ng-container *ngFor="let element of itemsPagos">
                 <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
                     [item]="element.item"></app-items>
             </ng-container>
-        </div>
+        </div> -->
 
         <!-- Tesoreria -->
         <li *ngIf="authService.usuario.permisos.includes('TESORERIA_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
