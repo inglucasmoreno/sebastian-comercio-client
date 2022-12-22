@@ -139,6 +139,12 @@ export class NuevaCompraComponent implements OnInit {
       return;
     }
 
+    // Verificcion - Cuenta corriente cuando hay saldo a favor
+    if(this.estadoCuentaCorriente === 'No tiene' && (this.totalPagado - this.precio_total) > 0){
+      this.alertService.info('Tienes saldo a favor pero no tienes una cuenta corriente creada en este proveedor.');
+      return;
+    }
+
     this.alertService.question({ msg: 'Completando compra', buttonText: 'Completar' })
       .then(({ isConfirmed }) => {
         if (isConfirmed) {
@@ -164,7 +170,6 @@ export class NuevaCompraComponent implements OnInit {
           this.comprasService.nuevaCompra(data).subscribe({
             next: () => {
               this.etapa = 'proveedores';
-              this.proveedorSeleccionado = null;
               this.showOptions = false;
               this.filtro.parametroProveedor = '';
               this.nro_factura = '';
@@ -649,7 +654,7 @@ export class NuevaCompraComponent implements OnInit {
 
   // Crear cuenta corriente
   crearCuentaCorriente(): void {
-    this.alertService.question({ msg: 'Creando cuenta corriente para ' + this.proveedorSeleccionado?.descripcion, buttonText: 'Crear' })
+    this.alertService.question({ msg: 'Creando cuenta corriente en ' + this.proveedorSeleccionado?.descripcion, buttonText: 'Crear' })
       .then(({ isConfirmed }) => {
         if (isConfirmed) {
           this.alertService.loading();

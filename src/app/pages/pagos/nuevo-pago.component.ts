@@ -13,6 +13,7 @@ import { environment } from 'src/environments/environment';
 import gsap from 'gsap';
 import { ChequesService } from 'src/app/services/cheques.service';
 import { DataService } from 'src/app/services/data.service';
+import { CcProveedoresService } from 'src/app/services/cc-proveedores.service';
 
 const base_url = environment.base_url;
 
@@ -26,7 +27,12 @@ export class NuevoPagoComponent implements OnInit {
 
   public fecha_pago: string = format(new Date(), 'yyyy-MM-dd');
 
+  // FLAGS
   public showOptions = false;
+  public flagCC = false;
+
+  // CUENTA CORRIENTE
+  public cuentaCorriente = null;
 
   // MODALS
   public showCheques = false;
@@ -97,6 +103,7 @@ export class NuevoPagoComponent implements OnInit {
     private comprasProductosService: ComprasProductosService,
     private comprasChequesService: ComprasChequesService,
     private proveedoresService: ProveedoresService,
+    private ccProveedoresService: CcProveedoresService,
     private ordenesPagoService: OrdenesPagoService,
     private cajasService: CajasService,
     private chequesService: ChequesService,
@@ -234,11 +241,11 @@ export class NuevoPagoComponent implements OnInit {
     let excesoMonto = '';
 
     // Verificacion de exceso de monto
-    this.cajas.map( caja => {
-      if(caja._id === this.forma_pago && caja.saldo < this.forma_pago_monto) excesoMonto = caja.descripcion;
+    this.cajas.map(caja => {
+      if (caja._id === this.forma_pago && caja.saldo < this.forma_pago_monto) excesoMonto = caja.descripcion;
     });
 
-    if(excesoMonto.trim() !== ''){
+    if (excesoMonto.trim() !== '') {
       this.alertService.info(`No tienes suficiente saldo en la caja ${excesoMonto}`);
       return;
     }
@@ -268,7 +275,7 @@ export class NuevoPagoComponent implements OnInit {
 
   // ** ABRIR MODAL -> CHEQUES
   abrirModalCheque(estado, cheque = null): void {
-    
+
     this.alertService.loading();
 
     this.estadoFormularioCheque = estado;
@@ -593,6 +600,10 @@ export class NuevoPagoComponent implements OnInit {
       return;
     }
 
+    // Datos de cuenta corriente
+    this.cuentaCorriente = null;
+    this.flagCC = false;
+
     // Reiniciando carro de pago
     this.montoTotal = 0;
     this.carro_pago = [];
@@ -601,16 +612,28 @@ export class NuevoPagoComponent implements OnInit {
     this.alertService.loading();
     this.compras = [];
 
-    // Listado de compras
-    this.comprasService.listarCompras({ proveedor: this.proveedorSeleccionado._id, cancelada: 'false', activo: true }).subscribe({
-      next: ({ compras }) => {
-        this.compras = compras;
-        this.alertService.close();
-      },
-      error: ({ error }) => this.alertService.errorApi(error.message)
-    });
+    // Tiene cuenta corriente?
+    this.ccProveedoresService.getCuentaCorrientePorProveedor(this.proveedorSeleccionado._id).subscribe({
+      next: ({ cuenta_corriente }) => {
 
-    this.etapa = 'pago';
+        if(cuenta_corriente){
+          this.cuentaCorriente = cuenta_corriente;
+          this.flagCC = true;
+        }
+        
+        // Listado de compras
+        this.comprasService.listarCompras({ proveedor: this.proveedorSeleccionado._id, cancelada: 'false', activo: true }).subscribe({
+          next: ({ compras }) => {
+            this.compras = compras;
+            this.etapa = 'pago';
+            this.alertService.close();
+          },
+          error: ({ error }) => this.alertService.errorApi(error.message)
+        });
+      
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
 
   }
 
@@ -656,6 +679,29 @@ export class NuevoPagoComponent implements OnInit {
     this.calculoMontoTotalAPagar();
     this.showCheques = false;
     this.showModalPago = true;
+  }
+
+  // Generar cuenta corriente
+  generarCuentaCorriente(): void {
+    this.alertService.question({ msg: `Creando cuenta corriente en ${this.proveedorSeleccionado.descripcion}`, buttonText: 'Crear' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          const data = {
+            proveedor: this.proveedorSeleccionado._id,
+            saldo: 0,
+            creatorUser: this.authService.usuario.userId,
+            updatorUser: this.authService.usuario.userId,
+          }
+          this.ccProveedoresService.nuevaCuentaCorriente(data).subscribe({
+            next: ({cuenta_corriente}) => {
+              this.flagCC = true;
+              this.cuentaCorriente = cuenta_corriente;
+              this.alertService.success('Cuenta corriente creada correctamente');
+            }, error: ({error}) => this.alertService.errorApi(error.message)
+          })
+        }
+    });
   }
 
   // Calcular total en cheques

@@ -12,6 +12,7 @@ import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-p
 import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
 import { format } from 'date-fns';
 import { DataService } from 'src/app/services/data.service';
+import { CcClientesService } from 'src/app/services/cc-clientes.service';
 
 const base_url = environment.base_url;
 
@@ -23,6 +24,10 @@ const base_url = environment.base_url;
 export class NuevoCobroComponent implements OnInit {
 
   public fecha_cobro: string = format(new Date(),'yyyy-MM-dd');
+
+  // CUENTA CORRIENTE
+  public flagCC = false;
+  public cuentaCorriente = null;
 
   // MODALS
   public showModalCobro = false;
@@ -92,6 +97,7 @@ export class NuevoCobroComponent implements OnInit {
     private ventasPropiasProductosService: VentasPropiasProductosService,
     private ventasPropiasChequesService: VentasPropiasChequesService,
     private clientesService: ClientesService,
+    private ccClientesService: CcClientesService,
     private cobrosService: RecibosCobroService,
     private cajasService: CajasService,
     private bancosService: BancosService,
@@ -570,6 +576,10 @@ export class NuevoCobroComponent implements OnInit {
       return;
     }
 
+    // Reiniciar valores cuenta corriente
+    this.flagCC = false;
+    this.cuentaCorriente = null;
+
     // Reiniciando carro de pago
     this.montoTotal = 0;
     this.carro_pago = [];
@@ -578,17 +588,51 @@ export class NuevoCobroComponent implements OnInit {
     this.alertService.loading();
     this.ventas = [];
 
-    // Listado de ventas 
-    this.ventasPropiasService.listarVentas({ cliente: this.clienteSeleccionado._id, cancelada: 'false', activo: true }).subscribe({
-      next: ({ ventas }) => {
-        this.ventas = ventas;
-        this.alertService.close();
-      },
-      error: ({ error }) => this.alertService.errorApi(error.message)
+    // Cuenta corriente
+    this.ccClientesService.getCuentaCorrientePorCliente(this.clienteSeleccionado._id).subscribe({
+      next: ({cuenta_corriente}) => {
+    
+        if(cuenta_corriente){
+          this.flagCC = true;
+          this.cuentaCorriente = cuenta_corriente;
+        }
+
+        // Listado de ventas 
+        this.ventasPropiasService.listarVentas({ cliente: this.clienteSeleccionado._id, cancelada: 'false', activo: true }).subscribe({
+          next: ({ ventas }) => {
+            this.ventas = ventas;
+            this.etapa = 'cobro';
+            this.alertService.close();
+          },
+          error: ({ error }) => this.alertService.errorApi(error.message)
+        });
+
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
+  }
+
+  // Generar cuenta corriente
+  generarCuentaCorriente(): void {
+    this.alertService.question({ msg: `Creando cuenta corriente para ${this.clienteSeleccionado.descripcion}`, buttonText: 'Crear' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          const data = {
+            cliente: this.clienteSeleccionado._id,
+            saldo: 0,
+            creatorUser: this.authService.usuario.userId,
+            updatorUser: this.authService.usuario.userId,
+          }
+          this.ccClientesService.nuevaCuentaCorriente(data).subscribe({
+            next: ({cuenta_corriente}) => {
+              this.flagCC = true;
+              this.cuentaCorriente = cuenta_corriente;
+              this.alertService.success('Cuenta corriente creada correctamente');
+            }, error: ({error}) => this.alertService.errorApi(error.message)
+          })
+        }
     });
-
-    this.etapa = 'cobro';
-
   }
 
 

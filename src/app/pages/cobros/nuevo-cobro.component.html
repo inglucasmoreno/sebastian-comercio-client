@@ -376,7 +376,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
             </svg>
           </button>
-          <button (click)="abrirModalCobro()" title="Completar cobro"
+          <button *ngIf="ventas?.length > 0 || flagCC" (click)="abrirModalCobro()" title="Completar cobro"
             class="p-2 ml-2 border focus:outline-none border-gray-400 text-primary-900 bg-white rounded hover:text-secondaryColor">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
               stroke="currentColor" stroke-width="2">
@@ -389,7 +389,18 @@
         <p class="text-lg flex items-center">
           <span> El cliente se encuentra al dia! </span>
         </p>
-        <button (click)="abrirModalCobro()" class="bg-secondaryColor shadow focus:outline-none text-sm text-white rounded p-2 mt-2"> Generar anticipo </button>
+        <button *ngIf="ventas?.length === 0 && flagCC" (click)="abrirModalCobro()" class="bg-secondaryColor shadow focus:outline-none text-sm text-white rounded p-2 mt-2"> Generar anticipo </button>
+        <p *ngIf="ventas.length === 0 && !flagCC" class="text-sm flex items-center text-gray-500"> 
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          <span class="ml-1 mt-1">
+            Para realizar un anticipo primero debe crear una cuenta corriente 
+          </span>
+        </p>
+        <button (click)="generarCuentaCorriente()" *ngIf="ventas.length === 0 && !flagCC" class="bg-secondaryColor focus:outline-none text-sm mt-2 shadow text-white p-2 rounded">
+          Generar cuenta corriente
+        </button>
       </div>
       <div *ngIf="ventas?.length !== 0" class="p-2">
         <h1 class="font-semibold"> LISTADO DE FACTURAS PENDIENTES </h1>
