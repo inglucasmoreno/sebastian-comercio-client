@@ -300,6 +300,8 @@ export class NuevaCompraComponent implements OnInit {
 
     let repetido = false;
 
+    console.log(this.productosCompra);
+
     // Se determina si el producto ya esta en la lista
     this.productosCompra.map(producto => {
       if (producto.producto === this.productoSeleccionado._id) {
