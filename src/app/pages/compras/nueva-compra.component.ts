@@ -41,6 +41,7 @@ export class NuevaCompraComponent implements OnInit {
   public cajas: any[] = [];
 
   // Porcentajes
+  public showNuevoProveedor = false;
   public porcentajeAplicado = false;
   public porcentajes = '';
   public porcentajeAplicadoTotal = false;
@@ -77,6 +78,17 @@ export class NuevaCompraComponent implements OnInit {
   public totalCheques: number = 0;
   public totalTmpCheques: number = 0;
 
+  // FORM - PROVEEDORES
+  proveedoresForm = {
+    descripcion: '',
+    tipo_identificacion: 'DNI',
+    identificacion: '',
+    telefono: '',
+    correo_electronico: '',
+    direccion: '',
+    condicion_iva: 'Consumidor Final',
+  }
+
   // Proveedores
   public proveedorSeleccionado: any = null;
   public proveedores: any[] = [];
@@ -111,11 +123,11 @@ export class NuevaCompraComponent implements OnInit {
     this.dataService.ubicacionActual = 'Dashboard - Compras';
     this.alertService.loading();
     this.recuperarLocalStorage();
-    this.calculosIniciales();
+    this.listarProveedores();
   }
 
   // Calculos iniciales de la seccion
-  calculosIniciales(): void {
+  listarProveedores(): void {
     this.proveedoresService.listarProveedores().subscribe({
       next: ({ proveedores }) => {
         this.proveedores = proveedores.filter(proveedor => proveedor.activo);
@@ -783,9 +795,55 @@ export class NuevaCompraComponent implements OnInit {
     this.almacenamientoLocalStorage();
   }
 
+  // Abrir modal -> Nuevo proveedor
+  abrirNuevoProveedor(): void {
+
+    // Formulario de proveedor
+    this.proveedoresForm = {
+      descripcion: '',
+      tipo_identificacion: 'DNI',
+      identificacion: '',
+      telefono: '',
+      correo_electronico: '',
+      direccion: '',
+      condicion_iva: 'Consumidor Final',
+    }
+
+    this.showNuevoProveedor = true;
+    this.showOptions = false;
+
+  }
+
+  // Borrar proveedor
   borrarProveedor(): void {
     this.proveedorSeleccionado = null;
     this.filtro.parametroProveedor = '';
+  }
+
+  // Nuevo proveedor
+  nuevoProveedor(): void {
+
+    console.log(this.proveedoresForm);
+
+    // Verificacion: Razon social
+    if (!this.proveedoresForm.descripcion) {
+      this.alertService.info('Debe colocar una razón social');
+      return;
+    }
+
+    this.alertService.loading();
+    const data = {
+      ...this.proveedoresForm,
+      creatorUser: this.authService.usuario.userId,
+      updatorUser: this.authService.usuario.userId,
+    };
+    this.proveedoresService.nuevoProveedor(data).subscribe({
+      next: ({proveedor}) => {
+        this.proveedorSeleccionado = proveedor;
+        this.showNuevoProveedor = false;
+        this.listarProveedores();
+      }, error: ({error}) => this.alertService.errorApi(error.message)
+    })
   }
 
   // Paginacion - Cambiar pagina

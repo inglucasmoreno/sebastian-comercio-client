@@ -24,6 +24,9 @@ const base_url = environment.base_url;
 })
 export class NuevaVentaComponent implements OnInit {
 
+  // Flag
+  public showOptionsClientes = false;
+
   // Porcentajes
   public porcentajes = '';
   public porcentajeAplicado = false;
@@ -35,6 +38,7 @@ export class NuevaVentaComponent implements OnInit {
 
   // Modal
   public showClientes = false;
+  public showNuevoCliente = false;
   public showProductos = false;
   public showEditarProducto = false;
   public showFormaPago = false;
@@ -74,10 +78,10 @@ export class NuevaVentaComponent implements OnInit {
   public nro_factura = '';
   public proveedor = '';
   public precio_total = 0;
-  public observacion:string = '';
+  public observacion: string = '';
 
   // Venta propia
-  public fecha_venta: string = format(new Date(),'yyyy-MM-dd');
+  public fecha_venta: string = format(new Date(), 'yyyy-MM-dd');
   public incrementoCC: boolean = false;
   public totalPagado: number = 0;
   public cancelada: boolean = true;
@@ -129,12 +133,13 @@ export class NuevaVentaComponent implements OnInit {
   public desdeProductos: number = 0;
   public paginaActualProductos: number = 1;
   public cantidadItemsProductos: number = 10;
-  
+
   // Filtrado
   public filtro = {
     activo: 'true',
     parametro: '',
-    parametroProductos: ''
+    parametroProductos: '',
+    parametroCliente: ''
   }
 
   // Ordenar
@@ -144,40 +149,37 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   constructor(private clientesService: ClientesService,
-              private authService: AuthService,
-              private proveedoresService: ProveedoresService,
-              private ventasService: VentasService,
-              private ventasPropiasService: VentasPropiasService,
-              private productosService: ProductosService,
-              private alertService: AlertService,
-              private bancosService: BancosService,
-              private ccClientesService: CcClientesService,
-              private cajasService: CajasService,
-              private dataService: DataService) { }
+    private authService: AuthService,
+    private proveedoresService: ProveedoresService,
+    private ventasService: VentasService,
+    private ventasPropiasService: VentasPropiasService,
+    private productosService: ProductosService,
+    private alertService: AlertService,
+    private bancosService: BancosService,
+    private ccClientesService: CcClientesService,
+    private cajasService: CajasService,
+    private dataService: DataService) { }
 
   // Inicio del componente
   ngOnInit(): void {
-    gsap.from('.gsap-contenido', { y:100, opacity: 0, duration: .2 });
+    gsap.from('.gsap-contenido', { y: 100, opacity: 0, duration: .2 });
     this.dataService.ubicacionActual = 'Dashboard - Nueva venta';
     this.recuperarLocalStorage();
     this.alertService.loading();
     this.proveedoresService.listarProveedores().subscribe({
       next: ({ proveedores }) => {
-        this.proveedores = proveedores.filter( proveedor => proveedor.activo );
-        this.alertService.close();
+        this.proveedores = proveedores.filter(proveedor => proveedor.activo);
+        this.listarClientes();
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     });
   }
 
   // Listar clientes
   listarClientes(): void {
-    this.alertService.loading();
     this.clientesService.listarClientes({
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
-      desde: this.desdeClientes,
-      cantidadItems: this.cantidadItemsClientes,
       activo: this.filtro.activo,
       parametro: this.filtro.parametro,
     }).subscribe({
@@ -185,7 +187,6 @@ export class NuevaVentaComponent implements OnInit {
         this.clientes = clientes;
         this.totalItemsClientes = totalItems;
         this.alertService.close();
-        this.showClientes = true;
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
     })
@@ -194,18 +195,19 @@ export class NuevaVentaComponent implements OnInit {
   // Listar productos
   listarProductos(): void {
     this.alertService.loading();
-    this.productosService.listarProductos({ 
+    this.productosService.listarProductos({
       desde: this.desdeProductos,
       cantidadItems: this.cantidadItemsProductos,
-      parametro: this.filtro.parametroProductos, 
-      activo: true }).subscribe({
+      parametro: this.filtro.parametroProductos,
+      activo: true
+    }).subscribe({
       next: ({ productos, totalItems }) => {
         this.totalItemsProductos = totalItems;
         this.productos = productos;
         this.alertService.close();
         this.showProductos = true;
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 
@@ -215,52 +217,65 @@ export class NuevaVentaComponent implements OnInit {
     this.cantidad = null;
     this.filtro.parametroProductos = '';
     this.cantidadItemsProductos = 10;
-    this.listarProductos();   
+    this.listarProductos();
   }
 
   // Seleccionar cliente
+  // seleccionarCliente(cliente: any): void {
+  //   this.clienteSeleccionado = cliente;
+  //   this.clientesForm = cliente;
+  //   this.showClientes = false;
+  //   this.almacenamientoLocalStorage();
+  // }
+
+  // Seleccionar cliente del listado
   seleccionarCliente(cliente: any): void {
     this.clienteSeleccionado = cliente;
-    this.clientesForm = cliente;
-    this.showClientes = false;
+    this.almacenamientoLocalStorage();
+  }
+
+  // Eliminar cliente seleccionado
+  borrarCliente(): void {
+    this.clienteSeleccionado = null;
+    this.filtro.parametroCliente = '';
     this.almacenamientoLocalStorage();
   }
 
   // Seleccionar producto
-  seleccionarProducto(producto: any): void { 
-    
+  seleccionarProducto(producto: any): void {
+
     this.porcentajes = '';
     this.porcentajeAplicado = false;
     this.cantidad = null;
     this.productoSeleccionado = producto;
-    
+
     // Se verifica si el producto ya esta cargado
     let cargado = false;
     let productoCargado: any;
 
-    this.productosVenta.map( productoMap => { 
-      if(productoMap.producto === producto._id){
+    this.productosVenta.map(productoMap => {
+      if (productoMap.producto === producto._id) {
         cargado = true;
         productoCargado = productoMap;
       }
     });
-    
+
     cargado ? this.precio = productoCargado.precio_unitario : this.precio = producto.precio;
     this.productoCargado = cargado;
 
-  } 
+  }
 
   // Agregar producto a la venta
   agregarProducto(): void {
 
     const { _id, descripcion, unidad_medida } = this.productoSeleccionado;
 
-    if(this.cantidad <= 0){
+    if (this.cantidad <= 0) {
       this.alertService.info('Debes colocar una cantidad');
       return;
     }
 
-    if(this.precio <= 0){
+    if (this.precio <= 0) {
       this.alertService.info('Debes colocar un precio');
       return;
     }
@@ -268,16 +283,16 @@ export class NuevaVentaComponent implements OnInit {
     let repetido = false;
 
     // Se determina si el producto ya esta en la lista
-    this.productosVenta.map( producto => {
-      if(producto.producto === this.productoSeleccionado._id){
+    this.productosVenta.map(producto => {
+      if (producto.producto === this.productoSeleccionado._id) {
         producto.cantidad = this.dataService.redondear(producto.cantidad + this.cantidad, 2);
         producto.precio_total = this.dataService.redondear(producto.cantidad * this.precio, 2);
-        repetido = true;  
+        repetido = true;
       }
     });
 
     // No esta repetido - Se agrega a la lista
-    if(!repetido){              
+    if (!repetido) {
 
       const data = {
         producto: _id,
@@ -291,42 +306,42 @@ export class NuevaVentaComponent implements OnInit {
         creatorUser: this.authService.usuario.userId,
         updatorUser: this.authService.usuario.userId
       }
-  
+
       this.productosVenta.unshift(data);
 
       this.filtro.parametroProductos = '';
       this.listarProductos();
-    
+
     }
 
     this.productoSeleccionado = null;
     this.cantidad = null;
 
     this.calcularPrecio();
-  
+
   }
 
   // Calcular total
   calcularTotalPagado(): void {
-    
+
     let totalPagadoTMP = 0;
     let faltaPagar = 0;
-    
-    this.formas_pago.map( forma => { totalPagadoTMP += forma.monto; })
-    this.cheques.map( cheque => { totalPagadoTMP += cheque.importe; })
-        
+
+    this.formas_pago.map(forma => { totalPagadoTMP += forma.monto; })
+    this.cheques.map(cheque => { totalPagadoTMP += cheque.importe; })
+
     this.totalPagado = totalPagadoTMP;
 
     // Calculo de monto faltante
     faltaPagar = this.precio_total - this.totalPagado;
-    
-    if(faltaPagar > 0) this.forma_pago_monto = faltaPagar;
+
+    if (faltaPagar > 0) this.forma_pago_monto = faltaPagar;
     else this.forma_pago_monto = null;
-    
+
     // Calculo de adicion para cuenta corriente
-    if(this.precio_total < this.totalPagado) this.incrementoCC = true;
+    if (this.precio_total < this.totalPagado) this.incrementoCC = true;
     else this.incrementoCC = false;
-    
+
   }
 
   // Actualizar producto
@@ -334,18 +349,18 @@ export class NuevaVentaComponent implements OnInit {
 
     const { descripcion, unidad_medida } = this.productoSeleccionado;
 
-    if(this.cantidad <= 0){
+    if (this.cantidad <= 0) {
       this.alertService.info('Debes colocar una cantidad');
       return;
     }
 
-    if(this.precio <= 0){
+    if (this.precio <= 0) {
       this.alertService.info('Debes colocar un precio');
       return;
     }
 
-    this.productosVenta.map((producto)=>{
-      if(producto.producto  === this.productoSeleccionado.producto){
+    this.productosVenta.map((producto) => {
+      if (producto.producto === this.productoSeleccionado.producto) {
         producto.cantidad = this.cantidad;
         producto.precio_unitario = this.precio;
         producto.precio_total = this.dataService.redondear(this.cantidad * this.precio, 2);
@@ -354,19 +369,19 @@ export class NuevaVentaComponent implements OnInit {
 
     this.showEditarProducto = false;
     this.calcularPrecio();
-  
+
   }
 
   // Eliminar producto de la venta
   eliminarProductoDeVenta(): void {
     this.alertService.question({ msg: '¿Quieres eliminar el producto?', buttonText: 'Eliminar' })
-    .then(({isConfirmed}) => {  
-      if (isConfirmed) {
-        this.productosVenta = this.productosVenta.filter( elemento => elemento.producto !== this.productoSeleccionado.producto);
-        this.showEditarProducto = false;
-        this.calcularPrecio();
-      }
-    });
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.productosVenta = this.productosVenta.filter(elemento => elemento.producto !== this.productoSeleccionado.producto);
+          this.showEditarProducto = false;
+          this.calcularPrecio();
+        }
+      });
   }
 
   // Eliminar cliente seleccionado
@@ -392,33 +407,32 @@ export class NuevaVentaComponent implements OnInit {
   // Calcular precio
   calcularPrecio(): void {
     let precioTMP = 0;
-    this.productosVenta.map( producto => {
+    this.productosVenta.map(producto => {
       precioTMP += producto.precio_total
     });
     this.precio_total = precioTMP;
     this.almacenamientoLocalStorage();
-  } 
+  }
 
   // Regresar a etapa anterior
   regresar(etapaActual: string): void {
-    if(etapaActual === 'clientes') this.etapa = 'tipo_venta';
-    if(etapaActual === 'productos' && this.tipo_cliente === 'cliente') this.etapa = 'cliente';
-    if(etapaActual === 'productos' && this.tipo_cliente === 'consumidor_final') this.etapa = 'tipo_venta';
+    if (etapaActual === 'clientes') this.etapa = 'tipo_venta';
+    if (etapaActual === 'productos' && this.tipo_cliente === 'cliente') this.etapa = 'cliente';
+    if (etapaActual === 'productos' && this.tipo_cliente === 'consumidor_final') this.etapa = 'tipo_venta';
     this.almacenamientoLocalStorage();
   }
 
   // Seleccionando tipo de cliente
   seleccionarTipoCliente(): void {
-    if(this.tipo_cliente === 'consumidor_final') this.etapa = 'productos';
-    if(this.tipo_cliente === 'cliente') this.etapa = 'cliente';
+    if (this.tipo_cliente === 'consumidor_final') this.etapa = 'productos';
+    if (this.tipo_cliente === 'cliente') this.etapa = 'cliente';
     this.almacenamientoLocalStorage();
   }
 
   // Seleccionar cliente
   seleccionarClienteVenta(): void {
-    const { descripcion, identificacion } = this.clientesForm;
-    if(descripcion === '' || identificacion === ''){
-      this.alertService.info('Debe completar los campos obligatorios');
+    if (!this.clienteSeleccionado) {
+      this.alertService.info('Debes seleccionar un cliente');
       return;
     }
     this.etapa = 'productos';
@@ -438,194 +452,200 @@ export class NuevaVentaComponent implements OnInit {
   crearVentaDirecta(): void {
 
     // Verificacion: Fecha
-    if(!this.fecha_venta){
+    if (!this.fecha_venta) {
       this.alertService.info('Debes colocar una fecha válida');
       return;
     }
 
     // Verificacion: Productos
-    if(this.productosVenta.length === 0){
+    if (this.productosVenta.length === 0) {
       this.alertService.info('Debes cargar al menos un producto');
       return;
     }
 
     // Verificacion: Proveedor
-    if(this.proveedor === ''){
+    if (this.proveedor === '') {
       this.alertService.info('Debes seleccionar un proveedor');
       return;
     }
 
     // Verificacion: Número de factura
-    if(this.nro_factura === ''){
+    if (this.nro_factura === '') {
       this.alertService.info('Debes colocar un numero de factura');
       return;
     }
 
     // Creando - VENTA DIRECTA
     this.alertService.question({ msg: '¿Quieres generar la venta?', buttonText: 'Generar' })
-    .then(({isConfirmed}) => {  
-      if (isConfirmed) {
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
 
-        this.alertService.loading();
+          this.alertService.loading();
 
-        let dataCliente = '';
+          let dataCliente = '';
 
-        // Adaptando cliente
-        if(this.clienteSeleccionado && this.tipo_cliente !== 'consumidor_final'){
-          dataCliente = this.clienteSeleccionado._id;
-        }else if(!this.clienteSeleccionado && this.tipo_cliente !== 'consumidor_final'){
-          dataCliente = '';
-        }else if(this.tipo_cliente === 'consumidor_final'){
-          dataCliente = '000000000000000000000000'
+          // Adaptando cliente
+          if (this.clienteSeleccionado && this.tipo_cliente !== 'consumidor_final') {
+            dataCliente = this.clienteSeleccionado._id;
+          } else if (!this.clienteSeleccionado && this.tipo_cliente !== 'consumidor_final') {
+            dataCliente = '';
+          } else if (this.tipo_cliente === 'consumidor_final') {
+            dataCliente = '000000000000000000000000'
+          }
+
+          const data = {
+            cliente: dataCliente,
+            nro_factura: this.nro_factura,
+            tipo_cliente: this.tipo_cliente,
+            tipo_venta: this.tipo_venta,
+            fecha_venta: this.fecha_venta,
+            cliente_descripcion: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.descripcion : 'CONSUMIDOR FINAL',
+            observacion: this.observacion,
+            cliente_tipo_identificacion: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.tipo_identificacion : 'DNI',
+            cliente_identificacion: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.identificacion : '',
+            cliente_direccion: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.direccion : '',
+            cliente_telefono: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.telefono : '',
+            cliente_correo_electronico: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.correo_electronico : '',
+            cliente_condicion_iva: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.condicion_iva : 'Consumidor Final',
+            precio_total: this.precio_total,
+            productos: this.productosVenta,
+            proveedor: this.proveedor,
+            creatorUser: this.authService.usuario.userId,
+            updatorUser: this.authService.usuario.userId,
+          };
+
+          this.ventasService.nuevaVenta(data).subscribe({
+            next: () => {
+              this.reiniciarValores();
+              this.alertService.success('Venta generada correctamente');
+              window.open(`${base_url}/pdf/venta.pdf`, '_blank');
+            },
+            error: ({ error }) => this.alertService.errorApi(error.message)
+          });
+
         }
-
-        const data = {
-          cliente: dataCliente,
-          nro_factura: this.nro_factura,
-          tipo_cliente: this.tipo_cliente,
-          tipo_venta: this.tipo_venta,
-          fecha_venta: this.fecha_venta,
-          cliente_descripcion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.descripcion : 'CONSUMIDOR FINAL',
-          observacion: this.observacion,
-          cliente_tipo_identificacion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.tipo_identificacion : 'DNI',
-          cliente_identificacion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.identificacion : '',
-          cliente_direccion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.direccion : '',
-          cliente_telefono: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.telefono : '',
-          cliente_correo_electronico: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.correo_electronico : '',
-          cliente_condicion_iva: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.condicion_iva : 'Consumidor Final',
-          precio_total: this.precio_total,
-          productos: this.productosVenta,
-          proveedor: this.proveedor,
-          creatorUser: this.authService.usuario.userId,
-          updatorUser: this.authService.usuario.userId,
-        };
-
-        this.ventasService.nuevaVenta(data).subscribe({
-          next: () => {
-            this.reiniciarValores();
-            this.alertService.success('Venta generada correctamente');
-            window.open(`${base_url}/pdf/venta.pdf`, '_blank');   
-          },
-          error: ({error}) => this.alertService.errorApi(error.message)
-        });
-
-      }
-    });    
+      });
   }
 
   // Crear venta - PROPIA
   crearVentaPropia(): void {
-    
+
     // Verificacion: Fecha
-    if(!this.fecha_venta){
+    if (!this.fecha_venta) {
       this.alertService.info('Debes colocar una fecha válida');
       return;
     }
 
     // Verificacion: Productos
-    if(this.productosVenta.length === 0){
+    if (this.productosVenta.length === 0) {
       this.alertService.info('Debes cargar al menos un producto');
       return;
     }
 
     // Verificacion: Formas de pago - Al menos una forma de pago
-    if(this.formas_pago.length === 0 && this.cheques.length === 0){
+    if (this.formas_pago.length === 0 && this.cheques.length === 0) {
       this.alertService.info('Debes colocar al menos una forma de pago');
       return;
     }
 
     // Verificacion: Total pagado
-    if(this.precio_total > this.totalPagado){
+    if (this.precio_total > this.totalPagado) {
       this.alertService.info('Se debe pagar la totalidad de la venta');
       return;
     }
 
     // Verificacion: Cuenta corriente
-    if(this.incrementoCC && (!this.cuenta_corriente || !this.cuenta_corriente?.activo)){
+    if (this.incrementoCC && (!this.cuenta_corriente || !this.cuenta_corriente?.activo)) {
       this.alertService.info('Se necesita una cuenta corriente para el saldo a favor');
+      return;
+    }
+
+    // Verificacion: Cliente
+    if (!this.clienteSeleccionado) {
+      this.alertService.info('Debe seleccionar un cliente');
       return;
     }
 
     // Creando - VENTA PROPIA 
     this.alertService.question({ msg: '¿Quieres generar la venta?', buttonText: 'Generar' })
-    .then(({isConfirmed}) => {  
-      if (isConfirmed) {
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
 
-        this.alertService.loading();
+          this.alertService.loading();
 
-        let dataCliente = '';
+          let dataCliente = '';
 
-        // Adaptando cliente
-        if(this.clienteSeleccionado && this.tipo_cliente !== 'consumidor_final'){
-          dataCliente = this.clienteSeleccionado._id;
-        }else if(!this.clienteSeleccionado && this.tipo_cliente !== 'consumidor_final'){
-          dataCliente = '';
-        }else if(this.tipo_cliente === 'consumidor_final'){
-          dataCliente = '000000000000000000000000'
+          // Adaptando cliente
+          if (this.clienteSeleccionado && this.tipo_cliente !== 'consumidor_final') {
+            dataCliente = this.clienteSeleccionado._id;
+          } else if (!this.clienteSeleccionado && this.tipo_cliente !== 'consumidor_final') {
+            dataCliente = '';
+          } else if (this.tipo_cliente === 'consumidor_final') {
+            dataCliente = '000000000000000000000000'
+          }
+
+          const data = {
+            cliente: dataCliente,
+            tipo_cliente: this.tipo_cliente,
+            tipo_venta: this.tipo_venta,
+            formas_pago: this.formas_pago,
+            cheques: this.cheques,
+            cancelada: this.cancelada,
+            deuda_monto: this.deuda_monto,
+            cliente_descripcion: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.descripcion : 'CONSUMIDOR FINAL',
+            observacion: this.observacion,
+            cliente_tipo_identificacion: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.tipo_identificacion : 'DNI',
+            cliente_identificacion: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.identificacion : '',
+            cliente_direccion: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.direccion : '',
+            cliente_telefono: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.telefono : '',
+            cliente_correo_electronico: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.correo_electronico : '',
+            cliente_condicion_iva: this.tipo_cliente !== 'consumidor_final' ? this.clienteSeleccionado.condicion_iva : 'Consumidor Final',
+            precio_total: this.precio_total,
+            productos: this.productosVenta,
+            fecha_venta: this.fecha_venta,
+            creatorUser: this.authService.usuario.userId,
+            updatorUser: this.authService.usuario.userId,
+          };
+
+
+          this.ventasPropiasService.nuevaVenta(data).subscribe({
+            next: () => {
+              this.reiniciarValores();
+              this.showFormaPago = false;
+              this.alertService.success('Venta generada correctamente');
+              window.open(`${base_url}/pdf/venta-propia.pdf`, '_blank');
+            },
+            error: ({ error }) => this.alertService.errorApi(error.message)
+          });
+
         }
-
-        const data = {
-          cliente: dataCliente,
-          tipo_cliente: this.tipo_cliente,
-          tipo_venta: this.tipo_venta,
-          formas_pago: this.formas_pago,
-          cheques: this.cheques,
-          cancelada: this.cancelada,
-          deuda_monto: this.deuda_monto,
-          cliente_descripcion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.descripcion : 'CONSUMIDOR FINAL',
-          observacion: this.observacion,
-          cliente_tipo_identificacion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.tipo_identificacion : 'DNI',
-          cliente_identificacion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.identificacion : '',
-          cliente_direccion: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.direccion : '',
-          cliente_telefono: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.telefono : '',
-          cliente_correo_electronico: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.correo_electronico : '',
-          cliente_condicion_iva: this.tipo_cliente !== 'consumidor_final' ? this.clientesForm.condicion_iva : 'Consumidor Final',
-          precio_total: this.precio_total,
-          productos: this.productosVenta,
-          fecha_venta: this.fecha_venta,
-          creatorUser: this.authService.usuario.userId,
-          updatorUser: this.authService.usuario.userId,
-        };
-
-
-        this.ventasPropiasService.nuevaVenta(data).subscribe({
-          next: () => {
-            this.reiniciarValores();
-            this.showFormaPago = false;
-            this.alertService.success('Venta generada correctamente');
-            window.open(`${base_url}/pdf/venta-propia.pdf`, '_blank');   
-          },
-          error: ({error}) => this.alertService.errorApi(error.message)
-        });
-
-      }
-    });    
+      });
 
   }
 
   // Forma de pago seleccionada
   seleccionandoFormaPago(): void {
-    if(this.forma_pago === 'cuenta_corriente'){
+    if (this.forma_pago === 'cuenta_corriente') {
       this.montoFijo = true;
       this.forma_pago_monto = this.precio_total
-    }else if(this.forma_pago.trim() === ''){
+    } else if (this.forma_pago.trim() === '') {
       this.montoFijo = false;
       return;
-    }else{
+    } else {
       this.montoFijo = false;
     }
   }
 
   // Seleccionar banco
   seleccionarBanco(): void {
-    if(this.cheque.banco.trim() !== ''){
-      this.bancos.map( banco => {
-        if(banco._id === this.cheque.banco){
+    if (this.cheque.banco.trim() !== '') {
+      this.bancos.map(banco => {
+        if (banco._id === this.cheque.banco) {
           this.cheque.banco_descripcion = banco.descripcion;
           return;
         }
       });
-    }else{
+    } else {
       this.cheque.banco_descripcion = '';
     }
   }
@@ -634,34 +654,34 @@ export class NuevaVentaComponent implements OnInit {
   agregarFormaPago(): void {
 
     // Verificacion de forma de pago vacia
-    if(this.forma_pago.trim() === ''){
+    if (this.forma_pago.trim() === '') {
       this.alertService.info('Debe seleccionar una forma de pago');
       return;
     }
 
     // Verificacion de monto invalido
-    if(!this.forma_pago_monto || this.forma_pago_monto <  0){
+    if (!this.forma_pago_monto || this.forma_pago_monto < 0) {
       this.alertService.info('Debe colocar un monto válido');
       return;
     }
 
     // Calculo de deuda
-    if(this.forma_pago === 'cuenta_corriente'){
+    if (this.forma_pago === 'cuenta_corriente') {
       this.flagCC = true;
-      if((this.cuenta_corriente.saldo < this.forma_pago_monto) && (this.cuenta_corriente.saldo > 0)){
+      if ((this.cuenta_corriente.saldo < this.forma_pago_monto) && (this.cuenta_corriente.saldo > 0)) {
         this.deuda_monto = this.forma_pago_monto - this.cuenta_corriente.saldo;
         this.cancelada = false;
-      }else if(this.cuenta_corriente.saldo <= 0){
+      } else if (this.cuenta_corriente.saldo <= 0) {
         this.deuda_monto = this.forma_pago_monto;
         this.cancelada = false;
-      }  
+      }
     }
 
     let existe = false;
 
     // Si la forma de pago existe
-    this.formas_pago.map( forma => {
-      if(forma._id === this.forma_pago){
+    this.formas_pago.map(forma => {
+      if (forma._id === this.forma_pago) {
         existe = true;
         // forma.monto += this.forma_pago_monto;
         // this.forma_pago = '';
@@ -670,25 +690,25 @@ export class NuevaVentaComponent implements OnInit {
     })
 
     // La forma de pago ya existe
-    if(existe){
+    if (existe) {
       this.alertService.info('Esa forma de pago ya fue ingresada');
       return; // Si existe se sale de la condicion
-    } 
+    }
 
     // Impacto en cuenta corriente - CLIENTE
-    if(this.forma_pago === 'cuenta_corriente'){
+    if (this.forma_pago === 'cuenta_corriente') {
       this.formas_pago.unshift({
         _id: this.forma_pago,
         descripcion: 'CUENTA CORRIENTE',
         monto: this.forma_pago_monto
-      })     
+      })
     }
 
     // Impacto en caja interna
-    else{
+    else {
       let caja_descripcion = '';
-      this.cajas.map( caja => {
-        if(caja._id == this.forma_pago) caja_descripcion = caja.descripcion;
+      this.cajas.map(caja => {
+        if (caja._id == this.forma_pago) caja_descripcion = caja.descripcion;
       });
       this.formas_pago.unshift({
         _id: this.forma_pago,
@@ -696,7 +716,7 @@ export class NuevaVentaComponent implements OnInit {
         monto: this.forma_pago_monto
       })
     }
-    
+
     this.calcularTotalPagado();
 
     this.forma_pago = '';
@@ -708,55 +728,55 @@ export class NuevaVentaComponent implements OnInit {
   eliminarFormaPago(forma_pago): void {
 
     // Se reinician los valores de deuda
-    if(forma_pago.descripcion === 'CUENTA CORRIENTE'){
+    if (forma_pago.descripcion === 'CUENTA CORRIENTE') {
       this.flagCC = false;
       this.montoFijo = false;
       this.cancelada = true;
       this.deuda_monto = 0;
     }
 
-    this.formas_pago = this.formas_pago.filter( elemento => elemento._id !== forma_pago._id);
-  
+    this.formas_pago = this.formas_pago.filter(elemento => elemento._id !== forma_pago._id);
+
     this.calcularTotalPagado();
 
   }
 
   // Eliminar cheque
   eliminarCheque(cheque): void {
-    this.cheques = this.cheques.filter( elemento => elemento._id !== cheque._id);
+    this.cheques = this.cheques.filter(elemento => elemento._id !== cheque._id);
     this.calcularTotalPagado();
-  }  
+  }
 
   // Forma de pago
   abrirFormaPago(): void {
-    
+
     this.alertService.loading();
-    
+
     // Listando cajas
     this.cajasService.listarCajas().subscribe({
-      
-      next: ({cajas}) => {
-        
-        this.cajas = cajas.filter( caja => (caja.activo && caja._id !== '222222222222222222222222'));
+
+      next: ({ cajas }) => {
+
+        this.cajas = cajas.filter(caja => (caja.activo && caja._id !== '222222222222222222222222'));
 
         // Se buscar el cliente y su cuenta corriente
-        this.clientesService.getClienteIdentificacion(this.clientesForm.identificacion).subscribe({
-          next: ({cliente}) => {
+        this.clientesService.getCliente(this.clienteSeleccionado._id).subscribe({
+          next: ({ cliente }) => {
 
-            if(cliente){ // El cliente EXISTE en la BD
+            if (cliente) { // El cliente EXISTE en la BD
 
               this.datosCliente = cliente;
 
               // Se busca la cuenta corriente del cliente
               this.ccClientesService.getCuentaCorrientePorCliente(cliente._id).subscribe({
 
-                next: ({cuenta_corriente}) => {
-                  
-                  if(cuenta_corriente){
+                next: ({ cuenta_corriente }) => {
+
+                  if (cuenta_corriente) {
                     this.cuenta_corriente = cuenta_corriente;
                     this.estadoCuentaCorriente = 'Tiene';
 
-                  }else{
+                  } else {
                     this.cuenta_corriente = null;
                     this.estadoCuentaCorriente = 'No tiene';
                   }
@@ -771,15 +791,15 @@ export class NuevaVentaComponent implements OnInit {
                   this.alertService.close();
 
                 },
-                error: ({error}) => this.alertService.errorApi(error.message) 
-              })    
+                error: ({ error }) => this.alertService.errorApi(error.message)
+              })
 
-            }else{ // El cliente NO EXISTE en la BD
-              
+            } else { // El cliente NO EXISTE en la BD
+
               this.showFormaPago = true;
               this.estadoCuentaCorriente = 'No existe';
               this.alertService.close();
-            
+
             }
 
             this.cheques = [];
@@ -787,11 +807,11 @@ export class NuevaVentaComponent implements OnInit {
             this.cancelada = true;
             this.deuda_monto = 0;
 
-          }, error: ({error}) => this.alertService.errorApi(error.message)
+          }, error: ({ error }) => this.alertService.errorApi(error.message)
         })
 
-      },error: ({error}) => this.alertService.errorApi(error.message)
-    
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+
     })
 
   }
@@ -800,11 +820,11 @@ export class NuevaVentaComponent implements OnInit {
   abrirModalCheque(estado, cheque = null): void {
     this.alertService.loading();
     this.estadoFormularioCheque = estado;
-    
-    if(estado === 'editar'){
+
+    if (estado === 'editar') {
       this.chequeSeleccionado = cheque;
       this.cheque = cheque;
-    }else{
+    } else {
       // Reinicio de formulario de cheque
       this.chequeSeleccionado = null;
       this.cheque = {
@@ -815,15 +835,15 @@ export class NuevaVentaComponent implements OnInit {
         banco_descripcion: '',
         fecha_cobro: ''
       }
-    } 
-   
+    }
+
     this.bancosService.listarBancos().subscribe({
       next: ({ bancos }) => {
         this.bancos = bancos.filter(banco => banco.activo);
         this.showFormaPago = false;
         this.showModalCheque = true;
         this.alertService.close();
-      }, error: ({error}) => this.alertService.errorApi(error.message)
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 
@@ -831,31 +851,31 @@ export class NuevaVentaComponent implements OnInit {
   agregarCheque(): void {
 
     // Verificacion: Numero de cheque vacio
-    if(this.cheque.nro_cheque.trim() === ""){
+    if (this.cheque.nro_cheque.trim() === "") {
       this.alertService.info('Debes colocar un número de cheque');
       return;
     }
-    
+
     // Verificacion: importe vacio
-    if(!this.cheque.importe || this.cheque.importe < 0){
+    if (!this.cheque.importe || this.cheque.importe < 0) {
       this.alertService.info('Debes colocar un importe válido');
       return;
     }
 
     // Verificacion: emisor vacio
-    if(this.cheque.emisor.trim() === ''){
+    if (this.cheque.emisor.trim() === '') {
       this.alertService.info('Debes colocar un emisor');
       return;
     }
 
     // Verificacion: banco vacio
-    if(this.cheque.banco.trim() === ''){
+    if (this.cheque.banco.trim() === '') {
       this.alertService.info('Debes colocar un banco');
       return;
     }
 
     // Verificacion: fecha de cobro vacia
-    if(this.cheque.fecha_cobro.trim() === ''){
+    if (this.cheque.fecha_cobro.trim() === '') {
       this.alertService.info('Debes colocar una fecha de cobro');
       return;
     }
@@ -865,7 +885,7 @@ export class NuevaVentaComponent implements OnInit {
       ...this.cheque,
       creatorUser: this.authService.usuario.userId,
       updatorUser: this.authService.usuario.userId,
-    });    
+    });
 
     this.calcularTotalPagado();
 
@@ -877,41 +897,41 @@ export class NuevaVentaComponent implements OnInit {
   actualizarCheque(): void {
 
     // Verificacion: Numero de cheque vacio
-    if(this.cheque.nro_cheque.trim() === ""){
+    if (this.cheque.nro_cheque.trim() === "") {
       this.alertService.info('Debes colocar un número de cheque');
       return;
     }
-    
+
     // Verificacion: importe vacio
-    if(!this.cheque.importe || this.cheque.importe < 0){
+    if (!this.cheque.importe || this.cheque.importe < 0) {
       this.alertService.info('Debes colocar un importe válido');
       return;
     }
 
     // Verificacion: emisor vacio
-    if(this.cheque.emisor.trim() === ''){
+    if (this.cheque.emisor.trim() === '') {
       this.alertService.info('Debes colocar un emisor');
       return;
     }
 
     // Verificacion: banco vacio
-    if(this.cheque.banco.trim() === ''){
+    if (this.cheque.banco.trim() === '') {
       this.alertService.info('Debes colocar un banco');
       return;
     }
 
     // Verificacion: fecha de cobro vacia
-    if(this.cheque.fecha_cobro.trim() === ''){
+    if (this.cheque.fecha_cobro.trim() === '') {
       this.alertService.info('Debes colocar una fecha de cobro');
       return;
     }
 
     // Se aplican los cambios al cheque
-    this.cheques.map( cheque => {
-      if(cheque._id === this.chequeSeleccionado){
+    this.cheques.map(cheque => {
+      if (cheque._id === this.chequeSeleccionado) {
         cheque = this.cheque;
       }
-    })  
+    })
 
     this.calcularTotalPagado();
 
@@ -940,8 +960,8 @@ export class NuevaVentaComponent implements OnInit {
   reiniciarValores(): void {
 
     // Clientes
-    this.clientes = [];
     this.clienteSeleccionado = null;
+    this.showOptionsClientes = false;
 
     // Porcentajes
     this.porcentajesTotal = '';
@@ -966,7 +986,7 @@ export class NuevaVentaComponent implements OnInit {
     }
 
     // Venta
-    this.fecha_venta = format(new Date(),'yyyy-MM-dd');
+    this.fecha_venta = format(new Date(), 'yyyy-MM-dd');
     this.precio_total = 0;
     this.observacion = '';
     this.nro_factura = '';
@@ -989,7 +1009,8 @@ export class NuevaVentaComponent implements OnInit {
     this.filtro = {
       activo: 'true',
       parametro: '',
-      parametroProductos: ''
+      parametroProductos: '',
+      parametroCliente: ''
     }
 
     // Ordenar
@@ -1005,40 +1026,40 @@ export class NuevaVentaComponent implements OnInit {
   // Crear cuenta corriente
   crearCuentaCorriente(): void {
     this.alertService.question({ msg: 'Creando cuenta corriente para ' + this.datosCliente.descripcion, buttonText: 'Crear' })
-    .then(({isConfirmed}) => {  
-      if (isConfirmed) {
-        this.alertService.loading();
-        this.ccClientesService.nuevaCuentaCorriente({
-          cliente: this.datosCliente._id,
-          saldo: 0,
-          creatorUser: this.authService.usuario.userId,
-          updatorUser: this.authService.usuario.userId,
-        }).subscribe({
-          next: ({cuenta_corriente}) => {
-            this.cuenta_corriente = cuenta_corriente;
-            this.estadoCuentaCorriente = 'Tiene';
-            this.alertService.success('Cuenta corriente creada');
-          },error: ({error}) => this.alertService.errorApi(error.message) 
-        })
-      }
-    }); 
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.ccClientesService.nuevaCuentaCorriente({
+            cliente: this.datosCliente._id,
+            saldo: 0,
+            creatorUser: this.authService.usuario.userId,
+            updatorUser: this.authService.usuario.userId,
+          }).subscribe({
+            next: ({ cuenta_corriente }) => {
+              this.cuenta_corriente = cuenta_corriente;
+              this.estadoCuentaCorriente = 'Tiene';
+              this.alertService.success('Cuenta corriente creada');
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
   }
 
   // Filtrar Activo/Inactivo
-  filtrarActivos(activo: any): void{
+  filtrarActivos(activo: any): void {
     this.paginaActualClientes = 1;
     this.filtro.activo = activo;
   }
 
   // Filtrar por Parametro
-  filtrarParametro(): void{
+  filtrarParametro(): void {
     this.paginaActualClientes = 1;
   }
 
   // Ordenar por columna
-  ordenarPorColumna(columna: string){
+  ordenarPorColumna(columna: string) {
     this.ordenar.columna = columna;
-    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1; 
+    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
     this.alertService.loading();
     this.listarClientes();
   }
@@ -1048,7 +1069,7 @@ export class NuevaVentaComponent implements OnInit {
 
     this.precioResguardo = this.precio;
 
-    if(!Number(this.precio)){
+    if (!Number(this.precio)) {
       this.alertService.info('Primero debe colocar un precio');
       return;
     }
@@ -1056,35 +1077,35 @@ export class NuevaVentaComponent implements OnInit {
     let error = false;
     let precioTMP = this.precio;
     const porcentajesArray = this.porcentajes.trim().split(' ');
-    
-    porcentajesArray.map( porcentaje => {
-      
+
+    porcentajesArray.map(porcentaje => {
+
       const signo = porcentaje.charAt(0);
-      
-      if(signo === '+'){
+
+      if (signo === '+') {
         const valor = Number(porcentaje);
-        if(!valor){
+        if (!valor) {
           this.alertService.info('Formato incorrecto');
           error = true;
         }
-        precioTMP = (1 + (valor/100)) * precioTMP;
-      
-      }else if(signo === '-'){
+        precioTMP = (1 + (valor / 100)) * precioTMP;
+
+      } else if (signo === '-') {
         const valor = Number(porcentaje);
-        if(!valor){
+        if (!valor) {
           this.alertService.info('Formato incorrecto');
           error = true;
         }
-        precioTMP = (1 + (valor/100)) * precioTMP;
-      
-      }else{
+        precioTMP = (1 + (valor / 100)) * precioTMP;
+
+      } else {
         this.alertService.info('Formato incorrecto');
         error = true;
       }
     });
 
-    if(!error){
-      this.precio =this.dataService.redondear(precioTMP, 2);
+    if (!error) {
+      this.precio = this.dataService.redondear(precioTMP, 2);
       this.porcentajeAplicado = true;
     }
 
@@ -1092,57 +1113,57 @@ export class NuevaVentaComponent implements OnInit {
 
   // Aplicar porcentajes - Todo los productos
   aplicarPorcentajesTotal(): void {
-    
+
     let error = false;
     const porcentajesArray = this.porcentajesTotal.trim().split(' ');
 
     // Verificacion
-    porcentajesArray.map( porcentaje => {
+    porcentajesArray.map(porcentaje => {
       const signo = porcentaje.charAt(0);
-      if(signo === '+'){
+      if (signo === '+') {
         const valor = Number(porcentaje);
-        if(!valor) error = true;
-      }else if(signo === '-'){
+        if (!valor) error = true;
+      } else if (signo === '-') {
         const valor = Number(porcentaje);
-        if(!valor) error = true;
-      }else{
+        if (!valor) error = true;
+      } else {
         error = true;
       }
     });
 
-    if(error){
+    if (error) {
       this.alertService.info('Formato incorrecto');
       return;
     }
 
     this.porcentajeAplicadoTotal = true;
 
-    this.productosVenta.map( producto => {
-      
+    this.productosVenta.map(producto => {
+
       let precioTMP = producto.precio_unitario;
 
-      porcentajesArray.map( porcentaje => {     
+      porcentajesArray.map(porcentaje => {
         const valor = Number(porcentaje);
-        precioTMP = (1 + (valor/100)) * precioTMP; 
+        precioTMP = (1 + (valor / 100)) * precioTMP;
       });
-      
+
       producto.precio_unitario = this.dataService.redondear(precioTMP, 2);
       producto.precio_total = this.dataService.redondear(precioTMP * producto.cantidad, 2);
-    
+
     });
 
     this.calcularPrecio();
-      
+
   }
 
   eliminarPorcentajesTotal(): void {
-    this.productosVenta.map( producto => {
+    this.productosVenta.map(producto => {
       producto.precio_unitario = producto.precio_original;
       producto.precio_total = this.dataService.redondear(producto.precio_original * producto.cantidad, 2);
     });
     this.porcentajesTotal = '';
     this.porcentajeAplicadoTotal = false;
-    this.calcularPrecio();  
+    this.calcularPrecio();
   }
 
   eliminarPorcentaje(): void {
@@ -1153,8 +1174,61 @@ export class NuevaVentaComponent implements OnInit {
 
   // Seleccion de tipo de venta
   seleccionarTipoVenta(): void {
-    if(this.tipo_venta === 'Propia') this.tipo_cliente = 'cliente';
+    if (this.tipo_venta === 'Propia') this.tipo_cliente = 'cliente';
     this.almacenamientoLocalStorage();
+  }
+
+  // Abrir modal -> Nuevo cliente
+  abrirNuevoCliente(): void {
+
+    // Formulario de cliente
+    this.clientesForm = {
+      descripcion: '',
+      tipo_identificacion: 'DNI',
+      identificacion: '',
+      direccion: '',
+      telefono: '',
+      correo_electronico: '',
+      condicion_iva: 'Consumidor Final'
+    }
+
+    this.showNuevoCliente = true;
+    this.showOptionsClientes = false;
+
+  }
+
+
+  // Crear nuevo cliente
+  nuevoCliente(): void {
+
+    // Verificacion: Razon social
+    if (!this.clientesForm.descripcion) {
+      this.alertService.info('Debe colocar una razón social');
+      return;
+    }
+
+    // Verificacion: Identificacion
+    if (!this.clientesForm.identificacion) {
+      this.alertService.info('Debe colocar una identificación');
+      return;
+    }
+
+    this.alertService.loading();
+
+    const data = {
+      ...this.clientesForm,
+      creatorUser: this.authService.usuario.userId,
+      updatorUser: this.authService.usuario.userId,
+    }
+    this.clientesService.nuevoCliente(data).subscribe({
+      next: ({ cliente }) => {
+        this.clienteSeleccionado = cliente;
+        this.showNuevoCliente = false;
+        this.almacenamientoLocalStorage();
+        this.listarClientes();
+        // Listar cliente
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
   }
 
   // Alamcenamiento en localstorage
@@ -1176,11 +1250,11 @@ export class NuevaVentaComponent implements OnInit {
   recuperarLocalStorage(): void {
     this.etapa = localStorage.getItem('venta_etapa') ? JSON.parse(localStorage.getItem('venta_etapa')) : 'tipo_venta';
     this.productoCargado = localStorage.getItem('venta_productoCargado') ? JSON.parse(localStorage.getItem('venta_productoCargado')) : false;
-    this.clienteSeleccionado = localStorage.getItem('venta_clienteSeleccionado') ? JSON.parse(localStorage.getItem('venta_clienteSeleccionado')) : null;  
+    this.clienteSeleccionado = localStorage.getItem('venta_clienteSeleccionado') ? JSON.parse(localStorage.getItem('venta_clienteSeleccionado')) : null;
     this.porcentajesTotal = localStorage.getItem('venta_porcentajesTotal') ? JSON.parse(localStorage.getItem('venta_porcentajesTotal')) : '';
     this.porcentajeAplicadoTotal = localStorage.getItem('venta_porcentajeAplicadoTotal') ? JSON.parse(localStorage.getItem('venta_porcentajeAplicadoTotal')) : false;
     this.tipo_cliente = localStorage.getItem('venta_tipo_cliente') ? JSON.parse(localStorage.getItem('venta_tipo_cliente')) : 'consumidor_final';
-    this.tipo_venta = localStorage.getItem('venta_tipo_venta') ? JSON.parse(localStorage.getItem('venta_tipo_venta')) : 'Directa';  
+    this.tipo_venta = localStorage.getItem('venta_tipo_venta') ? JSON.parse(localStorage.getItem('venta_tipo_venta')) : 'Directa';
     this.clientesForm = localStorage.getItem('venta_clientesForm') ? JSON.parse(localStorage.getItem('venta_clientesForm')) : {
       descripcion: '',
       tipo_identificacion: 'DNI',

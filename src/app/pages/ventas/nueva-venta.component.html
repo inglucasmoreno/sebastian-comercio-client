@@ -1,4 +1,80 @@
 
+<!-- Modal: Nuevo cliente -->
+<app-modal [showModal]="showNuevoCliente">
+  <div class="text-white rounded-t p-2 bg-primary-800 flex items-center justify-between">
+    <h1> Nuevo cliente </h1>
+    <button class="focus:outline-none" (click)="showNuevoCliente = false">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div> 
+  <div (keyup.enter)="nuevoCliente()" class="p-4 text-sm">
+    <div>
+      <p class="font-semibold"> <span class="text-red-500"> * </span> Razón social </p>
+      <div *ngIf="clienteSeleccionado" class="flex items-center mt-1">
+        <div class="w-max text-xs text-secondaryColor font-semibold p-2 rounded"> {{ clienteSeleccionado?.descripcion }} </div>
+      </div>
+      <input *ngIf="!clienteSeleccionado" [(ngModel)]="clientesForm.descripcion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Equinoccio Technology" type="text">
+    </div>
+    <div class="md:flex md:items-center mt-4">
+      <div class="md:w-1/2">
+        <p class="font-semibold"> <span class="text-red-500"> * </span> Tipo de identificación </p>
+        <div *ngIf="clienteSeleccionado" class="text-xs w-max font-semibold text-secondaryColor py-2 px-1 mt-1 rounded"> {{ clienteSeleccionado?.tipo_identificacion }} </div>
+        <select *ngIf="!clienteSeleccionado" [(ngModel)]="clientesForm.tipo_identificacion"  class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+          <option value="DNI"> DNI </option>
+          <option value="CUIL"> CUIL </option>
+          <option value="CUIT"> CUIT </option>
+        </select>
+      </div>
+      <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+        <p class="font-semibold"> <span class="text-red-500"> * </span> Identificación </p>
+        <div *ngIf="clienteSeleccionado" class="text-xs w-max font-semibold text-secondaryColor py-2 px-1 mt-1 rounded"> {{ clienteSeleccionado?.identificacion }} </div>
+        <input *ngIf="!clienteSeleccionado" [(ngModel)]="clientesForm.identificacion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 34060398" type="text">
+      </div>
+    </div>
+    <div class="md:flex md:items-center mt-4">
+      <div class="md:w-1/2">
+        <p class="font-semibold"> Teléfono </p>
+        <input [(ngModel)]="clientesForm.telefono" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 2664869642" type="text">
+      </div>
+      <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+        <p class="font-semibold"> Correo electrónico </p>
+        <input  [(ngModel)]="clientesForm.correo_electronico" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. equinocciotech@gmail.com" type="text">
+      </div>
+    </div>
+    <div class="md:flex md:items-center mt-4">
+      <div class="md:w-1/2">
+          <p class="font-semibold"> Dirección </p>
+          <input [(ngModel)]="clientesForm.direccion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Portugal 1030" type="text">              
+      </div>
+      <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+          <p class="font-semibold"> Condición frente al IVA </p>
+          <div *ngIf="clienteSeleccionado" class="text-xs w-max font-semibold text-secondaryColor py-2 px-1 mt-1 rounded"> {{ clienteSeleccionado?.condicion_iva }} </div>
+          <select *ngIf="!clienteSeleccionado" [(ngModel)]="clientesForm.condicion_iva" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+              <option value="Consumidor Final"> Consumidor Final </option>
+              <option value="IVA Responsable Inscripto"> IVA Responsable Inscripto </option>
+              <option value="IVA Responsable no Inscripto"> IVA Responsable no Inscripto </option>
+              <option value="IVA no Responsable"> IVA no Responsable </option>
+              <option value="IVA Sujeto Exento"> IVA Sujeto Exento </option>
+              <option value="Responsable Monotributo"> Responsable Monotributo </option>
+              <option value="Sujeto no Categorizado"> Sujeto no Categorizado </option>
+              <option value="Proveedor del Exterior"> Proveedor del Exterior </option>
+              <option value="Cliente del Exterior"> Cliente del Exterior </option>
+              <option value="IVA Liberado"> IVA Liberado </option>
+              <option value="IVA Responsable Inscripto – Agente de Percepción"> IVA Responsable Inscripto – Agente de Percepción </option>
+              <option value="Pequeño Contribuyente Eventual"> Pequeño Contribuyente Eventual </option>
+              <option value="Monotributista Social"> Monotributista Social </option>
+              <option value="Pequeño Contribuyente Eventual Social"> Pequeño Contribuyente Eventual Social </option>                    
+          </select>
+      </div>
+    </div>
+    <button (click)="nuevoCliente()" class="p-2 bg-secondaryColor mt-4 font-semibold focus:outline-none text-white rounded shadow w-full">
+      Crear cliente
+    </button>
+  </div>
+</app-modal>
+
 <!-- Agregar/Editar cheque -->
 <app-modal [showModal]="showModalCheque">
   <div (keyup.enter)="estadoFormularioCheque === 'crear' ? agregarCheque() : actualizarCheque()">
@@ -406,6 +482,7 @@
 </div>
 </app-modal-medium>
 
+<!-- Pagina principal -->
 <div class="gsap-contenido">
     
   <!-- Etapa - Tipo de venta -->
@@ -429,8 +506,57 @@
   </div>
 
   <!-- Etapa - Cliente -->
-  <div *ngIf="etapa === 'cliente'" class="max-w-2xl mx-auto border mt-5 shadow w-11/12">
-    <div class="flex items-center justify-between bg-primary-800 p-2 rounded-t border border-primary-800">
+
+  <div *ngIf="etapa === 'cliente'" class="max-w-2xl mt-10 mx-auto w-96">
+    
+    <div class="flex items-center justify-center">
+      <div>
+        <h1 class="text-3xl text-center"> Seleccionando cliente </h1>  
+        <div *ngIf="!clienteSeleccionado" class="mt-4">
+          <input [(ngModel)]="filtro.parametroCliente" type="text" (focus)="showOptionsClientes = true" class="border shadow border-gray-400 p-2 w-96 focus:outline-none" placeholder="Buscar cliente">
+          <p (click)="abrirNuevoCliente()" class="text-center font-semibold mt-2 text-sm p-1 cursor-pointer bg-gray-100 border hover:text-secondaryColor border-gray-400 rounded"> Nuevo cliente </p>
+
+          <div class="bg-white border mt-2 text-center border-gray-400 absolute w-96" *ngIf="showOptionsClientes">
+            
+            <div class="bg-gray-100 p-2 px-4 flex items-center justify-between border-b border-gray-400">
+              <p class="font-semibold"> Listado de clientes </p>
+              <button (click)="showOptionsClientes = false" class="focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>                
+              </button>
+            </div>
+            
+            <div class="max-h-80 overflow-y-auto">
+              <div (click)="seleccionarCliente(cliente)" class="cursor-pointer border-b text-left hover:bg-gray-100 p-2 text-sm" *ngFor="let cliente of clientes | filtroClientes:filtro.parametroCliente:'true'"> 
+                <div class="flex items-center">
+                  <img class="w-10" src="assets/avatar-cliente.svg">
+                  <div class="ml-2">
+                    <p> {{ cliente.descripcion }} </p>
+                    <p *ngIf="cliente.identificacion !== ''" class="text-xs text-gray-500"> {{ cliente.tipo_identificacion }} {{ cliente.identificacion }} </p>
+                    <p *ngIf="cliente.identificacion === ''" class="text-xs text-gray-500"> Sin identificación </p>                    
+                  </div> 
+                </div>
+              </div>
+            </div>
+          
+          </div>
+        </div>  
+      </div>
+    </div>
+
+    <div class="flex text-left items-center mt-4 border max-w-xl border-l-8 border-gray-400 shadow pl-4 pr-6 py-2" *ngIf="clienteSeleccionado">
+      <img class="w-20" src="assets/avatar-cliente.svg">
+      <div class="ml-2">
+        <p class="text-sm"> {{ clienteSeleccionado?.descripcion }} </p>
+        <p *ngIf="clienteSeleccionado?.identificacion !== ''" class="text-xs text-gray-500"> {{ clienteSeleccionado?.tipo_identificacion }} {{ clienteSeleccionado?.identificacion }} </p>
+        <p *ngIf="clienteSeleccionado?.identificacion === ''" class="text-xs text-gray-500"> Sin identificación </p>
+        <p (click)="borrarCliente()" class="font-semibold text-xs hover:text-secondaryColor cursor-pointer"> Cambiar de cliente </p>
+      </div>
+    </div>
+
+
+    <!-- <div class="flex items-center justify-between bg-primary-800 p-2 rounded-t border border-primary-800">
       <h1 class="text-lg text-white"> Datos del cliente </h1>
       <button *ngIf="!clienteSeleccionado" (click)="abrirModalClientes()" class="bg-white p-2 focus:outline-none rounded hover:text-secondaryColor">
         <svg title="Buscar cliente" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -504,10 +630,17 @@
         </div>
       </div>
     </div>
+
     <div class="flex items-center p-2">
       <button (click)="regresar('clientes')" class="bg-primary-800 focus:outline-none text-white w-1/2 p-2 rounded"> Regresar </button>
       <button (click)="seleccionarClienteVenta()" class="bg-secondaryColor focus:outline-none text-white w-1/2 p-2 rounded ml-2"> Continuar </button>
+    </div> -->
+
+    <div class="flex items-center justify-center mx-auto text-sm mt-4">
+      <button (click)="regresar('clientes')" class="bg-primary-800 w-1/2 text-white p-2 rounded focus:outline-none"> Regresar </button>
+      <button (click)="seleccionarClienteVenta()" class="bg-secondaryColor w-1/2 text-white p-2 ml-2 rounded focus:outline-none"> Continuar </button>
     </div>
+
   </div>
 
   <!-- Etapa - Productos -->
@@ -587,7 +720,7 @@
           </div> 
           <div *ngIf="tipo_cliente === 'cliente'"> 
             <span class="font-semibold"> Cliente: </span>
-            <span> {{ clientesForm?.descripcion.toUpperCase() }} </span> 
+            <span> {{ clienteSeleccionado?.descripcion.toUpperCase() }} </span> 
           </div> 
           <div>
             <span class="font-semibold"> Precio total: </span> ${{ precio_total | moneda }} 

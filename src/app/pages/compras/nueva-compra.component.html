@@ -1,3 +1,72 @@
+
+<!-- Modal: Nuevo proveedor -->
+<app-modal [showModal]="showNuevoProveedor">
+  <div (keyup.enter)="nuevoProveedor()">
+      <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
+          <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Nuevo proveedor </h1>
+          <svg (click)="showNuevoProveedor = false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </div>
+      <div class="p-4 text-sm">
+          <div>
+            <p class="font-semibold"> <span class="text-red-500"> * </span> Razón social </p>
+            <input [(ngModel)]="proveedoresForm.descripcion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Equinoccio Technology" type="text">
+          </div>
+          <div class="md:flex md:items-center mt-4">
+            <div class="md:w-1/2">
+              <p class="font-semibold"> Tipo de identificación </p>
+              <select [(ngModel)]="proveedoresForm.tipo_identificacion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+                <option value="DNI"> DNI </option>
+                <option value="CUIL"> CUIL </option>
+                <option value="CUIT"> CUIT </option>
+              </select>
+            </div>
+            <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+              <p class="font-semibold"> Identificación </p>
+              <input [(ngModel)]="proveedoresForm.identificacion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 34060398" type="text">
+            </div>
+          </div>
+          <div class="md:flex md:items-center mt-4">
+            <div class="md:w-1/2">
+              <p class="font-semibold"> Teléfono </p>
+              <input [(ngModel)]="proveedoresForm.telefono" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 2664869642" type="text">
+            </div>
+            <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+              <p class="font-semibold"> Correo electrónico </p>
+              <input [(ngModel)]="proveedoresForm.correo_electronico" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. equinocciotech@gmail.com" type="text">
+            </div>
+          </div>
+          <div class="md:flex md:items-center mt-4">
+              <div class="md:w-1/2">
+                  <p class="font-semibold"> Dirección </p>
+                  <input [(ngModel)]="proveedoresForm.direccion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Portugal 1030" type="text">              
+              </div>
+              <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+                  <p class="font-semibold"> Condición frente al IVA </p>
+                  <select [(ngModel)]="proveedoresForm.condicion_iva" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+                      <option value="Consumidor Final"> Consumidor Final </option>
+                      <option value="IVA Responsable Inscripto"> IVA Responsable Inscripto </option>
+                      <option value="IVA Responsable no Inscripto"> IVA Responsable no Inscripto </option>
+                      <option value="IVA no Responsable"> IVA no Responsable </option>
+                      <option value="IVA Sujeto Exento"> IVA Sujeto Exento </option>
+                      <option value="Responsable Monotributo"> Responsable Monotributo </option>
+                      <option value="Sujeto no Categorizado"> Sujeto no Categorizado </option>
+                      <option value="Proveedor del Exterior"> Proveedor del Exterior </option>
+                      <option value="Cliente del Exterior"> Cliente del Exterior </option>
+                      <option value="IVA Liberado"> IVA Liberado </option>
+                      <option value="IVA Responsable Inscripto – Agente de Percepción"> IVA Responsable Inscripto – Agente de Percepción </option>
+                      <option value="Pequeño Contribuyente Eventual"> Pequeño Contribuyente Eventual </option>
+                      <option value="Monotributista Social"> Monotributista Social </option>
+                      <option value="Pequeño Contribuyente Eventual Social"> Pequeño Contribuyente Eventual Social </option>                    
+                  </select>
+              </div>
+            </div> 
+            <button (click)="nuevoProveedor()" class="bg-secondaryColor text-white p-2 w-full mt-4 rounded focus:outline-none font-semibold">
+              Nuevo proveedor
+            </button>
+      </div>
+  </div>
+</app-modal>
+
 <!-- MODAL: CHEQUES -->
 <app-modal [showModal]="showCheques">
   <div class="flex items-center justify-between bg-primary-800 text-white p-2 rounded-t">
@@ -359,6 +428,7 @@
           <div *ngIf="!proveedorSeleccionado" class="mt-4">
             <input [(ngModel)]="filtro.parametroProveedor" type="text" (focus)="showOptions = true"
               class="border shadow border-gray-400 p-2 w-96 focus:outline-none" placeholder="Buscar proveedor">
+            <p (click)="abrirNuevoProveedor()" class="text-center font-semibold mt-2 text-sm p-1 cursor-pointer bg-gray-100 border hover:text-secondaryColor border-gray-400 rounded"> Nuevo proveedor </p>
             <div class="bg-white border mt-2 border-gray-400 absolute w-96" *ngIf="showOptions">
               <div class="bg-gray-100 p-2 px-4 flex items-center justify-between border-b border-gray-400">
                 <p class="font-semibold"> Listado de proveedores </p>

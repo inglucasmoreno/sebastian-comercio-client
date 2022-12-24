@@ -16,7 +16,7 @@ import { PastillaPendienteCompletadoComponent } from './pastilla-pendiente-compl
 import { ModalComponent } from './modal/modal.component';
 import { ModalMediumComponent } from './modal-medium/modal-medium.component';
 import { ModalSmallComponent } from './modal-small/modal-small.component';
-
+import { PipesModule } from '../pipes/pipes.module';
 
 
 @NgModule({
@@ -39,7 +39,8 @@ import { ModalSmallComponent } from './modal-small/modal-small.component';
   ],
   imports: [
     CommonModule,
-    AppRoutingModule
+    AppRoutingModule,
+    PipesModule
   ],
   exports: [
     PastillaEstadoComponent,

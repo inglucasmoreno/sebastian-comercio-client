@@ -19,6 +19,9 @@ const base_url = environment.base_url;
 })
 export class NuevoPresupuestoComponent implements OnInit {
 
+  // Flags
+  public showOptionsClientes = false;
+
   // Porcentajes
   public porcentajeAplicado = false;
   public porcentajes = '';
@@ -32,6 +35,7 @@ export class NuevoPresupuestoComponent implements OnInit {
   public showClientes = false;
   public showProductos = false;
   public showEditarProducto = false;
+  public showNuevoCliente = false;
 
   // Clientes
   public clientes: any[] = [];
@@ -115,7 +119,8 @@ export class NuevoPresupuestoComponent implements OnInit {
     this.proveedoresService.listarProveedores().subscribe({
       next: ({ proveedores }) => {
         this.proveedores = proveedores;
-        this.alertService.close();
+        this.listarClientes();
+        // this.alertService.close();
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
     });
@@ -123,20 +128,15 @@ export class NuevoPresupuestoComponent implements OnInit {
 
   // Listar clientes
   listarClientes(): void {
-    this.alertService.loading();
     this.clientesService.listarClientes({
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
-      desde: this.desdeClientes,
-      cantidadItems: this.cantidadItemsClientes,
-      parametro: this.filtro.parametroCliente, 
-      activo: true 
+      activo: true
     }).subscribe({
       next: ({ clientes, totalItems }) => {
         this.clientes = clientes;
         this.totalItemsClientes = totalItems;
         this.alertService.close();
-        this.showClientes = true;
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
     })
@@ -170,12 +170,12 @@ export class NuevoPresupuestoComponent implements OnInit {
   }
 
   // Seleccionar cliente
-  seleccionarCliente(cliente: any): void {
-    this.clienteSeleccionado = cliente;
-    this.clientesForm = cliente;
-    this.showClientes = false;
-    this.almacenamientoLocalStorage();
-  }
+  // seleccionarCliente(cliente: any): void {
+  //   this.clienteSeleccionado = cliente;
+  //   this.clientesForm = cliente;
+  //   this.showClientes = false;
+  //   this.almacenamientoLocalStorage();
+  // }
 
   // Seleccionar producto
   seleccionarProducto(producto: any): void {
@@ -297,21 +297,6 @@ export class NuevoPresupuestoComponent implements OnInit {
       });
   }
 
-  // Eliminar cliente seleccionado
-  eliminarClienteSeleccionado(): void {
-    this.clienteSeleccionado = null;
-    this.clientesForm = {
-      descripcion: '',
-      tipo_identificacion: 'DNI',
-      identificacion: '',
-      direccion: '',
-      telefono: '',
-      correo_electronico: '',
-      condicion_iva: 'Consumidor Final'
-    }
-    this.almacenamientoLocalStorage();
-  }
-
   // Eliminar producto seleccionado
   eliminarProducto(): void {
     this.productoSeleccionado = null;
@@ -344,11 +329,12 @@ export class NuevoPresupuestoComponent implements OnInit {
 
   // Seleccionar cliente
   seleccionarClientePresupuesto(): void {
-    const { descripcion, identificacion } = this.clientesForm;
-    if (descripcion === '' || identificacion === '') {
-      this.alertService.info('Debe completar los campos obligatorios');
+
+    if (!this.clienteSeleccionado) {
+      this.alertService.info('Debes seleccionar un cliente');
       return;
     }
+
     this.etapa = 'productos';
     this.almacenamientoLocalStorage();
   }
@@ -391,14 +377,14 @@ export class NuevoPresupuestoComponent implements OnInit {
           const data = {
             cliente: dataCliente,
             tipo_presupuesto: this.tipo_presupuesto,
-            descripcion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.descripcion : 'CONSUMIDOR FINAL',
+            descripcion: this.tipo_presupuesto !== 'consumidor_final' ? this.clienteSeleccionado.descripcion : 'CONSUMIDOR FINAL',
             observacion: this.observacion,
-            tipo_identificacion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.tipo_identificacion : 'DNI',
-            identificacion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.identificacion : '',
-            direccion: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.direccion : '',
-            telefono: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.telefono : '',
-            correo_electronico: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.correo_electronico : '',
-            condicion_iva: this.tipo_presupuesto !== 'consumidor_final' ? this.clientesForm.condicion_iva : 'Consumidor Final',
+            tipo_identificacion: this.tipo_presupuesto !== 'consumidor_final' ? this.clienteSeleccionado.tipo_identificacion : 'DNI',
+            identificacion: this.tipo_presupuesto !== 'consumidor_final' ? this.clienteSeleccionado.identificacion : '',
+            direccion: this.tipo_presupuesto !== 'consumidor_final' ? this.clienteSeleccionado.direccion : '',
+            telefono: this.tipo_presupuesto !== 'consumidor_final' ? this.clienteSeleccionado.telefono : '',
+            correo_electronico: this.tipo_presupuesto !== 'consumidor_final' ? this.clienteSeleccionado.correo_electronico : '',
+            condicion_iva: this.tipo_presupuesto !== 'consumidor_final' ? this.clienteSeleccionado.condicion_iva : 'Consumidor Final',
             precio_total: this.precio_total,
             productos: this.productosPresupuesto,
             creatorUser: this.authService.usuario.userId,
@@ -432,7 +418,7 @@ export class NuevoPresupuestoComponent implements OnInit {
   reiniciarValores(): void {
 
     // Clientes
-    this.clientes = [];
+    this.showOptionsClientes = false;
     this.clienteSeleccionado = null;
 
     // Porcentajes
@@ -610,6 +596,71 @@ export class NuevoPresupuestoComponent implements OnInit {
     this.precio = this.precioResguardo;
     this.porcentajes = '';
     this.porcentajeAplicado = false;
+  }
+
+  // Crear nuevo cliente
+  nuevoCliente(): void {
+
+    // Verificacion: Razon social
+    if (!this.clientesForm.descripcion) {
+      this.alertService.info('Debe colocar una razón social');
+      return;
+    }
+
+    // Verificacion: Identificacion
+    if (!this.clientesForm.identificacion) {
+      this.alertService.info('Debe colocar una identificación');
+      return;
+    }
+
+    this.alertService.loading();
+
+    const data = {
+      ...this.clientesForm,
+      creatorUser: this.authService.usuario.userId,
+      updatorUser: this.authService.usuario.userId,
+    }
+    this.clientesService.nuevoCliente(data).subscribe({
+      next: ({ cliente }) => {
+        this.clienteSeleccionado = cliente;
+        this.showNuevoCliente = false;
+        this.almacenamientoLocalStorage();
+        this.listarClientes();
+        // Listar cliente
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+  }
+
+  // Abrir modal -> Nuevo cliente
+  abrirNuevoCliente(): void {
+
+    // Formulario de cliente
+    this.clientesForm = {
+      descripcion: '',
+      tipo_identificacion: 'DNI',
+      identificacion: '',
+      direccion: '',
+      telefono: '',
+      correo_electronico: '',
+      condicion_iva: 'Consumidor Final'
+    }
+
+    this.showNuevoCliente = true;
+    this.showOptionsClientes = false;
+
+  }
+
+  // Seleccionar cliente del listado
+  seleccionarCliente(cliente: any): void {
+    this.clienteSeleccionado = cliente;
+    this.almacenamientoLocalStorage();
+  }
+
+  // Eliminar cliente seleccionado
+  borrarCliente(): void {
+    this.clienteSeleccionado = null;
+    this.filtro.parametroCliente = '';
+    this.almacenamientoLocalStorage();
   }
 
   // Alamcenamiento en localstorage
