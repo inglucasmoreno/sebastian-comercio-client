@@ -66,6 +66,7 @@ export class ProductosComponent implements OnInit {
   // Filtrado
   public filtro = {
     alerta_stock: false,
+    alerta_cantidad_negativa: false,
     parametro: '',
     activo: 'true',
   }
@@ -182,7 +183,8 @@ export class ProductosComponent implements OnInit {
       cantidadItems: this.cantidadItems,
       activo: this.filtro.activo,
       parametro: this.filtro.parametro,
-      alerta_stock: this.filtro.alerta_stock
+      alerta_stock: this.filtro.alerta_stock,
+      alerta_cantidad_negativa: this.filtro.alerta_cantidad_negativa,
     }
     ).subscribe({
       next: ({ productos, totalItems }) => {
@@ -208,13 +210,11 @@ export class ProductosComponent implements OnInit {
       stock_minimo_alerta
     } = this.productoForm;
 
-    console.log(this.productoForm);
-
     const condicion = descripcion.trim() === '' ||
       codigo.trim() === '' ||
       familia.trim() === '' ||
       unidad_medida.trim() === '' ||
-      stock_minimo_alerta === 'true' && !cantidad_minima
+      stock_minimo_alerta === 'true' && cantidad_minima < 0
 
     if (condicion) return true
     else return false
@@ -274,8 +274,6 @@ export class ProductosComponent implements OnInit {
     data.cantidad = this.productoForm.cantidad ? this.productoForm.cantidad : 0;
     data.cantidad_minima = this.productoForm.stock_minimo_alerta === 'true' ? this.productoForm.cantidad_minima : 0;
 
-    console.log(data);
-
     this.productosService.actualizarProducto(this.idProducto, data).subscribe({
       next: () => {
         this.listarProductos();
@@ -315,6 +313,12 @@ export class ProductosComponent implements OnInit {
   // Listar - Alerta stock minimo
   alertaStockMinimo(): void {
     this.filtro.alerta_stock = !this.filtro.alerta_stock;
+    this.listarProductos();
+  }
+
+  // Listar - Alerta stock negativo
+  alertaCantidadNegativa(): void {
+    this.filtro.alerta_cantidad_negativa = !this.filtro.alerta_cantidad_negativa;
     this.listarProductos();
   }
 

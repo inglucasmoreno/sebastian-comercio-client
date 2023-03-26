@@ -145,7 +145,7 @@
                           <tbody *ngIf="bancos">
                               <tr class="animate__animated animate__fadeIn" *ngFor="let banco of bancos | filtroBancos:filtro.parametro:filtro.activo | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual}">
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
-                                      <p class="text-gray-900 w-max whitespace-no-wrap">
+                                      <p class="text-gray-900 whitespace-no-wrap">
                                           {{ banco.descripcion }}
                                       </p>
                                   </td>

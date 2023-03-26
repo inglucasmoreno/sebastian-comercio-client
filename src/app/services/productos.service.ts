@@ -42,7 +42,8 @@ export class ProductosService {
         registerpp: parametros?.cantidadItems || 100000,
         activo: parametros?.activo || '',
         parametro: parametros?.parametro || '',
-        alerta_stock: parametros?.alerta_stock || false   
+        alerta_stock: parametros?.alerta_stock || false,
+        alerta_cantidad_negativa: parametros?.alerta_cantidad_negativa || false,   
       },
       headers: this.getToken
     });

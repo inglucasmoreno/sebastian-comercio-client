@@ -242,7 +242,7 @@
                           <tbody *ngIf="cajas">
                               <tr class="animate__animated animate__fadeIn" *ngFor="let caja of cajas | filtroCajas:filtro.parametro:filtro.activo | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual}">
                                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
-                                      <p class="text-gray-900 w-max whitespace-no-wrap">
+                                      <p class="text-gray-900 whitespace-no-wrap">
                                           {{ caja.descripcion }}
                                       </p>
                                   </td>
