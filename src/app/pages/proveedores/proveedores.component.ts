@@ -74,7 +74,6 @@ export class ProveedoresComponent implements OnInit {
 
   // Abrir modal
   abrirModal(estado: string, proveedor: any = null): void {
-    window.scrollTo(0, 0);
     this.reiniciarFormulario();
     this.idProveedor = '';
 

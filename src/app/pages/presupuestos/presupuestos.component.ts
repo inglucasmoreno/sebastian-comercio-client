@@ -257,7 +257,6 @@ export class PresupuestosComponent implements OnInit {
     this.presupuestoProductosService.listarProductos(parametros).subscribe({
       next: ({productos}) => {
         this.productos = productos;
-        window.scroll(0,0);
         this.presupuestoSeleccionado = presupuesto;
         this.showModalPresupuesto = true;
         this.alertService.close();
@@ -308,7 +307,6 @@ export class PresupuestosComponent implements OnInit {
           producto.precio_total_resguardo = producto.precio_total;
         });
 
-        window.scroll(0,0);
         this.presupuestoSeleccionado = presupuesto;
         this.showModalEditarPresupuesto = true;
         this.alertService.close();

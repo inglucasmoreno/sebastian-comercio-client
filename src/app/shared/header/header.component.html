@@ -1,5 +1,5 @@
 <nav [ngClass]="{'-translate-x-0 ease-in opacity-100' : this.dataService.showMenu === true, '-translate-x-full ease-out opacity-0':this.dataService.showMenu === false}"
-    class="absolute inset-0 transform max-h-screen duration-200 lg:transform-none lg:opacity-100 ease-in -translate-x-full lg:relative z-10 w-11/12 md:w-80 bg-primary-800 text-white h-full overflow-y-auto border-r-4 border-gray-500 p-3">
+    class="absolute inset-0 transform max-h-screen duration-200 ease-in -translate-x-full z-10 w-11/12 md:w-80 bg-primary-800 text-white h-full overflow-y-auto border-r-4 border-gray-500 p-3">
 
     <div class="flex justify-between">
         <div title="perfil de usuario" routerLink="perfil" class="flex cursor-pointer hover:text-blue-200">
@@ -19,7 +19,7 @@
             </div>
         </div>
         <button (click)="this.dataService.showMenu = false"
-            class="p-2 lg:hidden focus:outline-none focus:bg-gray-600 rounded-md">
+            class="p-2 focus:outline-none focus:bg-gray-600 rounded-md">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -43,80 +43,6 @@
             <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route" [item]="element.item">
             </app-items>
         </ng-container>
-
-        <!-- Terceros -->
-        <!-- <li *ngIf="authService.usuario.permisos.includes('TERCEROS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
-            (click)="showTerceros = !showTerceros"
-            class="flex items-center justify-between outline-none cursor-pointer p-2">
-
-            <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-                  </svg>                  
-                <span class="ml-1"> Terceros </span>
-            </div>
-
-            <div *ngIf="!showTerceros" class="bg-primary-600 p-1 font-semibold text-white rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                </svg>
-            </div>
-
-            <div *ngIf="showTerceros" class="bg-primary-600 p-1 font-semibold text-white rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-            </div>
-
-        </li> -->
-
-        <!-- <div *ngIf="showTerceros && (authService.usuario.permisos.includes('TERCEROS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
-            class="bg-primary-600 rounded pl-2">
-            <ng-container *ngFor="let element of itemsTerceros">
-                <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
-                    [item]="element.item"></app-items>
-            </ng-container>
-        </div>         -->
-
-        <!-- Productos -->
-        <!-- <li *ngIf="authService.usuario.permisos.includes('PRODUCTOS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
-            (click)="showProductos = !showProductos"
-            class="flex items-center justify-between outline-none cursor-pointer p-2">
-
-            <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                </svg>
-                <span class="ml-1"> Productos </span>
-            </div>
-
-            <div *ngIf="!showProductos" class="bg-primary-600 p-1 font-semibold text-white rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                </svg>
-            </div>
-
-            <div *ngIf="showProductos" class="bg-primary-600 p-1 font-semibold text-white rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-            </div>
-
-        </li> -->
-<!-- 
-        <div *ngIf="showProductos && (authService.usuario.permisos.includes('PRODUCTOS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
-            class="bg-primary-600 rounded pl-2">
-            <ng-container *ngFor="let element of itemsProductos">
-                <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
-                    [item]="element.item"></app-items>
-            </ng-container>
-        </div> -->
 
         <!-- Ventas -->
         <li *ngIf="authService.usuario.permisos.includes('VENTAS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
@@ -156,78 +82,6 @@
             </ng-container>
         </div>
 
-        <!-- Cobros -->
-        <!-- <li *ngIf="authService.usuario.permisos.includes('COBROS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
-            (click)="showCobros = !showCobros"
-            class="flex items-center justify-between outline-none cursor-pointer p-2">
-
-            <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
-                  </svg>
-                <span class="ml-1"> Cobros </span>
-            </div>
-
-            <div *ngIf="!showCobros" class="bg-primary-600 p-1 font-semibold text-white rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                </svg>
-            </div>
-
-            <div *ngIf="showCobros" class="bg-primary-600 p-1 font-semibold text-white rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-            </div>
-
-        </li> -->
-
-        <!-- <div *ngIf="showCobros && (authService.usuario.permisos.includes('COBROS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
-            class="bg-primary-600 rounded pl-2">
-            <ng-container *ngFor="let element of itemsCobros">
-                <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
-                    [item]="element.item"></app-items>
-            </ng-container>
-        </div> -->
-
-        <!-- Gastos -->
-        <!-- <li *ngIf="authService.usuario.permisos.includes('GASTOS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
-            (click)="showGastos = !showGastos"
-            class="flex items-center justify-between outline-none cursor-pointer p-2">
-
-            <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                  </svg>
-                <span class="ml-1"> Gastos </span>
-            </div>
-
-            <div *ngIf="!showGastos" class="bg-primary-600 p-1 font-semibold text-white rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                </svg>
-            </div>
-
-            <div *ngIf="showGastos" class="bg-primary-600 p-1 font-semibold text-white rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-            </div>
-
-        </li> -->
-
-        <!-- <div *ngIf="showGastos && (authService.usuario.permisos.includes('GASTOS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
-            class="bg-primary-600 rounded pl-2">
-            <ng-container *ngFor="let element of itemsGastos">
-                <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
-                    [item]="element.item"></app-items>
-            </ng-container>
-        </div> -->
-
         <!-- Compras -->
         <li *ngIf="authService.usuario.permisos.includes('COMPRAS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
             (click)="showCompras = !showCompras"
@@ -266,42 +120,6 @@
                     [item]="element.item"></app-items>
             </ng-container>
         </div>
-
-        <!-- Pagos -->
-        <!-- <li *ngIf="authService.usuario.permisos.includes('PAGOS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
-            (click)="showPagos = !showPagos"
-            class="flex items-center justify-between outline-none cursor-pointer p-2">
-
-            <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
-                </svg>
-                <span class="ml-1"> Pagos </span>
-            </div>
-
-            <div *ngIf="!showPagos" class="bg-primary-600 p-1 font-semibold text-white rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                </svg>
-            </div>
-
-            <div *ngIf="showPagos" class="bg-primary-600 p-1 font-semibold text-white rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-            </div>
-
-        </li> -->
-
-        <!-- <div *ngIf="showPagos && (authService.usuario.permisos.includes('PAGOS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
-            class="bg-primary-600 rounded pl-2">
-            <ng-container *ngFor="let element of itemsPagos">
-                <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
-                    [item]="element.item"></app-items>
-            </ng-container>
-        </div> -->
 
         <!-- Tesoreria -->
         <li *ngIf="authService.usuario.permisos.includes('TESORERIA_NAV') || authService.usuario.role === 'ADMIN_ROLE'"

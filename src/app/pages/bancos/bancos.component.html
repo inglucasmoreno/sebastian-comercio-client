@@ -3,22 +3,22 @@
 <app-modal [showModal]="showModalBanco">
   <div (keyup.enter)="estadoFormulario === 'crear' ? nuevoBanco() : actualizarBanco()">
       <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
-          <h1 class=" text-white px-2 py-1 rounded-t text-lg"> {{ estadoFormulario == 'crear' ? 'Creando banco' : 'Editando banco' }} </h1>
+          <h1 class=" text-white px-2 py-1 rounded-t md:text-lg"> {{ estadoFormulario == 'crear' ? 'Creando banco' : 'Editando banco' }} </h1>
           <svg (click)="showModalBanco = false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </div>
-      <div class="p-4 text-sm">
+      <div class="px-2 pt-2 overflow-y-auto max-h-96 text-sm">
           <p class="font-semibold"> <span class="text-red-500"> * </span> Descripción </p>
-          <input [(ngModel)]="descripcion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Supervielle" type="text">
+          <input [(ngModel)]="descripcion" class="py-2 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Supervielle" type="text">
           <div *ngIf="bancoSeleccionado && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
             <div class="xl:w-1/2">
                 <p class="font-semibold text-sm"> Fecha de alta </p>
-                <div class="border text-sm mt-2 border-gray-300 rounded p-2 bg-gray-100">
+                <div class="border text-sm mt-2 border-gray-400 rounded p-2 bg-gray-100">
                     {{ bancoSeleccionado.createdAt | fecha }}
                 </div>
             </div>
             <div class="xl:ml-4 xl:w-1/2 mt-4 xl:mt-0">
                 <p class="font-semibold text-sm"> Usuario creador </p>
-                <div class="border text-sm capitalize mt-2 border-gray-300 rounded p-2 bg-gray-100">
+                <div class="border text-sm capitalize mt-2 border-gray-400 rounded p-2 bg-gray-100">
                     {{ bancoSeleccionado.creatorUser.apellido.toLowerCase() }} {{ bancoSeleccionado.creatorUser.nombre.toLowerCase() }}
                 </div>
             </div>
@@ -26,20 +26,22 @@
         <div *ngIf="bancoSeleccionado && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
             <div class="xl:w-1/2">
                 <p class="font-semibold text-sm"> Ultima actualización </p>
-                <div class="border text-sm mt-2 border-gray-300 rounded p-2 bg-gray-100">
+                <div class="border text-sm mt-2 border-gray-400 rounded p-2 bg-gray-100">
                     {{ bancoSeleccionado.updatedAt | fecha }}
                 </div>
             </div>
             <div class="xl:ml-4 xl:w-1/2 mt-4 xl:mt-0">
                 <p class="font-semibold text-sm"> Usuario ultima actualización </p>
-                <div class="border text-sm capitalize mt-2 border-gray-300 rounded p-2 bg-gray-100">
+                <div class="border text-sm capitalize mt-2 border-gray-400 rounded p-2 bg-gray-100">
                     {{ bancoSeleccionado.updatorUser.apellido.toLowerCase() }} {{ bancoSeleccionado.updatorUser.nombre.toLowerCase() }}
                 </div>
             </div>
         </div>   
-          <button *ngIf="estadoFormulario == 'crear'" (click)="nuevoBanco()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Crear banco </button>
-          <button *ngIf="estadoFormulario == 'editar'" (click)="actualizarBanco()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Actualizar banco </button>
-      </div>
+    </div>
+    <div class="px-2 pb-2">
+        <button *ngIf="estadoFormulario == 'crear'" (click)="nuevoBanco()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full text-sm border border-gray-400 font-semibold p-2 rounded mt-4"> Crear banco </button>
+        <button *ngIf="estadoFormulario == 'editar'" (click)="actualizarBanco()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full text-sm border border-gray-400 font-semibold p-2 rounded mt-4"> Actualizar banco </button>
+    </div>
   </div>
 </app-modal>
 
@@ -50,16 +52,16 @@
           <div>
               <div class="flex items-center justify-between bg-primary-800 px-4 py-3 rounded-t">
                   <div class="ml-2 text-white">
-                      <h2 class="text-2xl leading-tight">
+                      <h2 class="text-xl md:text-2xl leading-tight">
                           Listado de bancos
                       </h2>
                       <p> Total de bancos: {{ bancos.length }} </p>
                   </div>
                   <div *ngIf="permisos.all">
-                    <button title="Nuevo banco" (click)="abrirModal('crear')" class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                        </svg>
+                    <button title="Nuevo banco" (click)="abrirModal('crear')" class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-400 bg-white rounded shadow">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>                          
                     </button>
                   </div>
               </div>
@@ -160,9 +162,9 @@
                                   <td *ngIf="permisos.all" class="px-5 py-2 border-b border-gray-200 text-xs text-center">
                                         <span class="flex items-center justify-center text-gray-900 whitespace-no-wrap">
                                             <app-boton-tabla (click)="abrirModal('editar', banco)" title="Editar banco">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                </svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                                                  </svg>                                                  
                                             </app-boton-tabla>
                                         </span>
                                   </td>

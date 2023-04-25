@@ -62,7 +62,6 @@ export class UnidadMedidaComponent implements OnInit {
 
     // Abrir modal
     abrirModal(estado: string, unidad: any = null): void {
-      window.scrollTo(0,0);
       this.reiniciarFormulario();
       this.descripcion = '';
       this.idUnidad = '';

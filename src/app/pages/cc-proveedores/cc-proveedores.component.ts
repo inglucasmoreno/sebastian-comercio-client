@@ -58,7 +58,7 @@ export class CcProveedoresComponent implements OnInit {
     private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.ubicacionActual = 'Dashboard - Cuentas corrientes - Proveedores';
+    this.dataService.ubicacionActual = 'Dashboard - CC de Proveedores';
     this.permisos.all = this.permisosUsuarioLogin();
     this.alertService.loading();
     this.cargaInicial();

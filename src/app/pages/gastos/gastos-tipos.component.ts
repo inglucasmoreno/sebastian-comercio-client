@@ -62,7 +62,6 @@ export class GastosTiposComponent implements OnInit {
 
   // Abrir modal
   abrirModal(estado: string, tipo: any = null): void {
-    window.scrollTo(0, 0);
     this.reiniciarFormulario();
     this.descripcion = '';
     this.idTipo = '';

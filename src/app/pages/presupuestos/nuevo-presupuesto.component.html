@@ -8,7 +8,8 @@
       </svg>
     </button>
   </div> 
-  <div (keyup.enter)="nuevoCliente()" class="p-4 text-sm">
+
+  <div (keyup.enter)="nuevoCliente()" class="px-4 pt-2 overflow-y-auto max-h-96 text-sm">
     <div>
       <p class="font-semibold"> <span class="text-red-500"> * </span> Razón social </p>
       <div *ngIf="clienteSeleccionado" class="flex items-center mt-1">
@@ -68,7 +69,9 @@
           </select>
       </div>
     </div>
-    <button (click)="nuevoCliente()" class="p-2 bg-secondaryColor font-semibold mt-4 focus:outline-none text-white rounded shadow w-full">
+  </div>
+  <div class="px-2 pb-2">
+    <button (click)="nuevoCliente()" class="p-2 text-sm bg-secondaryColor font-semibold mt-4 focus:outline-none text-white rounded shadow w-full">
       Crear cliente
     </button>
   </div>
@@ -131,17 +134,17 @@
   <div>
     <div class="bg-primary-800 flex items-center justify-between p-2 rounded-t">
       <div class="text-white">
-        <h1 class="text-lg"> Listado de productos </h1>
+        <h1 class="md:text-lg"> Listado de productos </h1>
       </div>
       <button (click)="showProductos = false" class="text-white focus:outline-none">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>              
       </button>
     </div>
     
     <!-- Busqueda de productos -->
-    <div *ngIf="!productoSeleccionado" class="p-4">
+    <div *ngIf="!productoSeleccionado" class="p-4 max-h-96 overflow-y-auto">
 
       <div class="block relative md:w-1/3">
         <span class="h-full absolute inset-y-0 left-0 flex items-center pl-2">
@@ -155,9 +158,9 @@
         />
       </div>  
       
-      <div class="mt-4 text-sm max-h-96 overflow-y-auto">
+      <div class="mt-4 text-sm">
         <div (click)="seleccionarProducto(producto)" class="border shadow hover:border-secondaryColor cursor-pointer border-gray-400 p-2 w-full my-2" *ngFor="let producto of productos | paginate: {itemsPerPage: cantidadItemsProductos, currentPage: paginaActualProductos, totalItems: totalItems, id: 'productos'}">
-          <p class="font-semibold"> {{ producto.descripcion }} </p>  
+          <p class="font-semibold text-xs md:text-sm"> {{ producto.descripcion }} </p>  
           <p class="text-gray-600 text-xs"> {{ producto.unidad_medida.descripcion }} </p>
         </div>
       </div>
@@ -188,14 +191,14 @@
           <div class="flex items-center w-full">
             <input [disabled]="porcentajeAplicado" (keyup.enter)="aplicarPorcentajes()" [(ngModel)]="porcentajes" type="text" placeholder="Ej. +5 -12 +10" class="w-full focus:outline-none mt-1 border rounded border-gray-400 p-2">    
             <button *ngIf="!porcentajeAplicado" title="Agregar variacion porcentual" (click)="aplicarPorcentajes()" class="p-2 border border-gray-400 ml-2 mt-1 focus:outline-none hover:text-green-700 rounded">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>              
             </button>
             <button *ngIf="porcentajeAplicado" title="Recuperar precio original" (click)="eliminarPorcentaje()" class="p-2 border border-gray-400 ml-2 mt-1 focus:outline-none hover:text-red-700 rounded">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              </svg>              
             </button>
           </div>
         </div> 
@@ -327,9 +330,9 @@
 
   <div *ngIf="etapa === 'tipo_presupuesto'" class="p-4 md:w-2/3 mx-auto mt-5 text-center">
     
-    <h1 class="font-semibold text-2xl p-2"> GENERADOR DE PRESUPUESTOS </h1>
-    <div class="mt-4">
-      <select [(ngModel)]="tipo_presupuesto" class="py-2 mt-1 border px-4 rounded border-gray-400 shadow tranform duration-500 outline-none text-gray-800">
+    <h1 class="font-semibold text-xl md:text-2xl p-2"> GENERADOR DE PRESUPUESTOS </h1>
+    <div class="mt-2 md:mt-4">
+      <select [(ngModel)]="tipo_presupuesto" class="py-2 mt-1 w-80 md:w-96 border px-4 rounded border-gray-400 shadow tranform duration-500 outline-none text-gray-800">
         <option value="consumidor_final"> Consumidor final </option>
         <option value="cliente"> Cliente </option>
       </select>
@@ -340,19 +343,19 @@
   </div>
 
   <!-- Etapa - Cliente -->
-  <div *ngIf="etapa === 'cliente'" class="max-w-2xl mt-10 mx-auto w-96">
+  <div *ngIf="etapa === 'cliente'" class="max-w-2xl mt-2 md:mt-10 w-11/12">
     
-    <div class="flex items-center justify-center">
+    <div class="flex items-center justify-center w-full">
       <div>
-        <h1 class="text-3xl text-center"> Seleccionando cliente </h1>  
+        <h1 class="text-2xl md:text-3xl text-center"> Seleccionando cliente </h1>  
         <div *ngIf="!clienteSeleccionado" class="mt-4">
-          <input [(ngModel)]="filtro.parametroCliente" type="text" (focus)="showOptionsClientes = true" class="border shadow border-gray-400 p-2 w-96 focus:outline-none" placeholder="Buscar cliente">
+          <input [(ngModel)]="filtro.parametroCliente" type="text" (focus)="showOptionsClientes = true" class="border shadow border-gray-400 p-2 w-80 md:w-96 focus:outline-none" placeholder="Buscar cliente">
           <p (click)="abrirNuevoCliente()" class="text-center font-semibold mt-2 text-sm p-1 cursor-pointer bg-gray-100 border hover:text-secondaryColor border-gray-400 rounded"> Nuevo cliente </p>
 
-          <div class="bg-white border mt-2 text-center border-gray-400 absolute w-96" *ngIf="showOptionsClientes">
+          <div class="bg-white border mt-2 text-center border-gray-400 absolute w-80 md:w-96" *ngIf="showOptionsClientes">
             
             <div class="bg-gray-100 p-2 px-4 flex items-center justify-between border-b border-gray-400">
-              <p class="font-semibold"> Listado de clientes </p>
+              <p class="font-semibold text-sm"> Listado de clientes </p>
               <button (click)="showOptionsClientes = false" class="focus:outline-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -374,92 +377,22 @@
             </div>
           
           </div>
+          
         </div>  
       </div>
     </div>
 
-    <div class="flex text-left items-center mt-4 border max-w-xl border-l-8 border-gray-400 shadow pl-4 pr-6 py-2" *ngIf="clienteSeleccionado">
-      <img class="w-20" src="assets/avatar-cliente.svg">
+    <div class="flex text-left mx-auto items-center mt-4 border w-80 md:w-96 border-l-8 border-gray-400 shadow pl-4 pr-6 py-2" *ngIf="clienteSeleccionado">
+      <img class="w-16 md:w-20" src="assets/avatar-cliente.svg">
       <div class="ml-2">
-        <p class="text-sm"> {{ clienteSeleccionado?.descripcion }} </p>
+        <p class="text-xs md:text-sm"> {{ clienteSeleccionado?.descripcion }} </p>
         <p *ngIf="clienteSeleccionado?.identificacion !== ''" class="text-xs text-gray-500"> {{ clienteSeleccionado?.tipo_identificacion }} {{ clienteSeleccionado?.identificacion }} </p>
         <p *ngIf="clienteSeleccionado?.identificacion === ''" class="text-xs text-gray-500"> Sin identificación </p>
         <p (click)="borrarCliente()" class="font-semibold text-xs hover:text-secondaryColor cursor-pointer"> Cambiar de cliente </p>
       </div>
     </div>
 
-    <!-- <div (keyup.enter)="seleccionarClientePresupuesto()" class="p-4 text-sm">
-      <div>
-        <p class="font-semibold"> <span class="text-red-500"> * </span> Razón social </p>
-        <div *ngIf="clienteSeleccionado" class="flex items-center mt-1">
-          <div class="w-max text-xs text-secondaryColor font-semibold p-2 rounded"> {{ clienteSeleccionado?.descripcion }} </div>
-          <button (click)="eliminarClienteSeleccionado()" class="bg-red-50 focus:outline-none text-red-700 rounded p-1 border border-red-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>          
-          </button>
-        </div>
-        <input *ngIf="!clienteSeleccionado" [(ngModel)]="clientesForm.descripcion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Equinoccio Technology" type="text">
-      </div>
-      <div class="md:flex md:items-center mt-4">
-        <div class="md:w-1/2">
-          <p class="font-semibold"> <span class="text-red-500"> * </span> Tipo de identificación </p>
-          <div *ngIf="clienteSeleccionado" class="text-xs w-max font-semibold text-secondaryColor py-2 px-1 mt-1 rounded"> {{ clienteSeleccionado?.tipo_identificacion }} </div>
-          <select *ngIf="!clienteSeleccionado" [(ngModel)]="clientesForm.tipo_identificacion"  class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
-            <option value="DNI"> DNI </option>
-            <option value="CUIL"> CUIL </option>
-            <option value="CUIT"> CUIT </option>
-          </select>
-        </div>
-        <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
-          <p class="font-semibold"> <span class="text-red-500"> * </span> Identificación </p>
-          <div *ngIf="clienteSeleccionado" class="text-xs w-max font-semibold text-secondaryColor py-2 px-1 mt-1 rounded"> {{ clienteSeleccionado?.identificacion }} </div>
-          <input *ngIf="!clienteSeleccionado" [(ngModel)]="clientesForm.identificacion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 34060398" type="text">
-        </div>
-      </div>
-      <div class="md:flex md:items-center mt-4">
-        <div class="md:w-1/2">
-          <p class="font-semibold"> Teléfono </p>
-          <input [(ngModel)]="clientesForm.telefono" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 2664869642" type="text">
-        </div>
-        <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
-          <p class="font-semibold"> Correo electrónico </p>
-          <input  [(ngModel)]="clientesForm.correo_electronico" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. equinocciotech@gmail.com" type="text">
-        </div>
-      </div>
-      <div class="md:flex md:items-center mt-4">
-        <div class="md:w-1/2">
-            <p class="font-semibold"> Dirección </p>
-            <input [(ngModel)]="clientesForm.direccion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Portugal 1030" type="text">              
-        </div>
-        <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
-            <p class="font-semibold"> Condición frente al IVA </p>
-            <div *ngIf="clienteSeleccionado" class="text-xs w-max font-semibold text-secondaryColor py-2 px-1 mt-1 rounded"> {{ clienteSeleccionado?.condicion_iva }} </div>
-            <select *ngIf="!clienteSeleccionado" [(ngModel)]="clientesForm.condicion_iva" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
-                <option value="Consumidor Final"> Consumidor Final </option>
-                <option value="IVA Responsable Inscripto"> IVA Responsable Inscripto </option>
-                <option value="IVA Responsable no Inscripto"> IVA Responsable no Inscripto </option>
-                <option value="IVA no Responsable"> IVA no Responsable </option>
-                <option value="IVA Sujeto Exento"> IVA Sujeto Exento </option>
-                <option value="Responsable Monotributo"> Responsable Monotributo </option>
-                <option value="Sujeto no Categorizado"> Sujeto no Categorizado </option>
-                <option value="Proveedor del Exterior"> Proveedor del Exterior </option>
-                <option value="Cliente del Exterior"> Cliente del Exterior </option>
-                <option value="IVA Liberado"> IVA Liberado </option>
-                <option value="IVA Responsable Inscripto – Agente de Percepción"> IVA Responsable Inscripto – Agente de Percepción </option>
-                <option value="Pequeño Contribuyente Eventual"> Pequeño Contribuyente Eventual </option>
-                <option value="Monotributista Social"> Monotributista Social </option>
-                <option value="Pequeño Contribuyente Eventual Social"> Pequeño Contribuyente Eventual Social </option>                    
-            </select>
-        </div>
-      </div>
-    </div>
-    <div class="flex items-center p-2">
-      <button (click)="regresar('clientes')" class="bg-primary-800 focus:outline-none text-white w-1/2 p-2 rounded"> Regresar </button>
-      <button (click)="seleccionarClientePresupuesto()" class="bg-secondaryColor focus:outline-none text-white w-1/2 p-2 rounded ml-2"> Continuar </button>
-    </div> -->
-
-    <div class="flex items-center justify-center mx-auto text-sm mt-4">
+    <div class="flex items-center justify-center w-80 md:w-96 mx-auto text-sm mt-4">
       <button (click)="regresar('clientes')" class="bg-primary-800 w-1/2 text-white p-2 rounded focus:outline-none"> Regresar </button>
       <button (click)="seleccionarClientePresupuesto()" class="bg-secondaryColor w-1/2 text-white p-2 ml-2 rounded focus:outline-none"> Continuar </button>
     </div>
@@ -467,24 +400,24 @@
   </div>
   
   <!-- Etapa - Productos -->
-  <div *ngIf="etapa === 'productos'" class="p-4 md:w-2/3 mx-auto mt-5">
+  <div *ngIf="etapa === 'productos'" class="p-4 md:w-2/3 mx-auto mt-2 md:mt-5">
     <div class="bg-primary-800 flex items-center justify-between p-2 rounded-t">
-      <h1 class="text-xl text-white"> Carga de productos </h1>
+      <h1 class="md:text-xl text-white"> Carga de productos </h1>
       <div>
         <button (click)="regresar('productos')" title="Regresar" class="bg-white p-2 rounded hover:text-secondaryColor focus:outline-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4 md:w-5 md:h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>          
         </button>
         <button (click)="crearPresupuesto()" title="Finalizar" class="bg-white p-2 rounded hover:text-green-700 ml-2 focus:outline-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-          </svg>   
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 md:w-5 md:h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>          
         </button>
         <button (click)="buscarProductos()" title="Buscar producto" class="bg-white p-2 rounded ml-2 hover:text-secondaryColor focus:outline-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>      
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 md:w-5 md:h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>            
         </button>
       </div>
     </div>
@@ -501,22 +434,22 @@
               <p class="font-semibold"> Observación personalizada </p> 
               <input type="text" [(ngModel)]="observacion" placeholder="Agregar observacion" class="border p-2 w-full border-gray-400 text-sm focus:outline-none mt-2 mb-1 rounded">
             </div>
-            <div class="md:w-1/2 md:ml-2">
+            <div class="md:w-1/2 md:ml-2 mt-2 md:mt-0">
               <p class="font-semibold"> Variación porcentual </p> 
               <div class="flex items-center">
                 <input [disabled]="porcentajeAplicadoTotal" (keyup.enter)="aplicarPorcentajesTotal()" type="text" [(ngModel)]="porcentajesTotal" placeholder="Ej. +5 -10 +12" class="border p-2 w-full border-gray-400 text-sm focus:outline-none mt-2 mb-1 rounded">
                 <button [title]="!porcentajeAplicadoTotal ? 'Aplicar porcentajes' : 'Eliminar porcentajes'" (click)="!porcentajeAplicadoTotal ? aplicarPorcentajesTotal() : eliminarPorcentajesTotal()" class="p-2 ml-1 border focus:outline-none hover:text-green-700 border-gray-400 rounded mt-1">
-                  <svg *ngIf="!porcentajeAplicadoTotal" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg> 
-                  <svg *ngIf="porcentajeAplicadoTotal" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <svg *ngIf="!porcentajeAplicadoTotal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  <svg *ngIf="porcentajeAplicadoTotal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>               
+                  </svg>             
                 </button>
               </div>
             </div>
         </div>
-        <div class="md:flex md:items-center justify-between p-2">
+        <div class="md:flex md:items-center justify-between p-2 mt-2 md:mt-0">
           <div *ngIf="tipo_presupuesto === 'consumidor_final'"> 
             <span class="font-semibold"> Cliente: </span>
             <span> Consumidor final </span> 
@@ -529,7 +462,7 @@
             <span class="font-semibold"> Precio total: </span> ${{ precio_total | moneda }} 
           </div>
         </div>
-        <div class="max-h-96 shadow overflow-y-auto border border-gray-300">
+        <div class="max-h-96 overflow-y-auto">
           <div (click)="abrirEditarProducto(producto)" class="border border-gray-400 p-2 hover:border-secondaryColor cursor-pointer flex items-center justify-between shadow m-2" *ngFor="let producto of productosPresupuesto">
             <div>
               <p class="font-semibold"> {{ producto.descripcion }} </p>

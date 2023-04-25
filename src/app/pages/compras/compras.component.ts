@@ -253,7 +253,6 @@ export class ComprasComponent implements OnInit {
     this.comprasProductosService.listarProductos(parametros).subscribe({
       next: ({ productos }) => {
         this.productos = productos;
-        window.scroll(0, 0);
         this.compraSeleccionada = compra;
         this.showModalCompra = true;
         this.alertService.close();
@@ -345,7 +344,6 @@ export class ComprasComponent implements OnInit {
             this.ordenesPagoCompraService.listarRelaciones({ compra: compra._id }).subscribe({
               next: ({ relaciones }) => {
                 this.ordenesPago = relaciones;
-                window.scroll(0, 0);
                 this.calcularPagoTotal();
                 this.showModalEditarCompra = true;
                 this.alertService.close();

@@ -98,7 +98,7 @@ export class CcClientesMovimientosComponent implements OnInit {
     private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.ubicacionActual = 'Dashboard - Cuenta corriente - Registros';
+    this.dataService.ubicacionActual = 'Dashboard - CC de clientes';
     this.activatedRoute.params.subscribe(({ id }) => { this.idCuentaCorriente = id; });
     this.permisos.all = this.permisosUsuarioLogin();
     this.calculosIniciales();
@@ -123,7 +123,6 @@ export class CcClientesMovimientosComponent implements OnInit {
 
   // Abrir modal
   abrirModal(estado: string, movimiento: any = null): void {
-    window.scrollTo(0, 0);
     this.descripcion = '';
     this.tipo = 'Debe';
     this.monto = null;

@@ -82,7 +82,6 @@ export class CajasComponent implements OnInit {
 
   // Abrir modal
   abrirModal(estado: string, caja: any = null): void {
-    window.scrollTo(0, 0);
     this.reiniciarFormulario();
     this.descripcion = '';
     this.monto = null;

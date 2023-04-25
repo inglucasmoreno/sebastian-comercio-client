@@ -312,8 +312,6 @@ export class NuevaCompraComponent implements OnInit {
 
     let repetido = false;
 
-    console.log(this.productosCompra);
-
     // Se determina si el producto ya esta en la lista
     this.productosCompra.map(producto => {
       if (producto.producto === this.productoSeleccionado._id) {
@@ -822,8 +820,6 @@ export class NuevaCompraComponent implements OnInit {
 
   // Nuevo proveedor
   nuevoProveedor(): void {
-
-    console.log(this.proveedoresForm);
 
     // Verificacion: Razon social
     if (!this.proveedoresForm.descripcion) {

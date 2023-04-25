@@ -101,9 +101,6 @@ export class ChequesComponent implements OnInit {
   // Abrir modal
   abrirModal(estado: string, cheque: any = null): void {
 
-    console.log(cheque);
-
-    window.scrollTo(0, 0);
     this.nro_cheque = '';
     this.importe = null;
     this.emisor = '';

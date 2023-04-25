@@ -5,7 +5,7 @@
       <h1 class=" text-white px-2 py-1 rounded-t"> Detalles de movimiento </h1>
       <svg (click)="cerrarDetallesMovimientoInterno()" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
   </div>
-  <div class="p-2 text-sm">
+  <div class="p-2 max-h-96 overflow-y-auto text-sm">
       <div class="flex items-center justify-between">
           <p> <span class="font-semibold"> Movimiento interno número: </span> {{ movimientoInternoSeleccionado?.nro }} </p>
           <p> <span class="font-semibold"> Fecha: </span> {{ movimientoInternoSeleccionado?.createdAt | fecha }} </p>
@@ -38,11 +38,13 @@
 <!-- Detalles del pago -->
 <app-modal [showModal]="showModalDetallesPago">
   <div class="text-sm"t>
+    
     <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
-      <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de pago </h1>
+      <h1 class=" text-white px-2 py-1 rounded-t md:text-lg"> Detalles de pago </h1>
       <svg (click)="cerrarDetallesPago()" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
     </div>
-    <div class="p-2">
+    
+    <div class="p-2 max-h-96 overflow-y-auto">
       <div class="flex items-center justify-between">
         <p> <span class="font-semibold"> Código de pago: </span> {{ orden_pago?.nro | codigoOrdenesPago }} </p>
         <p> <span class="font-semibold"> Fecha: </span> {{ orden_pago?.fecha_pago ? (orden_pago?.fecha_pago | fecha) : (orden_pago?.createdAt | fecha) }} </p>   
@@ -105,12 +107,14 @@
         </div>
       </div>
     </div>
+
   </div> 
 </app-modal>
 
 
 <!-- Detalles de compra -->
 <app-modal [showModal]="showModalDetallesCompra">
+  
   <div class="bg-primary-900 text-white flex items-center justify-between p-2 rounded-t">
     <h1> Detalles de la compra </h1>
     <button (click)="cerrarDetallesCompra()" class="text-white focus:outline-none">
@@ -119,7 +123,8 @@
       </svg>
     </button>
   </div>
-  <div class="p-2 text-sm">
+  
+  <div class="p-2 text-sm max-h-96 overflow-y-auto">
     <div class="w-full flex items-center justify-between">
       <p> <span class="font-semibold"> Código de compra: </span> {{ compra?.nro | codigoCompras }} </p>
       <p> <span class="font-semibold"> Fecha de compra: </span>  {{ compra?.fecha_compra ? (compra?.fecha_compra | fecha) : (compra?.createdAt | fecha) }} </p>
@@ -194,7 +199,7 @@
           </button>
       </div>
 
-      <div class="max-h-64 overflow-y-auto">
+      <div>
         <div class="text-sm border border-gray-400 mt-2 p-2" *ngFor="let producto of productos | filtroProductos:filtro.parametroProducto:''">
           <h1 class="font-semibold"> {{ producto.descripcion }} </h1>
           <p class="text-xs text-gray-500"> <span> ${{ producto.precio_unitario | moneda }} </span> x {{ producto.unidad_medida }} </p>
@@ -204,15 +209,18 @@
       </div>
     </div>
   </div>
+
 </app-modal>
 
 <!-- Detalles de gasto -->
 <app-modal [showModal]="showModalDetallesGasto">
+  
   <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
     <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de gasto </h1>
     <svg (click)="cerrarDetallesGasto()" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
   </div>  
-  <div class="p-2 text-sm">
+  
+  <div class="p-2 max-h-96 overflow-y-auto text-sm">
     <div class="flex items-center justify-between border-b-2 pb-1">
       <p> <span class="font-semibold"> Número de gasto: </span> <span> {{ gastoSeleccionado?.numero }} </span> </p>  
       <p> <span class="font-semibold"> Fecha: </span> <span> {{  gastoSeleccionado?.fecha_gasto | fecha }} </span> </p>  
@@ -221,16 +229,19 @@
     <p class="mt-2"> <span class="font-semibold"> Tipo de gasto: </span> <span> {{  gastoSeleccionado?.tipo_gasto.descripcion }} </span> </p> 
     <p *ngIf="gastoSeleccionado?.observacion.trim() !== ''" class="mt-2"> <span class="font-semibold"> Observación: </span> <span> {{ gastoSeleccionado?.observacion }} </span> </p> 
   </div>
+
 </app-modal>
 
 <!-- Detalles de recibo de cobro -->
 <app-modal [showModal]="showModalDetallesCobro">
   <div class="text-sm"t>
+    
     <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
       <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de cobro </h1>
       <svg (click)="cerrarDetallesCobro()" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
     </div>
-    <div class="p-2">
+    
+    <div class="p-2 max-h-96 overflow-y-auto">
       <div class="flex items-center justify-between">
         <p> <span class="font-semibold"> Código de recibo: </span> {{ recibo_cobro?.nro | codigoReciboCobro }} </p>
         <p> <span class="font-semibold"> Fecha: </span> {{ recibo_cobro?.fecha_cobro ? (recibo_cobro?.fecha_cobro | fecha) : (recibo_cobro?.createdAt | fecha) }} </p>   
@@ -293,17 +304,21 @@
         </div>
       </div>
     </div>
+
   </div> 
+
 </app-modal>
 
 <!-- Detalles de cheque -->
 <app-modal [showModal]="showModalDetallesCheque">
     <div>
+
       <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
-          <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de cheque </h1>
+          <h1 class=" text-white px-2 py-1 rounded-t md:text-lg"> Detalles de cheque </h1>
           <svg (click)="cerrarDetallesCheque()" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </div>
-      <div class="p-4 text-sm">
+      
+      <div class="p-4 max-h-96 overflow-y-auto text-sm">
         <div class="md:flex md:items-center">
             <div class="md:w-1/2">
                 <p class="font-semibold"> <span class="text-red-500"> * </span> Nro de cheque </p>
@@ -339,11 +354,13 @@
             </div>
         </div>
       </div>
+    
     </div>
   </app-modal>
 
 <!-- Detalles de venta -->
 <app-modal [showModal]="showModalDetallesVenta">
+  
   <div class="bg-primary-900 text-white flex items-center justify-between p-2 rounded-t">
     <h1> Detalles de la venta </h1>
     <button (click)="cerrarDetallesVenta()" class="text-white focus:outline-none">
@@ -352,7 +369,8 @@
       </svg>
     </button>
   </div>
-  <div class="p-2 text-sm">
+  
+  <div class="p-2 max-h-96 overflow-y-auto text-sm">
     <div class="w-full flex items-center justify-between">
       <p> <span class="font-semibold"> Código de venta: </span> {{ ventaPropia?.nro | codigoVentasPropias }} </p>
       <p> <span class="font-semibold"> Fecha de venta: </span>  {{ ventaPropia?.fecha_venta ? (ventaPropia?.fecha_venta | fecha) : (ventaPropia?.createdAt | fecha) }} </p>
@@ -426,7 +444,7 @@
           </button>
       </div>
 
-      <div class="max-h-64 overflow-y-auto">
+      <div>
         <div class="text-sm border border-gray-400 mt-2 p-2" *ngFor="let producto of productos | filtroProductos:filtro.parametroProducto:''">
           <h1 class="font-semibold"> {{ producto.descripcion }} </h1>
           <p class="text-xs text-gray-500"> <span> ${{ producto.precio_unitario | moneda }} </span> x {{ producto.unidad_medida }} </p>
@@ -435,7 +453,9 @@
         </div>
       </div>
     </div>
+  
   </div>
+
 </app-modal>
 
 <!-- Detalles de movimientos -->
@@ -445,7 +465,7 @@
           <h1 class=" text-white p-1 rounded-t"> Detalles de movimiento </h1>
           <svg (click)="showModalDetalles = false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </div>
-      <div class="p-2 text-sm">
+      <div class="p-2 max-h-96 overflow-y-auto text-sm">
           <div>
               <div class="md:flex items-center justify-between border-b pb-1">
                   <p class="mt-1 font-semibold"> {{ movimientoSeleccionado?.descripcion }} </p>
@@ -498,11 +518,13 @@
 <!-- Modal: Crear / Editar registro -->
 <app-modal [showModal]="showModalMovimiento">
 <div (keyup.enter)="estadoFormulario === 'crear' ? nuevoMovimiento() : actualizarMovimiento()">
+    
     <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
         <h1 class=" text-white px-2 py-1 rounded-t text-lg"> {{ estadoFormulario == 'crear' ? 'Creando registro' : 'Editando registro' }} </h1>
         <svg (click)="showModalMovimiento = false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
     </div>
-    <div class="p-4 text-sm">
+    
+    <div class="p-4 max-h-96 overflow-y-auto text-sm">
           <div>
               <p class="font-semibold"> <span class="text-red-500"> * </span> Descripción </p>
               <input [(ngModel)]="descripcion" class="py-2 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Pago de deuda" type="text">
@@ -554,7 +576,9 @@
         <button *ngIf="estadoFormulario == 'crear'" (click)="nuevoMovimiento()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Crear registro </button>
         <button *ngIf="estadoFormulario == 'editar'" (click)="actualizarMovimiento()" class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4"> Actualizar registro </button>
     </div>
-</div>
+
+  </div>
+
 </app-modal>
 
 <!-- Listado de movimiento -->
@@ -570,8 +594,8 @@
                           </svg>
                       </button>
                       <div class="ml-2 text-white">
-                          <h2 class="text-2xl leading-tight">
-                              Listado de registros
+                          <h2 class="text-xl md:text-2xl leading-tight">
+                              Movimientos de caja
                           </h2>
                           <p> Total de registros: {{ totalItems }} </p>
                       </div>

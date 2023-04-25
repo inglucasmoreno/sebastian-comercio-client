@@ -73,7 +73,6 @@ export class ClientesComponent implements OnInit {
 
   // Abrir modal
   abrirModal(estado: string, cliente: any = null): void {
-    window.scrollTo(0, 0);
     this.reiniciarFormulario();
     this.idCliente = '';
 

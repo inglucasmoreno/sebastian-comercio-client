@@ -89,7 +89,6 @@ export class CcClientesComponent implements OnInit {
 
   // Abrir modal
   abrirModal(estado: string, cuentaCorriente: any = null): void {
-    window.scrollTo(0, 0);
     this.reiniciarFormulario();
     this.idCuentaCorriente = '';
     this.cliente = '';

@@ -1,17 +1,17 @@
 <app-tarjeta-lista *ngIf="usuarios">
-    <div class="container mx-auto">
-        <div class="flex items-center justify-between bg-primary-800 text-white px-4 py-3 rounded-t">
+    <div class="max-w-full mx-auto">
+        <div class="flex items-center w-full justify-between bg-primary-800 text-white px-4 py-3 rounded-t">
             <div class="ml-2">
-                <h2 class="text-2xl leading-tight">
+                <h2 class="text-xl md:text-2xl leading-tight">
                     Listado de usuarios
                 </h2>
                 <p> Total de usuarios: {{ usuarios.length }} </p>
             </div>
             <div>
                 <app-boton-generico title="Nuevo usuario" *appPermisos="permiso_escritura" routerLink="/dashboard/usuarios/nuevo">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      </svg>                      
                 </app-boton-generico>
             </div>
         </div>
@@ -167,14 +167,14 @@
                                 <td *appPermisos="permiso_escritura" class="px-5 py-2 border-b border-gray-200 text-xs text-center">
                                     <p class="flex items-center justify-center text-gray-900 whitespace-no-wrap">
                                         <app-boton-tabla title="Editar usuario" [routerLink]="['/dashboard/usuarios/editar', usuario._id]">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                            </svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                                            </svg>  
                                         </app-boton-tabla>
                                         <app-boton-tabla title="Actualizar contraseña" class="ml-2" [routerLink]="['/dashboard/usuarios/password', usuario._id]">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                            </svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                              </svg>                                              
                                         </app-boton-tabla>
                                     </p>
                                 </td>

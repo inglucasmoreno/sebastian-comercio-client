@@ -161,7 +161,6 @@ export class CajasMovimientosComponent implements OnInit {
 
   // Abrir modal
   abrirModal(estado: string, movimiento: any = null): void {
-    window.scrollTo(0, 0);
     this.descripcion = '';
     this.tipo = 'Debe';
     this.monto = null;

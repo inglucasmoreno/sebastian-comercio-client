@@ -2,7 +2,7 @@
 <app-modal [showModal]="showModalGasto">
     <div (keyup.enter)="estadoFormulario === 'crear' ? nuevoGasto() : actualizarGasto()">
         <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
-            <h1 class=" text-white px-2 py-1 rounded-t text-lg"> {{ estadoFormulario == 'crear' ? 'Creando gasto' :
+            <h1 class=" text-white px-2 py-1 rounded-t md:text-lg"> {{ estadoFormulario == 'crear' ? 'Creando gasto' :
                 'Detalles de gasto' }} </h1>
             <svg (click)="showModalGasto = false" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -11,7 +11,7 @@
                 <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
         </div>
-        <div class="p-4 text-sm">
+        <div class="px-4 pt-2 max-h-96 overflow-y-auto text-sm">
 
             <div class="md:flex md:items-center">
                 <div class="md:w-1/2">
@@ -57,13 +57,13 @@
             <div *ngIf="gastoSeleccionado && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
                 <div class="xl:w-1/2">
                     <p class="font-semibold text-sm"> Fecha de alta </p>
-                    <div class="border text-sm mt-2 border-gray-300 rounded p-2 bg-gray-100">
+                    <div class="border text-sm mt-2 border-gray-400 rounded p-2 bg-gray-100">
                         {{ gastoSeleccionado.createdAt | fecha }}
                     </div>
                 </div>
                 <div class="xl:ml-4 xl:w-1/2 mt-4 xl:mt-0">
                     <p class="font-semibold text-sm"> Usuario creador </p>
-                    <div class="border text-sm capitalize mt-2 border-gray-300 rounded p-2 bg-gray-100">
+                    <div class="border text-sm capitalize mt-2 border-gray-400 rounded p-2 bg-gray-100">
                         {{ gastoSeleccionado.creatorUser.apellido.toLowerCase() }} {{
                         gastoSeleccionado.creatorUser.nombre.toLowerCase() }}
                     </div>
@@ -72,26 +72,23 @@
             <div *ngIf="gastoSeleccionado && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
                 <div class="xl:w-1/2">
                     <p class="font-semibold text-sm"> Ultima actualización </p>
-                    <div class="border text-sm mt-2 border-gray-300 rounded p-2 bg-gray-100">
+                    <div class="border text-sm mt-2 border-gray-400 rounded p-2 bg-gray-100">
                         {{ gastoSeleccionado.updatedAt | fecha }}
                     </div>
                 </div>
                 <div class="xl:ml-4 xl:w-1/2 mt-4 xl:mt-0">
                     <p class="font-semibold text-sm"> Usuario ultima actualización </p>
-                    <div class="border text-sm capitalize mt-2 border-gray-300 rounded p-2 bg-gray-100">
+                    <div class="border text-sm capitalize mt-2 border-gray-400 rounded p-2 bg-gray-100">
                         {{ gastoSeleccionado.updatorUser.apellido.toLowerCase() }} {{
                         gastoSeleccionado.updatorUser.nombre.toLowerCase() }}
                     </div>
                 </div>
             </div>
-            <div class="mt-2">
-                <button *ngIf="estadoFormulario == 'crear'" (click)="nuevoGasto()"
-                    class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4">
-                    Crear gasto </button>
-                <!-- <button *ngIf="estadoFormulario == 'editar'" (click)="actualizarGasto()"
-                    class="bg-gray-100 focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-300 font-semibold p-2 rounded mt-4">
-                    Actualizar gasto </button> -->
-            </div>
+        </div>
+        <div class="px-2 pb-2">
+            <button *ngIf="estadoFormulario == 'crear'" (click)="nuevoGasto()"
+                class="bg-gray-100 focus:outline-none hover:text-secondaryColor text-sm shadow text-gray-800 w-full border border-gray-400 font-semibold p-2 rounded mt-4">
+                Crear gasto </button>
         </div>
     </div>
 </app-modal>
@@ -103,7 +100,7 @@
             <div>
                 <div class="flex items-center justify-between bg-primary-800 px-4 py-3 rounded-t">
                     <div class="ml-2 text-white">
-                        <h2 class="text-2xl leading-tight">
+                        <h2 class="text-xl md:text-2xl leading-tight">
                             Listado de gastos
                         </h2>
                         <p> Total de gastos: {{ totalItems }} </p>
@@ -111,10 +108,9 @@
                     <div *ngIf="permisos.all">
                         <button title="Nuevo gasto" (click)="abrirModal('crear')"
                             class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                              </svg>                              
                         </button>
                     </div>
                 </div>
@@ -371,15 +367,15 @@
                                         class="px-5 py-2 border-b border-gray-200 text-xs text-center">
                                         <span class="flex items-center justify-center text-gray-900 whitespace-no-wrap">
                                             <app-boton-tabla (click)="altaBajaGasto(gasto)" [title]="gasto.activo ? 'Baja de gasto' : 'Alta de gasto'">
-                                                <svg *ngIf="gasto.activo" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <svg *ngIf="gasto.activo" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                                  </svg>
+                                                </svg>
                                                 <svg *ngIf="!gasto.activo" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                                  </svg>                                                 
+                                                </svg>                                                 
                                             </app-boton-tabla>
                                             <app-boton-tabla class="ml-2" (click)="abrirModal('editar', gasto)" title="Detalles de gasto">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                   </svg>   

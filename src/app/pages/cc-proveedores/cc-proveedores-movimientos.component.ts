@@ -100,7 +100,7 @@ export class CcProveedoresMovimientosComponent implements OnInit {
     private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.ubicacionActual = 'Dashboard - Cuenta corriente - Registros';
+    this.dataService.ubicacionActual = 'Dashboard - CC de proveedores';
     this.activatedRoute.params.subscribe(({ id }) => { this.idCuentaCorriente = id; });
     this.permisos.all = this.permisosUsuarioLogin();
     this.calculosIniciales();
