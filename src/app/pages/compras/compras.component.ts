@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { ComprasChequesService } from 'src/app/services/compras-cheques.service';
@@ -101,14 +102,18 @@ export class ComprasComponent implements OnInit {
     private comprasProductosService: ComprasProductosService,
     private ordenesPagoCompraService: OrdenesPagoCompraService,
     private authService: AuthService,
+    private activatedRoute: ActivatedRoute,
     private alertService: AlertService,
     private dataService: DataService) { }
 
   ngOnInit(): void {
     this.dataService.ubicacionActual = 'Dashboard - Compras';
-    this.permisos.all = this.permisosUsuarioLogin();
     this.alertService.loading();
-    this.listarCompras();
+    this.activatedRoute.params.subscribe(({codigo}) => {
+      if(codigo) this.filtro.parametro = codigo;
+      this.permisos.all = this.permisosUsuarioLogin();
+      this.listarCompras();
+    })
   }
 
   // Asignar permisos de usuario login

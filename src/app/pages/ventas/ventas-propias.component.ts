@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
@@ -100,13 +101,17 @@ export class VentasPropiasComponent implements OnInit {
               private ventasPropiasProductosService: VentasPropiasProductosService,
               private authService: AuthService,
               private alertService: AlertService,
+              private activatedRoute: ActivatedRoute,
               private dataService: DataService) { }
 
   ngOnInit(): void {
     this.dataService.ubicacionActual = 'Dashboard - Ventas propias'; 
-    this.permisos.all = this.permisosUsuarioLogin();
     this.alertService.loading();
-    this.listarVentas();
+    this.activatedRoute.params.subscribe(({codigo}) => {
+      if(codigo) this.filtro.parametro = codigo;
+      this.permisos.all = this.permisosUsuarioLogin();
+      this.listarVentas();
+    });
   }
 
   // Asignar permisos de usuario login

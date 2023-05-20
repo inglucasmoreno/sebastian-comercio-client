@@ -25,6 +25,7 @@ export class ChequesComponent implements OnInit {
   public bancos: any[] = [];
 
   // Modal
+  public showModalDetalles = false;
   public showModalCheque = false;
   public showModalCobrandoCheque = false;
   public showModalChequeTransferido = false;
@@ -34,6 +35,7 @@ export class ChequesComponent implements OnInit {
   public estadoFormulario = 'crear';
 
   // Cheque
+  public relaciones: any = null;
   public idCheque: string = '';
   public cheques: any = [];
   public chequeSeleccionado: any;
@@ -107,6 +109,7 @@ export class ChequesComponent implements OnInit {
     this.banco = '';
     this.fecha_cobro = '';
     this.idCheque = '';
+    this.showModalDetalles = false;
 
     if (estado === 'editar') this.getCheque(cheque);
     else this.showModalCheque = true;
@@ -336,6 +339,7 @@ export class ChequesComponent implements OnInit {
 
   // Abrir modal cobrando cheque
   abrirModalCobrandoCheque(cheque: any) {
+    this.showModalDetalles = false;
     this.alertService.loading();
     this.cajaSeleccionada = '';
     this.chequeSeleccionado = cheque;
@@ -352,10 +356,10 @@ export class ChequesComponent implements OnInit {
   // Abrir detalles de transferencia
   abrirDetallesTransferencia(cheque: any): void {
     this.chequeSeleccionado = cheque;
+    this.showModalDetalles = false;
     this.alertService.loading();
     this.chequesService.getCheque(cheque._id).subscribe({
       next: ({ destino }) => {
-        console.log(destino);
         this.destinoTransferencia = destino;
         this.showModalChequeTransferido = true;
         this.alertService.close();
@@ -366,15 +370,37 @@ export class ChequesComponent implements OnInit {
   // Abrir detalles de cobro
   abrirDetallesCobro(cheque: any): void {
     this.chequeSeleccionado = cheque;
+    this.showModalDetalles = false;
     this.alertService.loading();
     this.chequesService.getCheque(cheque._id).subscribe({
       next: ({ destino_caja }) => {
-        console.log(destino_caja);
         this.destinoCobro = destino_caja;
         this.showModalChequeCobrado = true;
         this.alertService.close();
       }, error: ({error}) => this.alertService.errorApi(error.message)
     })
+  }
+
+  // Abrir detalles de cheque
+  abrirDetallesCheque(cheque: any): void {
+    this.showModalDetalles = true;
+    this.chequeSeleccionado = cheque;
+    this.alertService.loading();
+    this.chequesService.getRelaciones(cheque._id).subscribe({
+      next: ({ relaciones }) => {
+        this.relaciones = relaciones;
+        console.log(relaciones);
+        this.alertService.close();
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+  }
+
+  regresarDetalles(): void {
+    this.showModalCheque = false;
+    this.showModalChequeCobrado = false;
+    this.showModalChequeTransferido = false;
+    this.showModalCobrandoCheque = false;
+    this.showModalDetalles = true;
   }
 
   // Filtrar por Parametro

@@ -32,6 +32,13 @@ export class ChequesService {
     });
   };
 
+  // Listar relaciones
+  getRelaciones(id: string): Observable<any> {
+    return this.http.get(`${base_url}/cheques/relaciones/${ id }`,{ 
+      headers: this.getToken
+    });
+  }
+
   // Listar cheques
   listarCheques(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/cheques`, {

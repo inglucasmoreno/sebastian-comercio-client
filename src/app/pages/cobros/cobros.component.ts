@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
@@ -79,6 +80,7 @@ export class CobrosComponent implements OnInit {
     private ventasPropiasChequesService: VentasPropiasChequesService,
     private ventasPropiasProductosService: VentasPropiasProductosService,
     private alertService: AlertService,
+    private activatedRoute: ActivatedRoute,
     private dataService: DataService
   ) { }
 
@@ -86,7 +88,10 @@ export class CobrosComponent implements OnInit {
     this.dataService.ubicacionActual = 'Dashboard - Recibos de cobro';
     this.permisos.all = this.permisosUsuarioLogin();
     this.alertService.loading();
-    this.listarRecibos();
+    this.activatedRoute.params.subscribe(({codigo}) => {
+      if(codigo) this.filtro.parametro = codigo;
+      this.listarRecibos();
+    })
   }
 
   // Asignar permisos de usuario login

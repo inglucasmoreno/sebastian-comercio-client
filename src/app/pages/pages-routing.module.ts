@@ -85,11 +85,13 @@ const routes: Routes = [
             { path: 'ventas', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasComponent },
             { path: 'nueva-venta', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: NuevaVentaComponent },
             { path: 'ventas-propias', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasPropiasComponent },
+            { path: 'ventas-propias/:codigo', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasPropiasComponent },
             { path: 'cc-clientes', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: CcClientesComponent },
             { path: 'cc-clientes-movimientos/:id', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: CcClientesMovimientosComponent },
 
             // Cobros
             { path: 'cobros', data: { permisos: 'COBROS_NAV' }, canActivate: [PermisosGuard], component: CobrosComponent },
+            { path: 'cobros/:codigo', data: { permisos: 'COBROS_NAV' }, canActivate: [PermisosGuard], component: CobrosComponent },
             { path: 'nuevo-cobro', data: { permisos: 'COBROS_NAV' }, canActivate: [PermisosGuard], component: NuevoCobroComponent },
 
             // Caja
@@ -110,12 +112,14 @@ const routes: Routes = [
 
             // Compras
             { path: 'compras', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: ComprasComponent },
+            { path: 'compras/:codigo', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: ComprasComponent },
             { path: 'nueva-compra', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: NuevaCompraComponent },
             { path: 'cc-proveedores', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: CcProveedoresComponent },
             { path: 'cc-proveedores-movimientos/:id', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: CcProveedoresMovimientosComponent },
 
             // Pagos
             { path: 'pagos', data: { permisos: 'PAGOS_NAV' }, canActivate: [PermisosGuard], component: PagosComponent },
+            { path: 'pagos/:codigo', data: { permisos: 'PAGOS_NAV' }, canActivate: [PermisosGuard], component: PagosComponent },
             { path: 'nuevo-pago', data: { permisos: 'PAGOS_NAV' }, canActivate: [PermisosGuard], component: NuevoPagoComponent },
 
             // Configuraciones

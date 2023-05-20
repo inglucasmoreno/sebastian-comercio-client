@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { ComprasChequesService } from 'src/app/services/compras-cheques.service';
@@ -77,6 +78,7 @@ export class PagosComponent implements OnInit {
     private ordenesPagoCompraService: OrdenesPagoCompraService,
     private authService: AuthService,
     private comprasService: ComprasService,
+    private activatedRoute: ActivatedRoute,
     private comprasChequesService: ComprasChequesService,
     private comprasProductosService: ComprasProductosService,
     private alertService: AlertService,
@@ -85,9 +87,12 @@ export class PagosComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataService.ubicacionActual = 'Dashboard - Ordenes de pago';
-    this.permisos.all = this.permisosUsuarioLogin();
     this.alertService.loading();
-    this.listarOrdenesPago();
+    this.activatedRoute.params.subscribe(({codigo}) => {
+      if(codigo) this.filtro.parametro = codigo;
+      this.permisos.all = this.permisosUsuarioLogin();
+      this.listarOrdenesPago();
+    });
   }
 
   // Asignar permisos de usuario login
