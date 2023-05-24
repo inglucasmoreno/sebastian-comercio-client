@@ -217,7 +217,7 @@
       <div>
         <h2 class="font-semibold"> Ordenes de pago </h2>
         <div class="flex flex-wrap items-center">
-          <p class="p-2 border-l-8 border-gray-400 w-max mr-2 hover:border-secondaryColor hover:text-secondaryColor cursor-pointer border mt-2" *ngFor="let relacion of ordenesPago"> 
+          <p [routerLink]="['/dashboard/pagos', relacion?.orden_pago.nro]" class="p-2 border-l-8 border-gray-400 w-max mr-2 hover:border-secondaryColor hover:text-secondaryColor cursor-pointer border mt-2" *ngFor="let relacion of ordenesPago"> 
             <span>
               {{ relacion?.orden_pago.nro | codigoOrdenesPago }} 
             </span>

@@ -214,7 +214,7 @@
       <div>
         <h2 class="font-semibold"> Recibos de cobro </h2>
         <div class="flex flex-wrap items-center">
-          <p class="p-2 border-l-8 border-gray-400 w-max mr-2 hover:border-secondaryColor hover:text-secondaryColor cursor-pointer border mt-2" *ngFor="let relacion of recibosCobro"> 
+          <p [routerLink]="['/dashboard/cobros', relacion.recibo_cobro.nro]" class="p-2 border-l-8 border-gray-400 w-max mr-2 hover:border-secondaryColor hover:text-secondaryColor cursor-pointer border mt-2" *ngFor="let relacion of recibosCobro"> 
             <span>
               {{ relacion.recibo_cobro.nro | codigoReciboCobro }} 
             </span>
