@@ -311,12 +311,14 @@ export class ProductosComponent implements OnInit {
 
   // Listar - Alerta stock minimo
   alertaStockMinimo(): void {
+    this.paginaActual = 1;
     this.filtro.alerta_stock = !this.filtro.alerta_stock;
     this.listarProductos();
   }
 
   // Listar - Alerta stock negativo
   alertaCantidadNegativa(): void {
+    this.paginaActual = 1;
     this.filtro.alerta_cantidad_negativa = !this.filtro.alerta_cantidad_negativa;
     this.listarProductos();
   }
