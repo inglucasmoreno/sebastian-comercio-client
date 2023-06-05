@@ -60,11 +60,10 @@
             </div>
             <div class="md:w-1/2 md:ml-2 mt-2 md:mt-0">
                 <p class="font-semibold"> <span class="text-red-500"> * </span> Monto </p>
-                <input [(ngModel)]="monto" [disabled]="estadoFormulario === 'editar'" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 1000" type="number">
+                <input [(ngModel)]="monto" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 1000" type="number">
             </div>
         </div>
         
-          
           <div *ngIf="cajaSeleccionada && estadoFormulario === 'editar'" class="xl:flex items-center mt-4">
             <div class="xl:w-1/2">
                 <p class="font-semibold text-sm"> Fecha de alta </p>
