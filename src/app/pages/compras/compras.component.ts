@@ -20,6 +20,9 @@ const base_url = environment.base_url;
 })
 export class ComprasComponent implements OnInit {
 
+  // Fechas
+  public reporte = { fechaDesde: '', fechaHasta: '' };
+
   // Porcentajes
   public porcentajeAplicado = false;
   public porcentajes = '';
@@ -33,6 +36,7 @@ export class ComprasComponent implements OnInit {
   // Modal
   public showModalCompra = false;
   public showModalEditarCompra = false;
+  public showModalReportesCompra = false;
 
   // Cheques
   public showDetallesCheque = false;
@@ -109,8 +113,8 @@ export class ComprasComponent implements OnInit {
   ngOnInit(): void {
     this.dataService.ubicacionActual = 'Dashboard - Compras';
     this.alertService.loading();
-    this.activatedRoute.params.subscribe(({codigo}) => {
-      if(codigo) this.filtro.parametro = codigo;
+    this.activatedRoute.params.subscribe(({ codigo }) => {
+      if (codigo) this.filtro.parametro = codigo;
       this.permisos.all = this.permisosUsuarioLogin();
       this.listarCompras();
     })
@@ -785,21 +789,31 @@ export class ComprasComponent implements OnInit {
     this.precioConPorcentaje = this.dataService.redondear(precioTMP, 2);;
   }
 
+  // Abrir reportes - Excel
+  abrirReportes(): void {
+    this.reporte.fechaDesde = '';
+    this.reporte.fechaHasta = '';
+    this.showModalReportesCompra = true;
+  }
+
   // Reporte - Excel
   reporteExcel(): void {
-    // this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
-    //   .then(({ isConfirmed }) => {
-    //     if (isConfirmed) {
-    //       this.alertService.loading();
-    //       this.comprasService.generarExcel().subscribe({
-    //         next: () => {
-    //           window.open(`${base_url}/excel/ventas-propias.xlsx`, '_blank');
-    //           this.alertService.close();
-    //         },
-    //         error: ({ error }) => this.alertService.errorApi(error.message)
-    //       });
-    //     }
-    //   });
+    this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.comprasService.generarExcel({
+            fechaDesde: this.reporte.fechaDesde,
+            fechaHasta: this.reporte.fechaHasta,
+          }).subscribe({
+            next: () => {
+              window.open(`${base_url}/excel/compras.xlsx`, '_blank');
+              this.showModalReportesCompra = false;
+              this.alertService.close();
+            }, error: ({error}) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
   }
 
   // Reiniciando formulario

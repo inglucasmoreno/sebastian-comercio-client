@@ -70,4 +70,11 @@ export class ComprasService {
     });
   };
 
+  // Generar Excel
+  generarExcel(data: any): Observable<any> {
+    return this.http.post(`${base_url}/compras/generarExcel`, data, {
+      headers: this.getToken
+    });
+  };
+
 }

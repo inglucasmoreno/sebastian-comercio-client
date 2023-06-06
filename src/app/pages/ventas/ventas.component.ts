@@ -17,6 +17,12 @@ const base_url = environment.base_url;
 })
 export class VentasComponent implements OnInit {
 
+  // Reportes
+  public reportes = {
+    fechaDesde: '',
+    fechaHasta: ''
+  };
+
   // Porcentajes
   public porcentajeAplicado = false;
   public porcentajes = '';
@@ -30,6 +36,7 @@ export class VentasComponent implements OnInit {
   // Modal
   public showModalVenta = false;
   public showModalEditarVenta = false;
+  public showModalReportesVentas = false;
 
   // Venta
   public idVenta: string = '';
@@ -742,7 +749,7 @@ export class VentasComponent implements OnInit {
     .then(({isConfirmed}) => {  
       if (isConfirmed) {
         this.alertService.loading();
-        this.ventasService.generarExcel().subscribe({
+        this.ventasService.generarExcel(this.reportes).subscribe({
           next: () => {
             window.open(`${base_url}/excel/ventas-directas.xlsx`, '_blank');
             this.alertService.close();
@@ -768,6 +775,13 @@ export class VentasComponent implements OnInit {
   filtrarParametro(parametro: string): void{
     this.paginaActual = 1;
     this.filtro.parametro = parametro;
+  }
+
+  // Abrir reportes - Excel
+  abrirReportes(): void {
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.showModalReportesVentas = true;
   }
 
   // Ordenar por columna

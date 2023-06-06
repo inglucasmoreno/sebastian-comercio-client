@@ -19,6 +19,12 @@ const base_url = environment.base_url;
 })
 export class VentasPropiasComponent implements OnInit {
 
+  // Reportes
+  public reportes = {
+    fechaDesde: '',
+    fechaHasta: ''
+  };
+
  // Porcentajes
   public porcentajeAplicado = false;
   public porcentajes = '';
@@ -32,6 +38,7 @@ export class VentasPropiasComponent implements OnInit {
   // Modal
   public showModalVenta = false;
   public showModalEditarVenta = false;
+  public showModalReportesVentas = false;
 
   // Cheques
   public showDetallesCheque = false;
@@ -791,7 +798,7 @@ export class VentasPropiasComponent implements OnInit {
     .then(({isConfirmed}) => {  
       if (isConfirmed) {
         this.alertService.loading();
-        this.ventasPropiasService.generarExcel().subscribe({
+        this.ventasPropiasService.generarExcel(this.reportes).subscribe({
           next: () => {
             window.open(`${base_url}/excel/ventas-propias.xlsx`, '_blank');
             this.alertService.close();
@@ -800,6 +807,13 @@ export class VentasPropiasComponent implements OnInit {
         });
       }
     });
+  }
+
+  // Abrir reportes - Excel
+  abrirReportes(): void {
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.showModalReportesVentas = true;
   }
 
   // Reiniciando formulario

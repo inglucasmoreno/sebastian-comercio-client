@@ -33,8 +33,8 @@ export class VentasPropiasService {
   };
 
   // Generar Excel
-  generarExcel(): Observable<any> {
-    return this.http.get(`${base_url}/ventas-propias/reporte/excel`, {
+  generarExcel(data: any): Observable<any> {
+    return this.http.post(`${base_url}/ventas-propias/reporte/excel`, data, {
       headers: this.getToken
     });
   };
