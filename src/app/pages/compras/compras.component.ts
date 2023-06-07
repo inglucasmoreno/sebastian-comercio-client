@@ -8,7 +8,9 @@ import { ComprasService } from 'src/app/services/compras.service';
 import { DataService } from 'src/app/services/data.service';
 import { OrdenesPagoCompraService } from 'src/app/services/ordenes-pago-compra.service';
 import { ProductosService } from 'src/app/services/productos.service';
+import { ReportesService } from 'src/app/services/reportes.service';
 import { environment } from 'src/environments/environment';
+import { saveAs } from 'file-saver-es'; 
 
 const base_url = environment.base_url;
 
@@ -108,7 +110,9 @@ export class ComprasComponent implements OnInit {
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,
     private alertService: AlertService,
-    private dataService: DataService) { }
+    private dataService: DataService,
+    private reportesService: ReportesService
+    ) { }
 
   ngOnInit(): void {
     this.dataService.ubicacionActual = 'Dashboard - Compras';
@@ -802,13 +806,11 @@ export class ComprasComponent implements OnInit {
       .then(({ isConfirmed }) => {
         if (isConfirmed) {
           this.alertService.loading();
-          this.comprasService.generarExcel({
-            fechaDesde: this.reporte.fechaDesde,
-            fechaHasta: this.reporte.fechaHasta,
-          }).subscribe({
-            next: () => {
-              window.open(`${base_url}/excel/compras.xlsx`, '_blank');
-              this.showModalReportesCompra = false;
+          this.reportesService.comprasExcel().subscribe({
+            next: (buffer) => {
+              console.log(buffer);
+              const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              saveAs(blob, 'archivo.xlsx');
               this.alertService.close();
             }, error: ({error}) => this.alertService.errorApi(error.message)
           })
