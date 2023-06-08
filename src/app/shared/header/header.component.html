@@ -46,7 +46,7 @@
 
         <!-- Ventas -->
         <li *ngIf="authService.usuario.permisos.includes('VENTAS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
-            (click)="showVentas = !showVentas"
+            (click)="abrirCerrarMenu('ventas')"
             class="flex items-center justify-between outline-none cursor-pointer p-2">
 
             <div class="flex items-center">
@@ -84,7 +84,7 @@
 
         <!-- Compras -->
         <li *ngIf="authService.usuario.permisos.includes('COMPRAS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
-            (click)="showCompras = !showCompras"
+            (click)="abrirCerrarMenu('compras')"
             class="flex items-center justify-between outline-none cursor-pointer p-2">
 
             <div class="flex items-center">
@@ -123,7 +123,7 @@
 
         <!-- Tesoreria -->
         <li *ngIf="authService.usuario.permisos.includes('TESORERIA_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
-            (click)="showTesoreria = !showTesoreria"
+            (click)="abrirCerrarMenu('tesoreria')"
             class="flex items-center justify-between outline-none cursor-pointer p-2">
 
             <div class="flex items-center">

@@ -10,6 +10,9 @@ import { OrdenesPagoChequesService } from 'src/app/services/ordenes-pago-cheques
 import { OrdenesPagoCompraService } from 'src/app/services/ordenes-pago-compra.service';
 import { OrdenesPagoService } from 'src/app/services/ordenes-pago.service';
 import { environment } from 'src/environments/environment';
+import { saveAs } from 'file-saver-es';
+import { format } from 'date-fns';
+import { ReportesService } from 'src/app/services/reportes.service';
 
 const base_url = environment.base_url;
 
@@ -21,6 +24,12 @@ const base_url = environment.base_url;
 })
 export class PagosComponent implements OnInit {
 
+  // Reportes
+  public reportes = {
+    fechaDesde: '',
+    fechaHasta: ''
+  }
+
   // Permisos de usuarios login
   public permisos = { all: false };
 
@@ -28,6 +37,7 @@ export class PagosComponent implements OnInit {
   public showModalOrdenPago = false;
   public showModalDetallesCheque = false;
   public showModalDetallesCompra = false;
+  public showModalReportesOrdenes = false;
 
   // Estado formulario 
   public estadoFormulario = 'crear';
@@ -82,6 +92,7 @@ export class PagosComponent implements OnInit {
     private comprasChequesService: ComprasChequesService,
     private comprasProductosService: ComprasProductosService,
     private alertService: AlertService,
+    private reportesService: ReportesService,
     private dataService: DataService
   ) { }
 
@@ -309,6 +320,34 @@ export class PagosComponent implements OnInit {
   cerrarDetallesCompra(): void {
     this.showModalOrdenPago = true;
     this.showModalDetallesCompra = false;
+  }
+
+  // Abrir reportes - Excel
+  abrirReportes(): void {
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.showModalReportesOrdenes = true;
+  }
+
+  // Reporte - Excel
+  reporteExcel(): void {
+    this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.reportesService.ordenesPagoExcel({
+            fechaDesde: this.reportes.fechaDesde,
+            fechaHasta: this.reportes.fechaHasta
+          }).subscribe({
+            next: (buffer) => {
+              const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              saveAs(blob, `Reporte - Ordenes de pago - ${format(new Date(),'dd-MM-yyyy')}`);
+              this.alertService.close();
+              this.showModalReportesOrdenes = false;
+            }, error: ({error}) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
   }
 
   // Generar PDF

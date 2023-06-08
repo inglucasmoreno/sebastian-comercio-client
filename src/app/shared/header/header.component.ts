@@ -35,7 +35,7 @@ export class HeaderComponent implements OnInit {
   public itemsTerceros: any[];
   public itemsConfiguraciones: any[];
   public itemsGastos: any[];
- 
+
   // Flags - Navegacion
   public administrador = false;
   public showProductos = false;
@@ -53,8 +53,8 @@ export class HeaderComponent implements OnInit {
   // Permisos para navegacion
   public permiso_usuarios = true;
 
-  constructor( public authService: AuthService,
-               public dataService: DataService ) { }
+  constructor(public authService: AuthService,
+    public dataService: DataService) { }
 
   ngOnInit(): void {
     this.items = items;
@@ -70,11 +70,34 @@ export class HeaderComponent implements OnInit {
     this.itemsConfiguraciones = itemsConfiguraciones;
     this.itemsGastos = itemsGastos;
   }
-  
-  // Habilitacion de navegacion
-  habilitacionNavegacion(): void {}
+
+  // Abrir/Cerrar navegacion
+  abrirCerrarMenu(menu: string): void {
+    switch (menu) {
+      case 'ventas':
+        this.showVentas = !this.showVentas;
+        break;
+      case 'compras':
+        this.showCompras = !this.showCompras;
+        break;
+      case 'tesoreria':
+        this.showTesoreria = !this.showTesoreria;
+        break;
+      case 'configuraciones':
+        this.showConfiguraciones = !this.showConfiguraciones;
+        break;
+      default:
+        break;
+    }
+
+    menu != 'ventas' ? this.showVentas = false : null;
+    menu != 'compras' ? this.showCompras = false : null;
+    menu != 'tesoreria' ? this.showTesoreria = false : null;
+    menu != 'configurariones' ? this.showConfiguraciones = false : null;
+
+  }
 
   // Metodo: Cerrar sesion
-  logout(): void{ this.authService.logout(); }
+  logout(): void { this.authService.logout(); }
 
 }

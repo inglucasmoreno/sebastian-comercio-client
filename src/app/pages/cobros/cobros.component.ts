@@ -6,10 +6,13 @@ import { DataService } from 'src/app/services/data.service';
 import { RecibosCobroChequeService } from 'src/app/services/recibos-cobro-cheque.service';
 import { RecibosCobroVentaService } from 'src/app/services/recibos-cobro-venta.service';
 import { RecibosCobroService } from 'src/app/services/recibos-cobro.service';
+import { ReportesService } from 'src/app/services/reportes.service';
 import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
 import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
 import { environment } from 'src/environments/environment';
+import { saveAs } from 'file-saver-es';
+import { format } from 'date-fns';
 
 const base_url = environment.base_url;
 
@@ -21,6 +24,12 @@ const base_url = environment.base_url;
 })
 export class CobrosComponent implements OnInit {
 
+  // Reportes
+  public reportes = {
+    fechaDesde: '',
+    fechaHasta: ''
+  }
+
   // Permisos de usuarios login
   public permisos = { all: false };
 
@@ -28,6 +37,7 @@ export class CobrosComponent implements OnInit {
   public showModalRecibo = false;
   public showModalDetallesCheque = false;
   public showModalDetallesVenta = false;
+  public showModalReportesRecibos = false;
 
   // Estado formulario 
   public estadoFormulario = 'crear';
@@ -81,6 +91,7 @@ export class CobrosComponent implements OnInit {
     private ventasPropiasProductosService: VentasPropiasProductosService,
     private alertService: AlertService,
     private activatedRoute: ActivatedRoute,
+    private reportesService: ReportesService,
     private dataService: DataService
   ) { }
 
@@ -307,6 +318,34 @@ export class CobrosComponent implements OnInit {
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
     })
+  }
+
+  // Abrir reportes - Excel
+  abrirReportes(): void {
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.showModalReportesRecibos = true;
+  }
+
+  // Reporte - Excel
+  reporteExcel(): void {
+    this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.reportesService.recibosCobroExcel({
+            fechaDesde: this.reportes.fechaDesde,
+            fechaHasta: this.reportes.fechaHasta
+          }).subscribe({
+            next: (buffer) => {
+              const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              saveAs(blob, `Reporte - Recibos de cobro - ${format(new Date(),'dd-MM-yyyy')}`);
+              this.alertService.close();
+              this.showModalReportesRecibos = false;
+            }, error: ({error}) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
   }
 
   // Reiniciando formulario

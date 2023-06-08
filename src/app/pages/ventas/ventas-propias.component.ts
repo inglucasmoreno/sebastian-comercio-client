@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { format } from 'date-fns';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { ProductosService } from 'src/app/services/productos.service';
 import { RecibosCobroVentaService } from 'src/app/services/recibos-cobro-venta.service';
+import { ReportesService } from 'src/app/services/reportes.service';
 import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-cheques.service';
 import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
 import { environment } from 'src/environments/environment';
+import { saveAs } from 'file-saver-es';
 
 const base_url = environment.base_url;
 
@@ -105,6 +108,7 @@ export class VentasPropiasComponent implements OnInit {
               private recibosCobroVentaService: RecibosCobroVentaService,
               private ventasPropiasChequesService: VentasPropiasChequesService,
               private productosService: ProductosService,
+              private reportesService: ReportesService,
               private ventasPropiasProductosService: VentasPropiasProductosService,
               private authService: AuthService,
               private alertService: AlertService,
@@ -798,12 +802,16 @@ export class VentasPropiasComponent implements OnInit {
     .then(({isConfirmed}) => {  
       if (isConfirmed) {
         this.alertService.loading();
-        this.ventasPropiasService.generarExcel(this.reportes).subscribe({
-          next: () => {
-            window.open(`${base_url}/excel/ventas-propias.xlsx`, '_blank');
+        this.reportesService.ventasPropiasExcel({ 
+          fechaDesde: this.reportes.fechaDesde, 
+          fechaHasta: this.reportes.fechaHasta 
+        }).subscribe({
+          next: (buffer) => {
+            const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            saveAs(blob, `Reporte - Ventas propias - ${format(new Date(),'dd-MM-yyyy')}`);
+            this.showModalReportesVentas = false;
             this.alertService.close();
-          },
-          error: ({error}) => this.alertService.errorApi(error.message)
+          }, error: ({error}) => this.alertService.errorApi(error.message)
         });
       }
     });

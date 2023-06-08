@@ -293,8 +293,6 @@ export class NuevaCompraComponent implements OnInit {
 
   }
 
-
-
   // Agregar producto a la compra
   agregarProducto(): void {
 

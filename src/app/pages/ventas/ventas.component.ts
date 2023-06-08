@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { format } from 'date-fns';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { ProductosService } from 'src/app/services/productos.service';
+import { ReportesService } from 'src/app/services/reportes.service';
 import { VentasProductosService } from 'src/app/services/ventas-productos.service';
 import { VentasService } from 'src/app/services/ventas.service';
 import { environment } from 'src/environments/environment';
+import { saveAs } from 'file-saver-es';
 
 const base_url = environment.base_url;
 
@@ -94,6 +97,7 @@ export class VentasComponent implements OnInit {
               private ventasProductosService: VentasProductosService,
               private authService: AuthService,
               private alertService: AlertService,
+              private reportesService: ReportesService,
               private dataService: DataService) { }
 
   ngOnInit(): void {
@@ -746,15 +750,19 @@ export class VentasComponent implements OnInit {
   // Reporte - Excel
   reporteExcel(): void{
     this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
-    .then(({isConfirmed}) => {  
+    .then(({isConfirmed}) => {
       if (isConfirmed) {
         this.alertService.loading();
-        this.ventasService.generarExcel(this.reportes).subscribe({
-          next: () => {
-            window.open(`${base_url}/excel/ventas-directas.xlsx`, '_blank');
+        this.reportesService.ventasExcel({ 
+          fechaDesde: this.reportes.fechaDesde, 
+          fechaHasta: this.reportes.fechaHasta 
+        }).subscribe({
+          next: (buffer) => {
+            const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            saveAs(blob, `Reporte - Ventas - ${format(new Date(),'dd-MM-yyyy')}`);
+            this.showModalReportesVentas = false;
             this.alertService.close();
-          },
-          error: ({error}) => this.alertService.errorApi(error.message)
+          }, error: ({error}) => this.alertService.errorApi(error.message)
         });
       }
     });

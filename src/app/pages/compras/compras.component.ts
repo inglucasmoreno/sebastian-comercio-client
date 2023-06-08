@@ -11,6 +11,7 @@ import { ProductosService } from 'src/app/services/productos.service';
 import { ReportesService } from 'src/app/services/reportes.service';
 import { environment } from 'src/environments/environment';
 import { saveAs } from 'file-saver-es'; 
+import { format } from 'date-fns';
 
 const base_url = environment.base_url;
 
@@ -806,12 +807,15 @@ export class ComprasComponent implements OnInit {
       .then(({ isConfirmed }) => {
         if (isConfirmed) {
           this.alertService.loading();
-          this.reportesService.comprasExcel().subscribe({
+          this.reportesService.comprasExcel({
+            fechaDesde: this.reporte.fechaDesde,
+            fechaHasta: this.reporte.fechaHasta
+          }).subscribe({
             next: (buffer) => {
-              console.log(buffer);
               const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-              saveAs(blob, 'archivo.xlsx');
+              saveAs(blob, `Reporte - Compras - ${format(new Date(),'dd-MM-yyyy')}`);
               this.alertService.close();
+              this.showModalReportesCompra = false;
             }, error: ({error}) => this.alertService.errorApi(error.message)
           })
         }
