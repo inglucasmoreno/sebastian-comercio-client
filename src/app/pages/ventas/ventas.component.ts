@@ -23,7 +23,8 @@ export class VentasComponent implements OnInit {
   // Reportes
   public reportes = {
     fechaDesde: '',
-    fechaHasta: ''
+    fechaHasta: '',
+    activas: 'true'
   };
 
   // Porcentajes
@@ -753,13 +754,10 @@ export class VentasComponent implements OnInit {
     .then(({isConfirmed}) => {
       if (isConfirmed) {
         this.alertService.loading();
-        this.reportesService.ventasExcel({ 
-          fechaDesde: this.reportes.fechaDesde, 
-          fechaHasta: this.reportes.fechaHasta 
-        }).subscribe({
+        this.reportesService.ventasExcel(this.reportes).subscribe({
           next: (buffer) => {
             const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            saveAs(blob, `Reporte - Ventas - ${format(new Date(),'dd-MM-yyyy')}`);
+            saveAs(blob, `Reporte - Ventas directas - ${format(new Date(),'dd-MM-yyyy')}`);
             this.showModalReportesVentas = false;
             this.alertService.close();
           }, error: ({error}) => this.alertService.errorApi(error.message)
@@ -789,6 +787,7 @@ export class VentasComponent implements OnInit {
   abrirReportes(): void {
     this.reportes.fechaDesde = '';
     this.reportes.fechaHasta = '';
+    this.reportes.activas = 'true';
     this.showModalReportesVentas = true;
   }
 

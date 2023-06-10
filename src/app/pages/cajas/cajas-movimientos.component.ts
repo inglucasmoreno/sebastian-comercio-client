@@ -21,6 +21,9 @@ import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-che
 import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
 import { environment } from 'src/environments/environment';
+import { saveAs } from 'file-saver-es';
+import { format } from 'date-fns';
+import { ReportesService } from 'src/app/services/reportes.service';
 
 const base_url = environment.base_url;
 
@@ -31,6 +34,13 @@ const base_url = environment.base_url;
   ]
 })
 export class CajasMovimientosComponent implements OnInit {
+
+  // Fechas
+  public reportes = { 
+    fechaDesde: '', 
+    fechaHasta: '',
+    caja: ''
+  };
 
   // Permisos de usuarios login
   public permisos = { all: false };
@@ -45,6 +55,7 @@ export class CajasMovimientosComponent implements OnInit {
   public showModalDetallesCompra = false;
   public showModalDetallesCheque = false;
   public showModalDetallesGasto = false;
+  public showModalReportesMovimientos = false;
 
   // Estado formulario 
   public estadoFormulario = 'crear';
@@ -133,6 +144,7 @@ export class CajasMovimientosComponent implements OnInit {
     private authService: AuthService,
     private chequesService: ChequesService,
     private alertService: AlertService,
+    private reportesService: ReportesService,
     private dataService: DataService) { }
 
   ngOnInit(): void {
@@ -148,6 +160,7 @@ export class CajasMovimientosComponent implements OnInit {
     this.cajasService.getCaja(this.idCaja).subscribe({
       next: ({ caja }) => {
         this.caja = caja;
+        this.reportes.caja = caja._id;
         this.listarMovimientos();
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
@@ -341,15 +354,15 @@ export class CajasMovimientosComponent implements OnInit {
 
                 this.recibosCobroVentaService.listarRelaciones({ venta_propia: venta._id }).subscribe({
                   next: ({ relaciones }) => {
-    
+
                     this.recibosCobro = relaciones;
-    
+
                     this.showModalDetalles = false;
                     this.showModalDetallesCobro = false;
                     this.showModalDetallesVenta = true;
                     this.alertService.close();
 
-                  }, error: ({error}) => this.alertService.errorApi(error.message)
+                  }, error: ({ error }) => this.alertService.errorApi(error.message)
                 })
 
               }, error: ({ error }) => this.alertService.errorApi(error.message)
@@ -412,7 +425,7 @@ export class CajasMovimientosComponent implements OnInit {
                 // Se obtienen las ordenes de pago
                 this.ordenesPagoCompraService.listarRelaciones({ compra: compra._id }).subscribe({
                   next: ({ relaciones }) => {
-                    
+
                     this.ordenesPago = relaciones;
                     this.showModalDetalles = false;
                     this.showModalDetallesCobro = false;
@@ -445,7 +458,7 @@ export class CajasMovimientosComponent implements OnInit {
         this.showModalDetallesGasto = true;
         this.showModalDetalles = false;
         this.alertService.close();
-      }, error: ({error}) => this.alertService.errorApi(error.message)
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
     })
 
 
@@ -483,7 +496,7 @@ export class CajasMovimientosComponent implements OnInit {
 
     }
 
-    
+
   }
 
   // Cerrar el detalles del cheque
@@ -560,7 +573,7 @@ export class CajasMovimientosComponent implements OnInit {
     // ORDEN DE PAGO
     this.pagosService.getOrdenPago(this.movimientoSeleccionado.orden_pago).subscribe({
       next: ({ orden_pago }) => {
-    
+
         this.orden_pago = orden_pago;
 
         // RELACION -> ORDEN PAGO - COMPRAS
@@ -568,7 +581,7 @@ export class CajasMovimientosComponent implements OnInit {
           next: ({ relaciones }) => {
 
             this.pago_compras = relaciones;
-            
+
             relaciones.map(relacion => this.totalEnCompras += relacion.monto_pagado);
 
             // RELACION -> ORDEN PAGO - CHEQUES
@@ -598,8 +611,8 @@ export class CajasMovimientosComponent implements OnInit {
         this.showModalDetalles = false;
         this.showModalDetallesMovimientoInterno = true;
         this.alertService.close();
-      },error: ({error}) => this.alertService.errorApi(error.message)
-    })  
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
   }
 
   // Cerrar detalles de movimiento interno
@@ -633,6 +646,31 @@ export class CajasMovimientosComponent implements OnInit {
   cerrarDetallesPago(): void {
     this.showModalDetallesPago = false;
     this.showModalDetalles = true;
+  }
+
+  // Abrir reportes - Excel
+  abrirReportes(): void {
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.showModalReportesMovimientos = true;
+  }
+
+  // Reporte - Excel
+  reporteExcel(): void {
+    this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.reportesService.movimientosCajasExcel(this.reportes).subscribe({
+            next: (buffer) => {
+              const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              saveAs(blob, `Reporte - Movimientos - ${this.caja.cliente.descripcion} - ${format(new Date(), 'dd-MM-yyyy')}`);
+              this.alertService.close();
+              this.showModalReportesMovimientos = false;
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
   }
 
   // Filtrar Activo/Inactivo

@@ -24,7 +24,11 @@ const base_url = environment.base_url;
 export class ComprasComponent implements OnInit {
 
   // Fechas
-  public reporte = { fechaDesde: '', fechaHasta: '' };
+  public reportes = { 
+    fechaDesde: '', 
+    fechaHasta: '',
+    activas: 'true'
+  };
 
   // Porcentajes
   public porcentajeAplicado = false;
@@ -796,8 +800,9 @@ export class ComprasComponent implements OnInit {
 
   // Abrir reportes - Excel
   abrirReportes(): void {
-    this.reporte.fechaDesde = '';
-    this.reporte.fechaHasta = '';
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.reportes.activas = 'true';
     this.showModalReportesCompra = true;
   }
 
@@ -807,10 +812,7 @@ export class ComprasComponent implements OnInit {
       .then(({ isConfirmed }) => {
         if (isConfirmed) {
           this.alertService.loading();
-          this.reportesService.comprasExcel({
-            fechaDesde: this.reporte.fechaDesde,
-            fechaHasta: this.reporte.fechaHasta
-          }).subscribe({
+          this.reportesService.comprasExcel(this.reportes).subscribe({
             next: (buffer) => {
               const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
               saveAs(blob, `Reporte - Compras - ${format(new Date(),'dd-MM-yyyy')}`);

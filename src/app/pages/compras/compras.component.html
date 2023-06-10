@@ -9,12 +9,19 @@
     <div class="flex items-center">
       <div class="text-center w-1/2">
         <p class="font-semibold"> Desde </p>
-        <input [(ngModel)]="reporte.fechaDesde" class="p-2 border mt-1 w-full focus:outline-none border-gray-400" type="date">
+        <input [(ngModel)]="reportes.fechaDesde" class="p-2 border mt-1 w-full focus:outline-none border-gray-400" type="date">
       </div>
       <div class="text-center w-1/2 ml-2">
         <p class="font-semibold"> Hasta </p>
-        <input [(ngModel)]="reporte.fechaHasta" class="p-2 border mt-1 w-full focus:outline-none border-gray-400" type="date">
+        <input [(ngModel)]="reportes.fechaHasta" class="p-2 border mt-1 w-full focus:outline-none border-gray-400" type="date">
       </div>
+    </div>
+    <div class="mt-3">
+      <select [(ngModel)]="reportes.activas" class="border focus:outline-none border-gray-400 p-2 w-full" type="text">
+        <option value="true"> Solo compras activas </option>
+        <option value="false"> Solo compras inactivas </option>
+        <option value=""> Todas las compras </option>
+      </select>
     </div>
     <button (click)="reporteExcel()" class="border bg-secondaryColor w-full p-2 rounded focus:outline-none text-white mt-3"> Generar reporte </button>   
   </div>

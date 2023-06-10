@@ -25,7 +25,8 @@ export class VentasPropiasComponent implements OnInit {
   // Reportes
   public reportes = {
     fechaDesde: '',
-    fechaHasta: ''
+    fechaHasta: '',
+    activas: 'true'
   };
 
  // Porcentajes
@@ -802,10 +803,7 @@ export class VentasPropiasComponent implements OnInit {
     .then(({isConfirmed}) => {  
       if (isConfirmed) {
         this.alertService.loading();
-        this.reportesService.ventasPropiasExcel({ 
-          fechaDesde: this.reportes.fechaDesde, 
-          fechaHasta: this.reportes.fechaHasta 
-        }).subscribe({
+        this.reportesService.ventasPropiasExcel(this.reportes).subscribe({
           next: (buffer) => {
             const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             saveAs(blob, `Reporte - Ventas propias - ${format(new Date(),'dd-MM-yyyy')}`);

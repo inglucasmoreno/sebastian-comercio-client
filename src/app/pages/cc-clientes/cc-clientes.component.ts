@@ -4,9 +4,9 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CcClientesService } from 'src/app/services/cc-clientes.service';
 import { ClientesService } from 'src/app/services/clientes.service';
 import { DataService } from 'src/app/services/data.service';
-import { environment } from 'src/environments/environment';
-
-const base_url = environment.base_url;
+import { ReportesService } from 'src/app/services/reportes.service';
+import { saveAs } from 'file-saver-es'; 
+import { format } from 'date-fns';
 
 @Component({
   selector: 'app-cc-clientes',
@@ -16,11 +16,19 @@ const base_url = environment.base_url;
 })
 export class CcClientesComponent implements OnInit {
 
+  // Fechas
+  public reportes = { 
+    fechaDesde: '', 
+    fechaHasta: '',
+    activas: 'true'
+  };
+
   // Permisos de usuarios login
   public permisos = { all: false };
 
   // Modal
   public showModalCuentaCorriente = false;
+  public showModalReportesCC = false;
 
   // Estado formulario 
   public estadoFormulario = 'crear';
@@ -58,6 +66,7 @@ export class CcClientesComponent implements OnInit {
   constructor(private ccClientesService: CcClientesService,
     private clientesService: ClientesService,
     private authService: AuthService,
+    private reportesService: ReportesService,
     private alertService: AlertService,
     private dataService: DataService) { }
 
@@ -122,7 +131,7 @@ export class CcClientesComponent implements OnInit {
       desde: this.desde,
       cantidadItems: this.cantidadItems,
       activo: this.filtro.activo,
-      parametro: this.filtro.parametro 
+      parametro: this.filtro.parametro
     }
     this.ccClientesService.listarCuentasCorrientes(parametros)
       .subscribe(({ cuentas_corrientes, totalItems }) => {
@@ -184,21 +193,30 @@ export class CcClientesComponent implements OnInit {
 
   }
 
+  // Abrir reportes - Excel
+  abrirReportes(): void {
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.reportes.activas = 'true';
+    this.showModalReportesCC = true;
+  }
+
   // Reporte - Excel
-  reporteExcel(): void{
+  reporteExcel(): void {
     this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
-    .then(({isConfirmed}) => {  
-      if (isConfirmed) {
-        this.alertService.loading();
-        this.ccClientesService.generarExcel().subscribe({
-          next: () => {
-            window.open(`${base_url}/excel/cuentas_corrientes.xlsx`, '_blank');
-            this.alertService.close();
-          },
-          error: ({error}) => this.alertService.errorApi(error.message)
-        });
-      }
-    });
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.reportesService.cuentasCorrientesClientesExcel(this.reportes).subscribe({
+            next: (buffer) => {
+              const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              saveAs(blob, `Reporte - CC de clientes - ${format(new Date(), 'dd-MM-yyyy')}`);
+              this.alertService.close();
+              this.showModalReportesCC = false;
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
   }
 
   // Reiniciando formulario

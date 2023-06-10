@@ -4,6 +4,9 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CajasService } from 'src/app/services/cajas.service';
 import { DataService } from 'src/app/services/data.service';
 import { InicializacionService } from 'src/app/services/inicializacion.service';
+import { ReportesService } from 'src/app/services/reportes.service';
+import { saveAs } from 'file-saver-es';
+import { format } from 'date-fns';
 
 @Component({
   selector: 'app-cajas',
@@ -13,9 +16,17 @@ import { InicializacionService } from 'src/app/services/inicializacion.service';
 })
 export class CajasComponent implements OnInit {
 
+  // Fechas
+  public reportes = {
+    fechaDesde: '',
+    fechaHasta: '',
+    activas: 'true'
+  };
+
   // Flags
   public flagInicializacion = false;
   public flagMovimientoInterno = false;
+  public showModalReportesCajas = false;
 
   // Permisos de usuarios login
   public permisos = { all: false };
@@ -66,6 +77,7 @@ export class CajasComponent implements OnInit {
     private inicializacionService: InicializacionService,
     private authService: AuthService,
     private alertService: AlertService,
+    private reportesService: ReportesService,
     private dataService: DataService) { }
 
   ngOnInit(): void {
@@ -337,6 +349,32 @@ export class CajasComponent implements OnInit {
   // Reiniciando formulario
   reiniciarFormulario(): void {
     this.descripcion = '';
+  }
+
+  // Abrir reportes - Excel
+  abrirReportes(): void {
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.reportes.activas = 'true';
+    this.showModalReportesCajas = true;
+  }
+
+  // Reporte - Excel
+  reporteExcel(): void {
+    this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.reportesService.cajasExcel(this.reportes).subscribe({
+            next: (buffer) => {
+              const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              saveAs(blob, `Reporte - Cajas - ${format(new Date(), 'dd-MM-yyyy')}`);
+              this.alertService.close();
+              this.showModalReportesCajas = false;
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
   }
 
   // Filtrar Activo/Inactivo

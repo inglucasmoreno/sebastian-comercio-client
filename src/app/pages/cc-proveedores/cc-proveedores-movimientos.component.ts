@@ -12,6 +12,9 @@ import { OrdenesPagoChequesService } from 'src/app/services/ordenes-pago-cheques
 import { OrdenesPagoCompraService } from 'src/app/services/ordenes-pago-compra.service';
 import { OrdenesPagoService } from 'src/app/services/ordenes-pago.service';
 import { environment } from 'src/environments/environment';
+import { saveAs } from 'file-saver-es'; 
+import { format } from 'date-fns';
+import { ReportesService } from 'src/app/services/reportes.service';
 
 const base_url = environment.base_url;
 
@@ -23,6 +26,13 @@ const base_url = environment.base_url;
 })
 export class CcProveedoresMovimientosComponent implements OnInit {
 
+  // Fechas
+  public reportes = {
+    fechaDesde: '',
+    fechaHasta: '',
+    proveedor: ''
+  };
+
   // Permisos de usuarios login
   public permisos = { all: false };
 
@@ -32,6 +42,7 @@ export class CcProveedoresMovimientosComponent implements OnInit {
   public showModalDetallesCompra = false;
   public showModalDetallesCheque = false;
   public showModalDetallesPago = false;
+  public showModalReportesCC = false;
 
   // Estado formulario 
   public estadoFormulario = 'crear';
@@ -96,6 +107,7 @@ export class CcProveedoresMovimientosComponent implements OnInit {
     private ordenesPagoChequesService: OrdenesPagoChequesService,
     private comprasChequesService: ComprasChequesService,
     private authService: AuthService,
+    private reportesService: ReportesService,
     private alertService: AlertService,
     private dataService: DataService) { }
 
@@ -112,6 +124,7 @@ export class CcProveedoresMovimientosComponent implements OnInit {
     this.cuentaCorrienteService.getCuentaCorriente(this.idCuentaCorriente).subscribe({
       next: ({ cuenta_corriente }) => {
         this.cuentaCorriente = cuenta_corriente;
+        this.reportes.proveedor = cuenta_corriente.proveedor._id;
         this.listarMovimientos();
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
@@ -254,7 +267,7 @@ export class CcProveedoresMovimientosComponent implements OnInit {
 
   // Abrir modal - Detalles de movimientos
   abrirDetallesMovimientos(movimiento: any): void {
-    
+
     if (movimiento.compra !== '') {
       this.alertService.loading();
       this.comprasService.getCompra(movimiento.compra).subscribe({
@@ -271,16 +284,16 @@ export class CcProveedoresMovimientosComponent implements OnInit {
                   this.relaciones = relaciones;
 
                   this.ordenesPagoCompraService.listarRelaciones({ compra: compra._id }).subscribe({
-                  
+
                     next: ({ relaciones }) => {
 
                       this.ordenesPago = relaciones;
                       this.movimientoSeleccionado = movimiento;
                       this.showModalDetalles = true;
                       this.alertService.close();
-                  
-                    }, error: ({error}) => this.alertService.errorApi(error.message)
-                  
+
+                    }, error: ({ error }) => this.alertService.errorApi(error.message)
+
                   })
 
                 }, error: ({ error }) => this.alertService.errorApi(error.message)
@@ -295,8 +308,8 @@ export class CcProveedoresMovimientosComponent implements OnInit {
       this.movimientoSeleccionado = movimiento;
       this.showModalDetalles = true;
     }
-  
-  
+
+
   }
 
   // Abrir detalles de compra
@@ -319,7 +332,7 @@ export class CcProveedoresMovimientosComponent implements OnInit {
                 this.relaciones = relaciones;
 
                 this.ordenesPagoCompraService.listarRelaciones({ compra: compra._id }).subscribe({
-                  
+
                   next: ({ relaciones }) => {
 
                     this.ordenesPago = relaciones;
@@ -327,9 +340,9 @@ export class CcProveedoresMovimientosComponent implements OnInit {
                     this.showModalDetallesPago = false;
                     this.showModalDetallesCompra = true;
                     this.alertService.close();
-                
-                  }, error: ({error}) => this.alertService.errorApi(error.message)
-                
+
+                  }, error: ({ error }) => this.alertService.errorApi(error.message)
+
                 })
 
               }, error: ({ error }) => this.alertService.errorApi(error.message)
@@ -365,7 +378,7 @@ export class CcProveedoresMovimientosComponent implements OnInit {
     // ORDEN DE PAGO
     this.pagosService.getOrdenPago(this.movimientoSeleccionado.orden_pago).subscribe({
       next: ({ orden_pago }) => {
-    
+
         this.orden_pago = orden_pago;
 
         // RELACION -> ORDEN PAGO - COMPRAS
@@ -373,7 +386,7 @@ export class CcProveedoresMovimientosComponent implements OnInit {
           next: ({ relaciones }) => {
 
             this.pago_compras = relaciones;
-            
+
             relaciones.map(relacion => this.totalEnCompras += relacion.monto_pagado);
 
             // RELACION -> ORDEN PAGO - CHEQUES
@@ -447,6 +460,31 @@ export class CcProveedoresMovimientosComponent implements OnInit {
   cerrarDetallesPago(): void {
     this.showModalDetallesPago = false;
     this.showModalDetalles = true;
+  }
+
+  // Abrir reportes - Excel
+  abrirReportes(): void {
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.showModalReportesCC = true;
+  }
+
+  // Reporte - Excel
+  reporteExcel(): void {
+    this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.reportesService.movimientosProveedoresExcel(this.reportes).subscribe({
+            next: (buffer) => {
+              const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              saveAs(blob, `Reporte - Movimientos - ${this.cuentaCorriente.proveedor.descripcion} - ${format(new Date(), 'dd-MM-yyyy')}`);
+              this.alertService.close();
+              this.showModalReportesCC = false;
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
   }
 
   // Filtrar Activo/Inactivo

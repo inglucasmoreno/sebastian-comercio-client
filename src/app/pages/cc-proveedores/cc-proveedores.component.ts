@@ -4,6 +4,9 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CcProveedoresService } from 'src/app/services/cc-proveedores.service';
 import { DataService } from 'src/app/services/data.service';
 import { ProveedoresService } from 'src/app/services/proveedores.service';
+import { ReportesService } from 'src/app/services/reportes.service';
+import { saveAs } from 'file-saver-es'; 
+import { format } from 'date-fns';
 
 @Component({
   selector: 'app-cc-proveedores',
@@ -12,11 +15,20 @@ import { ProveedoresService } from 'src/app/services/proveedores.service';
   ]
 })
 export class CcProveedoresComponent implements OnInit {
+  
+   // Fechas
+   public reportes = { 
+    fechaDesde: '', 
+    fechaHasta: '',
+    activas: 'true'
+  };
+  
   // Permisos de usuarios login
   public permisos = { all: false };
 
   // Modal
   public showModalCuentaCorriente = false;
+  public showModalReportesCC = false;
 
   // Estado formulario 
   public estadoFormulario = 'crear';
@@ -55,6 +67,7 @@ export class CcProveedoresComponent implements OnInit {
     private proveedoresService: ProveedoresService,
     private authService: AuthService,
     private alertService: AlertService,
+    private reportesService: ReportesService,
     private dataService: DataService) { }
 
   ngOnInit(): void {
@@ -185,6 +198,31 @@ export class CcProveedoresComponent implements OnInit {
         }
       });
 
+  }
+
+  abrirReportes(): void {
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.reportes.activas = 'true';
+    this.showModalReportesCC = true;
+  }
+
+  // Reporte - Excel
+  reporteExcel(): void {
+    this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.reportesService.cuentasCorrientesProveedoresExcel(this.reportes).subscribe({
+            next: (buffer) => {
+              const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              saveAs(blob, `Reporte - CC de proveedores - ${format(new Date(), 'dd-MM-yyyy')}`);
+              this.alertService.close();
+              this.showModalReportesCC = false;
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
   }
 
   // Reiniciando formulario

@@ -12,6 +12,9 @@ import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-che
 import { VentasPropiasProductosService } from 'src/app/services/ventas-propias-productos.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
 import { environment } from 'src/environments/environment';
+import { saveAs } from 'file-saver-es'; 
+import { format } from 'date-fns';
+import { ReportesService } from 'src/app/services/reportes.service';
 
 const base_url = environment.base_url;
 
@@ -20,6 +23,13 @@ const base_url = environment.base_url;
   templateUrl: './cc-clientes-movimientos.component.html',
 })
 export class CcClientesMovimientosComponent implements OnInit {
+
+  // Fechas
+  public reportes = { 
+    fechaDesde: '', 
+    fechaHasta: '',
+    cliente: ''
+  };
 
   // Permisos de usuarios login
   public permisos = { all: false };
@@ -30,6 +40,7 @@ export class CcClientesMovimientosComponent implements OnInit {
   public showModalDetallesVenta = false;
   public showModalDetallesCheque = false;
   public showModalDetallesCobro = false;
+  public showModalReportesCC = false;
 
   // Estado formulario 
   public estadoFormulario = 'crear';
@@ -95,13 +106,16 @@ export class CcClientesMovimientosComponent implements OnInit {
     private ventasPropiasProductosService: VentasPropiasProductosService,
     private authService: AuthService,
     private alertService: AlertService,
+    private reportesService: ReportesService,
     private dataService: DataService) { }
 
   ngOnInit(): void {
     this.dataService.ubicacionActual = 'Dashboard - CC de clientes';
-    this.activatedRoute.params.subscribe(({ id }) => { this.idCuentaCorriente = id; });
-    this.permisos.all = this.permisosUsuarioLogin();
-    this.calculosIniciales();
+    this.activatedRoute.params.subscribe(({ id }) => { 
+      this.idCuentaCorriente = id;
+      this.permisos.all = this.permisosUsuarioLogin();
+      this.calculosIniciales();
+    });
   }
 
   // Calculos iniciales
@@ -110,6 +124,7 @@ export class CcClientesMovimientosComponent implements OnInit {
     this.cuentaCorrienteService.getCuentaCorriente(this.idCuentaCorriente).subscribe({
       next: ({ cuenta_corriente }) => {
         this.cuentaCorriente = cuenta_corriente;
+        this.reportes.cliente = cuenta_corriente.cliente._id;
         this.listarMovimientos();
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
@@ -426,6 +441,31 @@ export class CcClientesMovimientosComponent implements OnInit {
       }, error: ({ error }) => this.alertService.errorApi(error.message)
     })
 
+  }
+  
+  // Abrir reportes - Excel
+  abrirReportes(): void {
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.showModalReportesCC = true;
+  }
+
+  // Reporte - Excel
+  reporteExcel(): void {
+    this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.reportesService.movimientosClientesExcel(this.reportes).subscribe({
+            next: (buffer) => {
+              const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              saveAs(blob, `Reporte - Movimientos - ${this.cuentaCorriente.cliente.descripcion} - ${format(new Date(), 'dd-MM-yyyy')}`);
+              this.alertService.close();
+              this.showModalReportesCC = false;
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
   }
 
   // Cerrar detalles de cobro
