@@ -459,7 +459,7 @@ export class CcClientesMovimientosComponent implements OnInit {
           this.reportesService.movimientosClientesExcel(this.reportes).subscribe({
             next: (buffer) => {
               const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-              saveAs(blob, `Reporte - Movimientos - ${this.cuentaCorriente.cliente.descripcion} - ${format(new Date(), 'dd-MM-yyyy')}`);
+              saveAs(blob, `Reporte - Movimientos - ${this.cuentaCorriente.cliente.descripcion.replace(/\./g,"")} - ${format(new Date(), 'dd-MM-yyyy')}`);
               this.alertService.close();
               this.showModalReportesCC = false;
             }, error: ({ error }) => this.alertService.errorApi(error.message)
