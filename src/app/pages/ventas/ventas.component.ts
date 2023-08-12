@@ -9,6 +9,7 @@ import { VentasProductosService } from 'src/app/services/ventas-productos.servic
 import { VentasService } from 'src/app/services/ventas.service';
 import { environment } from 'src/environments/environment';
 import { saveAs } from 'file-saver-es';
+import { Router } from '@angular/router';
 
 const base_url = environment.base_url;
 
@@ -19,6 +20,9 @@ const base_url = environment.base_url;
   ]
 })
 export class VentasComponent implements OnInit {
+
+  // Compra
+  public showModalCompra = false;
 
   // Reportes
   public reportes = {
@@ -97,6 +101,7 @@ export class VentasComponent implements OnInit {
               private productosService: ProductosService,
               private ventasProductosService: VentasProductosService,
               private authService: AuthService,
+              private router: Router,
               private alertService: AlertService,
               private reportesService: ReportesService,
               private dataService: DataService) { }
@@ -764,6 +769,64 @@ export class VentasComponent implements OnInit {
         });
       }
     });
+  }
+
+  // Abrir generar compra
+  abrirGenerarCompra(venta: any): void {
+    this.ventaSeleccionada = venta;
+    this.showModalCompra = true;
+    this.showModalEditarVenta = false;
+  }
+
+  generarCompra(): void {
+
+    this.alertService.loading();
+
+    const parametros = {
+      direccion: this.ordenar.direccion,
+      columna: this.ordenar.columna,
+      venta: this.ventaSeleccionada._id
+    }
+
+    this.ventasProductosService.listarProductos(parametros).subscribe({
+      next: ({ productos }) => {
+
+        let productosCompra = [];
+        let precioTotal = 0;
+
+        productos.map( producto => {
+          productosCompra.push({
+            cantidad: producto.cantidad,
+            creatorUser: this.authService.usuario.userId,
+            descripcion: producto.descripcion,
+            familia: producto.familia,
+            precio_original: producto.precio_unitario,
+            precio_total: producto.precio_total,
+            precio_unitario: producto.precio_unitario,
+            producto: producto.producto._id,
+            unidad_medida: producto.unidad_medida,
+            updatorUser: this.authService.usuario.userId,
+          })
+          precioTotal += producto.precio_total;
+        })
+
+        // Adaptacion de localstorage
+
+        localStorage.setItem('compra-productosCompra', JSON.stringify(productosCompra));
+        localStorage.setItem('compra-porcentajesTotal', "");
+        localStorage.setItem('compra-porcentajeAplicadoTotal', JSON.stringify(false));
+        localStorage.setItem('compra-precio_total', JSON.stringify(precioTotal));
+        localStorage.setItem('compra-proveedorSeleccionado', JSON.stringify(null));
+        localStorage.setItem('compra-etapa', JSON.stringify("proveedores"));
+
+        this.router.navigateByUrl('/dashboard/nueva-compra');
+
+        this.alertService.close();
+      
+      },
+      error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
   }
 
   // Reiniciando formulario

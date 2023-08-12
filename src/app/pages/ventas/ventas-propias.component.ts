@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { format } from 'date-fns';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -22,6 +22,10 @@ const base_url = environment.base_url;
 })
 export class VentasPropiasComponent implements OnInit {
 
+  // Compra
+
+  public showModalCompra = false; 
+
   // Reportes
   public reportes = {
     fechaDesde: '',
@@ -29,7 +33,7 @@ export class VentasPropiasComponent implements OnInit {
     activas: 'true'
   };
 
- // Porcentajes
+  // Porcentajes
   public porcentajeAplicado = false;
   public porcentajes = '';
   public porcentajesTotal = '';
@@ -55,7 +59,7 @@ export class VentasPropiasComponent implements OnInit {
   public ventaSeleccionada: any;
   public descripcion: string = '';
   public pagoTotal: number = 0;
-  
+
   // Relacion -> CHEQUES - VENTAS
   public cheques_venta = [];
 
@@ -106,21 +110,22 @@ export class VentasPropiasComponent implements OnInit {
   public cantidadItems: number = 10;
 
   constructor(private ventasPropiasService: VentasPropiasService,
-              private recibosCobroVentaService: RecibosCobroVentaService,
-              private ventasPropiasChequesService: VentasPropiasChequesService,
-              private productosService: ProductosService,
-              private reportesService: ReportesService,
-              private ventasPropiasProductosService: VentasPropiasProductosService,
-              private authService: AuthService,
-              private alertService: AlertService,
-              private activatedRoute: ActivatedRoute,
-              private dataService: DataService) { }
+    private recibosCobroVentaService: RecibosCobroVentaService,
+    private ventasPropiasChequesService: VentasPropiasChequesService,
+    private productosService: ProductosService,
+    private reportesService: ReportesService,
+    private ventasPropiasProductosService: VentasPropiasProductosService,
+    private authService: AuthService,
+    private alertService: AlertService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.ubicacionActual = 'Dashboard - Ventas propias'; 
+    this.dataService.ubicacionActual = 'Dashboard - Ventas propias';
     this.alertService.loading();
-    this.activatedRoute.params.subscribe(({codigo}) => {
-      if(codigo) this.filtro.parametro = codigo;
+    this.activatedRoute.params.subscribe(({ codigo }) => {
+      if (codigo) this.filtro.parametro = codigo;
       this.permisos.all = this.permisosUsuarioLogin();
       this.listarVentas();
     });
@@ -136,11 +141,11 @@ export class VentasPropiasComponent implements OnInit {
     this.alertService.loading();
     this.idVenta = venta._id;
     this.ventaSeleccionada = venta;
-    this.ventasPropiasService.getVenta(venta._id).subscribe(({venta}) => {
+    this.ventasPropiasService.getVenta(venta._id).subscribe(({ venta }) => {
       this.descripcion = venta.descripcion;
       this.alertService.close();
       this.showModalVenta = true;
-    },({error})=>{
+    }, ({ error }) => {
       this.alertService.errorApi(error);
     });
   }
@@ -157,32 +162,32 @@ export class VentasPropiasComponent implements OnInit {
       cancelada: this.filtro.cancelada,
     }
     this.ventasPropiasService.listarVentas(parametros)
-    .subscribe( ({ ventas, totalItems }) => {
-      
-      this.ventas = ventas;
-      this.totalItems = totalItems;
-      this.showModalVenta = false;
-      this.productoSeleccionado = null;
-      
-      // Cuando viene de actualizacion de observacion
-      if(this.observacionActualizadaFlag){
-        this.alertService.success('Observación actualizada');
-        this.observacionActualizadaFlag = false;
-      }else if(this.productoAgregadoFlag){
-        this.productoAgregadoFlag = false;
-        this.listarProductos();       
-      }else this.alertService.close();
+      .subscribe(({ ventas, totalItems }) => {
 
-    }, (({error}) => {
-      this.alertService.errorApi(error.msg);
-    }));
+        this.ventas = ventas;
+        this.totalItems = totalItems;
+        this.showModalVenta = false;
+        this.productoSeleccionado = null;
+
+        // Cuando viene de actualizacion de observacion
+        if (this.observacionActualizadaFlag) {
+          this.alertService.success('Observación actualizada');
+          this.observacionActualizadaFlag = false;
+        } else if (this.productoAgregadoFlag) {
+          this.productoAgregadoFlag = false;
+          this.listarProductos();
+        } else this.alertService.close();
+
+      }, (({ error }) => {
+        this.alertService.errorApi(error.msg);
+      }));
   }
 
   // Nueva venta
   nuevaVenta(): void {
 
     // Verificacion: Descripción vacia
-    if(this.descripcion.trim() === ""){
+    if (this.descripcion.trim() === "") {
       this.alertService.info('Debes colocar una descripción');
       return;
     }
@@ -197,17 +202,17 @@ export class VentasPropiasComponent implements OnInit {
 
     this.ventasPropiasService.nuevaVenta(data).subscribe(() => {
       this.listarVentas();
-    },({error})=>{
-      this.alertService.errorApi(error.message);  
+    }, ({ error }) => {
+      this.alertService.errorApi(error.message);
     });
-    
+
   }
 
   // Actualizar venta
   actualizarVenta(): void {
 
     // Verificacion: Descripción vacia
-    if(this.descripcion.trim() === ""){
+    if (this.descripcion.trim() === "") {
       this.alertService.info('Debes colocar una descripción');
       return;
     }
@@ -221,7 +226,7 @@ export class VentasPropiasComponent implements OnInit {
 
     this.ventasPropiasService.actualizarVenta(this.idVenta, data).subscribe(() => {
       this.listarVentas();
-    },({error})=>{
+    }, ({ error }) => {
       this.alertService.errorApi(error.message);
     });
 
@@ -229,29 +234,29 @@ export class VentasPropiasComponent implements OnInit {
 
   // Actualizar estado Activo/Inactivo
   actualizarEstado(venta: any): void {
-    
+
     const { _id, activo } = venta;
-    
-    if(!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
+
+    if (!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
 
     this.alertService.question({ msg: venta.activo ? '¿Quieres dar de baja la venta?' : '¿Quieres dar de alta la venta?', buttonText: venta.activo ? 'Dar de baja' : 'Data de alta' })
-        .then(({isConfirmed}) => {  
-          if (isConfirmed) {
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          const estado = activo ? 'Baja' : 'Alta';
+          this.ventasPropiasService.altaBajaVenta(_id, {
+            estado,
+            creatorUser: this.authService.usuario.userId,
+            updatorUser: this.authService.usuario.userId
+          }).subscribe(() => {
             this.alertService.loading();
-            const estado = activo ? 'Baja' : 'Alta';
-            this.ventasPropiasService.altaBajaVenta(_id, {
-              estado, 
-              creatorUser: this.authService.usuario.userId,
-              updatorUser: this.authService.usuario.userId
-            }).subscribe(() => {
-              this.alertService.loading();
-              this.listarVentas();
-            }, ({error}) => {
-              this.alertService.close();
-              this.alertService.errorApi(error.message);
-            });
-          }
-        });
+            this.listarVentas();
+          }, ({ error }) => {
+            this.alertService.close();
+            this.alertService.errorApi(error.message);
+          });
+        }
+      });
   }
 
   // Obtener datos de venta
@@ -266,14 +271,14 @@ export class VentasPropiasComponent implements OnInit {
     this.alertService.loading();
 
     this.ventasPropiasProductosService.listarProductos(parametros).subscribe({
-      next: ({productos}) => {
+      next: ({ productos }) => {
         this.productos = productos;
-        window.scroll(0,0);
+        window.scroll(0, 0);
         this.ventaSeleccionada = venta;
         this.showModalVenta = true;
         this.alertService.close();
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
 
   }
@@ -282,14 +287,14 @@ export class VentasPropiasComponent implements OnInit {
   calcularPagoTotal(): void {
 
     let pagoTotalTMP = 0;
-    
+
     // Sumando montos de formas de pago
-    this.ventaSeleccionada.formas_pago.map( forma => {
+    this.ventaSeleccionada.formas_pago.map(forma => {
       pagoTotalTMP += forma.monto;
     });
 
     // Sumando montos de cheques
-    this.cheques_venta.map( relacion => {
+    this.cheques_venta.map(relacion => {
       pagoTotalTMP += relacion.cheque.importe;
     });
 
@@ -340,19 +345,19 @@ export class VentasPropiasComponent implements OnInit {
     this.alertService.loading();
 
     this.ventasPropiasProductosService.listarProductos(parametros).subscribe({
-      next: ({productos}) => {
+      next: ({ productos }) => {
 
         this.productos = productos;
 
         // Se le agregan los precios de reguardo
-        this.productos.map( producto => {
+        this.productos.map(producto => {
           producto.precio_unitario_resguardo = producto.precio_unitario;
           producto.precio_total_resguardo = producto.precio_total;
         });
 
         // Se obtienen los cheques relacionados con la venta
         this.ventasPropiasChequesService.listarRelaciones({ venta_propia: venta._id }).subscribe({
-          next: ({relaciones}) => {
+          next: ({ relaciones }) => {
             this.cheques_venta = relaciones;
 
             // Se obtienen los recibos de cobro
@@ -361,18 +366,18 @@ export class VentasPropiasComponent implements OnInit {
 
                 this.recibosCobro = relaciones;
 
-                window.scroll(0,0);
+                window.scroll(0, 0);
                 this.calcularPagoTotal();
                 this.showModalEditarVenta = true;
                 this.alertService.close();
-              }, error: ({error}) => this.alertService.errorApi(error.message)
+              }, error: ({ error }) => this.alertService.errorApi(error.message)
             })
 
           },
-          error: ({error}) => this.alertService.errorApi(error.message)
+          error: ({ error }) => this.alertService.errorApi(error.message)
         })
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
 
   }
@@ -393,7 +398,7 @@ export class VentasPropiasComponent implements OnInit {
   // Seleccionar producto - Para actualizar
   seleccionarProducto(producto): void {
 
-    if(this.porcentajeAplicadoTotal){
+    if (this.porcentajeAplicadoTotal) {
       this.alertService.info('Debe completar la modificación por porcentajes');
       return;
     }
@@ -408,12 +413,12 @@ export class VentasPropiasComponent implements OnInit {
   // Actualizar producto
   actualizarProducto(): void {
 
-    if(!this.cantidad || this.cantidad < 0){
+    if (!this.cantidad || this.cantidad < 0) {
       this.alertService.info('Debe colocar una cantidad válida');
       return;
     }
 
-    if(!this.precio_unitario || this.precio_unitario < 0){
+    if (!this.precio_unitario || this.precio_unitario < 0) {
       this.alertService.info('Debe colocar un precio válido');
       return;
     }
@@ -424,15 +429,15 @@ export class VentasPropiasComponent implements OnInit {
       precio_total: this.dataService.redondear(this.cantidad * this.precio_unitario, 2),
       updatorUser: this.authService.usuario.userId
     };
-    
+
     this.alertService.loading();
-    
+
     // Se actualiza el producto
     this.ventasPropiasProductosService.actualizarProducto(this.productoSeleccionado._id, data).subscribe({
       next: () => {
         let precio_total_venta = 0;
-        this.productos.map( producto => {
-          if(this.productoSeleccionado._id === producto._id){
+        this.productos.map(producto => {
+          if (this.productoSeleccionado._id === producto._id) {
             producto.cantidad = data.cantidad;
             producto.precio_unitario = data.precio_unitario;
             producto.precio_total = data.precio_total
@@ -444,52 +449,53 @@ export class VentasPropiasComponent implements OnInit {
         // Se actualiza el precio total de la venta
         this.ventasPropiasService.actualizarVenta(this.ventaSeleccionada._id, { precio_total: precio_total_venta }).subscribe({
           next: () => this.listarVentas(),
-          error: ({error}) => this.alertService.errorApi(error.message)
+          error: ({ error }) => this.alertService.errorApi(error.message)
         })
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 
   // Eliminar producto
   eliminarProducto(): void {
     this.alertService.question({ msg: '¿Quieres eliminar el producto?', buttonText: 'Eliminar' })
-    .then(({isConfirmed}) => {  
-      if (isConfirmed) {
-        this.alertService.loading();
-        this.ventasPropiasProductosService.eliminarProducto(this.productoSeleccionado._id).subscribe({
-          next: () => {
-    
-            // Se filtra el producto
-            this.productos = this.productos.filter( producto => producto._id !== this.productoSeleccionado._id);
-    
-            // Se calcula el precio total
-            let precio_total_venta = 0;
-            this.productos.map( producto => precio_total_venta += producto.precio_total ); 
-            this.ventaSeleccionada.precio_total = precio_total_venta;
-    
-            // Se actualiza el precio total de la venta
-            this.ventasPropiasService.actualizarVenta(this.ventaSeleccionada._id, { precio_total: precio_total_venta }).subscribe({
-              next: () => this.listarVentas(),
-              error: ({error}) => this.alertService.errorApi(error.message)
-            })
-    
-          },
-          error: ({error}) => this.alertService.errorApi(error.message)
-        })
-      }
-    });
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.ventasPropiasProductosService.eliminarProducto(this.productoSeleccionado._id).subscribe({
+            next: () => {
+
+              // Se filtra el producto
+              this.productos = this.productos.filter(producto => producto._id !== this.productoSeleccionado._id);
+
+              // Se calcula el precio total
+              let precio_total_venta = 0;
+              this.productos.map(producto => precio_total_venta += producto.precio_total);
+              this.ventaSeleccionada.precio_total = precio_total_venta;
+
+              // Se actualiza el precio total de la venta
+              this.ventasPropiasService.actualizarVenta(this.ventaSeleccionada._id, { precio_total: precio_total_venta }).subscribe({
+                next: () => this.listarVentas(),
+                error: ({ error }) => this.alertService.errorApi(error.message)
+              })
+
+            },
+            error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
 
   }
 
   // Listar productos
   listarProductos(): void {
     this.alertService.loading();
-    this.productosService.listarProductos({ 
+    this.productosService.listarProductos({
       desde: this.desdeProductos,
       cantidadItems: this.cantidadItems,
-      parametro: this.filtro.parametroProductos, 
-      activo: true }).subscribe({
+      parametro: this.filtro.parametroProductos,
+      activo: true
+    }).subscribe({
       next: ({ productos, totalItems }) => {
         this.totalItemsProductos = totalItems;
         this.todosProductos = productos;
@@ -497,7 +503,7 @@ export class VentasPropiasComponent implements OnInit {
         this.showModalEditarVenta = false;
         this.showProductos = true;
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 
@@ -507,13 +513,13 @@ export class VentasPropiasComponent implements OnInit {
     this.filtro.parametroProductos = '';
 
     // Verificacion: Cantidad valida
-    if(!this.cantidad || this.cantidad < 0){
+    if (!this.cantidad || this.cantidad < 0) {
       this.alertService.info('Debe ingresar una cantidad válida');
       return;
     }
 
     // Verificacion: Precio valido
-    if(!this.precio_unitario || this.precio_unitario < 0){
+    if (!this.precio_unitario || this.precio_unitario < 0) {
       this.alertService.info('Debe ingresar un precio válido');
       return;
     }
@@ -521,8 +527,8 @@ export class VentasPropiasComponent implements OnInit {
     let repetido = false;
     let idRepetido: string;
 
-    this.productos.map( producto => {
-      if(producto.producto === this.productoSeleccionado._id) {
+    this.productos.map(producto => {
+      if (producto.producto === this.productoSeleccionado._id) {
         repetido = true;
         idRepetido = producto._id
       };
@@ -530,7 +536,7 @@ export class VentasPropiasComponent implements OnInit {
 
     this.alertService.loading();
 
-    if(repetido){
+    if (repetido) {
 
       const data = {
         venta: this.ventaSeleccionada,
@@ -540,13 +546,13 @@ export class VentasPropiasComponent implements OnInit {
       }
 
       this.ventasPropiasProductosService.actualizarProducto(idRepetido, data).subscribe({
-        next: ({productos}) => {
+        next: ({ productos }) => {
 
           this.productos = productos;
 
           // Se calcula el precio total
           let precio_total_venta = 0;
-          this.productos.map( producto => precio_total_venta += producto.precio_total ); 
+          this.productos.map(producto => precio_total_venta += producto.precio_total);
           this.ventaSeleccionada.precio_total = precio_total_venta;
 
           // Se actualiza el precio total de la venta
@@ -555,14 +561,14 @@ export class VentasPropiasComponent implements OnInit {
               this.productoAgregadoFlag = true;
               this.listarVentas();
             },
-            error: ({error}) => this.alertService.errorApi(error.message)
+            error: ({ error }) => this.alertService.errorApi(error.message)
           })
 
         },
-        error: ({error}) => this.alertService.errorApi(error.message)
+        error: ({ error }) => this.alertService.errorApi(error.message)
       })
-      
-    }else{
+
+    } else {
 
       const data = {
         venta: this.ventaSeleccionada._id,
@@ -574,18 +580,18 @@ export class VentasPropiasComponent implements OnInit {
         precio_unitario: this.precio_unitario,
         precio_total: this.dataService.redondear(this.precio_unitario * this.cantidad, 2),
         creatorUser: this.authService.usuario.userId,
-        updatorUser: this.authService.usuario.userId,  
+        updatorUser: this.authService.usuario.userId,
       }
 
       this.ventasPropiasProductosService.nuevoProducto(data).subscribe({
-        
-        next: ({productos}) => {
+
+        next: ({ productos }) => {
           // this.filtro.parametroProductos = '';
           this.productos = productos;
 
           // Se calcula el precio total
           let precio_total_venta = 0;
-          this.productos.map( producto => precio_total_venta += producto.precio_total ); 
+          this.productos.map(producto => precio_total_venta += producto.precio_total);
           this.ventaSeleccionada.precio_total = precio_total_venta;
 
           // Se actualiza el precio total de la venta
@@ -594,40 +600,40 @@ export class VentasPropiasComponent implements OnInit {
               this.productoAgregadoFlag = true;
               this.listarVentas();
             },
-            error: ({error}) => this.alertService.errorApi(error.message)
+            error: ({ error }) => this.alertService.errorApi(error.message)
           })
 
         },
-        error: ({error}) => this.alertService.errorApi(error.message)
+        error: ({ error }) => this.alertService.errorApi(error.message)
       });
-    
+
     }
-    
+
   }
 
   // Seleccionar producto
-  seleccionarProductoNuevo(producto: any): void { 
-    
+  seleccionarProductoNuevo(producto: any): void {
+
     this.porcentajeAplicado = false;
     this.porcentajes = '';
     this.cantidad = null;
     this.productoSeleccionado = producto;
-    
+
     // Se verifica si el producto ya esta cargado
     let cargado = false;
     let productoCargado: any;
 
-    this.productos.map( productoMap => { 
-      if(productoMap.producto === producto._id){
+    this.productos.map(productoMap => {
+      if (productoMap.producto === producto._id) {
         cargado = true;
         productoCargado = productoMap;
       }
     });
-    
+
     cargado ? this.precio_unitario = productoCargado.precio_unitario : this.precio_unitario = producto.precio;
     this.productoCargado = cargado;
 
-  } 
+  }
 
   // Listado de productos -> Editar producto
   volverEditar(): void {
@@ -635,19 +641,19 @@ export class VentasPropiasComponent implements OnInit {
     this.showProductos = false;
     this.showModalEditarVenta = true;
   }
-  
+
   buscarProductos(): void {
 
-    if(this.porcentajeAplicadoTotal){
+    if (this.porcentajeAplicadoTotal) {
       this.alertService.info('Debe completar la modificación por porcentajes');
       return;
-    }   
+    }
 
     this.productoSeleccionado = null;
     this.cantidad = null;
     this.filtro.parametroProductos = '';
     this.cantidadItemsProductos = 10;
-    this.listarProductos();   
+    this.listarProductos();
   }
 
   // Aplicar variacion porcentual
@@ -655,7 +661,7 @@ export class VentasPropiasComponent implements OnInit {
 
     this.precioResguardo = this.precio_unitario;
 
-    if(!Number(this.precio_unitario)){
+    if (!Number(this.precio_unitario)) {
       this.alertService.info('Primero debe colocar un precio');
       return;
     }
@@ -663,34 +669,34 @@ export class VentasPropiasComponent implements OnInit {
     let error = false;
     let precioTMP = this.precio_unitario;
     const porcentajesArray = this.porcentajes.trim().split(' ');
-    
-    porcentajesArray.map( porcentaje => {
-      
+
+    porcentajesArray.map(porcentaje => {
+
       const signo = porcentaje.charAt(0);
-      
-      if(signo === '+'){
+
+      if (signo === '+') {
         const valor = Number(porcentaje);
-        if(!valor){
+        if (!valor) {
           this.alertService.info('Formato incorrecto');
           error = true;
         }
-        precioTMP = (1 + (valor/100)) * precioTMP;
-      
-      }else if(signo === '-'){
+        precioTMP = (1 + (valor / 100)) * precioTMP;
+
+      } else if (signo === '-') {
         const valor = Number(porcentaje);
-        if(!valor){
+        if (!valor) {
           this.alertService.info('Formato incorrecto');
           error = true;
         }
-        precioTMP = (1 + (valor/100)) * precioTMP;
-      
-      }else{
+        precioTMP = (1 + (valor / 100)) * precioTMP;
+
+      } else {
         this.alertService.info('Formato incorrecto');
         error = true;
       }
     });
 
-    if(!error){
+    if (!error) {
       this.precio_unitario = this.dataService.redondear(precioTMP, 2);
       this.porcentajeAplicado = true;
     }
@@ -699,47 +705,47 @@ export class VentasPropiasComponent implements OnInit {
 
   // Aplicar porcentajes - Todo los productos
   aplicarPorcentajesTotal(): void {
-  
+
     let error = false;
     const porcentajesArray = this.porcentajesTotal.trim().split(' ');
 
     // Verificacion
-    porcentajesArray.map( porcentaje => {
+    porcentajesArray.map(porcentaje => {
       const signo = porcentaje.charAt(0);
-      if(signo === '+'){
+      if (signo === '+') {
         const valor = Number(porcentaje);
-        if(!valor) error = true;
-      }else if(signo === '-'){
+        if (!valor) error = true;
+      } else if (signo === '-') {
         const valor = Number(porcentaje);
-        if(!valor) error = true;
-      }else{
+        if (!valor) error = true;
+      } else {
         error = true;
       }
     });
 
-    if(error){
+    if (error) {
       this.alertService.info('Formato incorrecto');
       return;
     }
 
     this.porcentajeAplicadoTotal = true;
 
-    this.productos.map( producto => {
-      
+    this.productos.map(producto => {
+
       let precioTMP = producto.precio_unitario;
 
-      porcentajesArray.map( porcentaje => {     
+      porcentajesArray.map(porcentaje => {
         const valor = Number(porcentaje);
-        precioTMP = (1 + (valor/100)) * precioTMP; 
+        precioTMP = (1 + (valor / 100)) * precioTMP;
       });
-      
+
       producto.precio_unitario = this.dataService.redondear(precioTMP, 2);
       producto.precio_total = this.dataService.redondear(precioTMP * producto.cantidad, 2);
-    
+
     });
 
     this.calcularPrecioPorcentaje();
-      
+
   }
 
   // Actualizar productos con porcentajes
@@ -748,7 +754,7 @@ export class VentasPropiasComponent implements OnInit {
 
     let data = [];
 
-    this.productos.map( producto => {
+    this.productos.map(producto => {
       data.push({
         _id: producto._id,
         venta: producto.venta,
@@ -772,7 +778,7 @@ export class VentasPropiasComponent implements OnInit {
 
   // Eliminar porcentajes
   eliminarPorcentajesTotal(): void {
-    this.productos.map( producto => {
+    this.productos.map(producto => {
       producto.precio_unitario = producto.precio_unitario_resguardo;
       producto.precio_total = producto.precio_total_resguardo;
     });
@@ -791,29 +797,88 @@ export class VentasPropiasComponent implements OnInit {
   // Calcular nuevo precio con porcentaje aplicado
   calcularPrecioPorcentaje(): void {
     let precioTMP = 0;
-    this.productos.map( producto => {
+    this.productos.map(producto => {
       precioTMP += producto.precio_total;
     });
     this.precioConPorcentaje = this.dataService.redondear(precioTMP, 2);;
   }
 
   // Reporte - Excel
-  reporteExcel(): void{
+  reporteExcel(): void {
     this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
-    .then(({isConfirmed}) => {  
-      if (isConfirmed) {
-        this.alertService.loading();
-        this.reportesService.ventasPropiasExcel(this.reportes).subscribe({
-          next: (buffer) => {
-            const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            saveAs(blob, `Reporte - Ventas propias - ${format(new Date(),'dd-MM-yyyy')}`);
-            this.showModalReportesVentas = false;
-            this.alertService.close();
-          }, error: ({error}) => this.alertService.errorApi(error.message)
-        });
-      }
-    });
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.reportesService.ventasPropiasExcel(this.reportes).subscribe({
+            next: (buffer) => {
+              const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              saveAs(blob, `Reporte - Ventas propias - ${format(new Date(), 'dd-MM-yyyy')}`);
+              this.showModalReportesVentas = false;
+              this.alertService.close();
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          });
+        }
+      });
   }
+
+  // Abrir generar compra
+  abrirGenerarCompra(venta: any): void {
+    this.ventaSeleccionada = venta;
+    this.showModalCompra = true;
+    this.showModalEditarVenta = false;
+  }
+
+  generarCompra(): void {
+
+    this.alertService.loading();
+
+    const parametros = {
+      direccion: this.ordenar.direccion,
+      columna: this.ordenar.columna,
+      venta: this.ventaSeleccionada._id
+    }
+
+    this.ventasPropiasProductosService.listarProductos(parametros).subscribe({
+      next: ({ productos }) => {
+
+        let productosCompra = [];
+        let precioTotal = 0;
+
+        productos.map(producto => {
+          productosCompra.push({
+            cantidad: producto.cantidad,
+            creatorUser: this.authService.usuario.userId,
+            descripcion: producto.descripcion,
+            familia: producto.familia,
+            precio_original: producto.precio_unitario,
+            precio_total: producto.precio_total,
+            precio_unitario: producto.precio_unitario,
+            producto: producto.producto._id,
+            unidad_medida: producto.unidad_medida,
+            updatorUser: this.authService.usuario.userId,
+          })
+          precioTotal += producto.precio_total;
+        })
+
+        // Adaptacion de localstorage
+
+        localStorage.setItem('compra-productosCompra', JSON.stringify(productosCompra));
+        localStorage.setItem('compra-porcentajesTotal', "");
+        localStorage.setItem('compra-porcentajeAplicadoTotal', JSON.stringify(false));
+        localStorage.setItem('compra-precio_total', JSON.stringify(precioTotal));
+        localStorage.setItem('compra-proveedorSeleccionado', JSON.stringify(null));
+        localStorage.setItem('compra-etapa', JSON.stringify("proveedores"));
+
+        this.router.navigateByUrl('/dashboard/nueva-compra');
+
+        this.alertService.close();
+
+      },
+      error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
+  }
+
 
   // Abrir reportes - Excel
   abrirReportes(): void {
@@ -824,25 +889,25 @@ export class VentasPropiasComponent implements OnInit {
 
   // Reiniciando formulario
   reiniciarFormulario(): void {
-    this.descripcion = '';  
+    this.descripcion = '';
   }
 
   // Filtrar Activo/Inactivo
-  filtrarActivos(activo: any): void{
+  filtrarActivos(activo: any): void {
     this.paginaActual = 1;
     this.filtro.activo = activo;
   }
 
   // Filtrar por Parametro
-  filtrarParametro(parametro: string): void{
+  filtrarParametro(parametro: string): void {
     this.paginaActual = 1;
     this.filtro.parametro = parametro;
   }
 
   // Ordenar por columna
-  ordenarPorColumna(columna: string){
+  ordenarPorColumna(columna: string) {
     this.ordenar.columna = columna;
-    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1; 
+    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
     this.alertService.loading();
     this.listarVentas();
   }
@@ -862,7 +927,7 @@ export class VentasPropiasComponent implements OnInit {
     this.alertService.loading();
     this.listarVentas();
   }
-  
+
   // Cambiar cantidad de items
   cambiarCantidadItems(): void {
     this.paginaActual = 1

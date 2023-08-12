@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { format } from 'date-fns';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
@@ -43,7 +45,7 @@ export class PresupuestosComponent implements OnInit {
   public presupuestos: any[] = [];
   public presupuestoSeleccionado: any;
   public descripcion: string = '';
-  
+
   // Productos
   public productos: any[];
   public productoSeleccionado: any;
@@ -68,11 +70,7 @@ export class PresupuestosComponent implements OnInit {
   public productoAgregadoFlag: boolean = false;
 
   // Venta
-  public venta_tipo = 'Directa';
-  public venta_proveedor = '';
-  public venta_observacion = '';
-  public venta_precio_total = 0;
-  public venta_nro_factura = '';
+  public venta_tipo = 'Propia';
 
   // Filtrado
   public filtro = {
@@ -94,16 +92,17 @@ export class PresupuestosComponent implements OnInit {
   public cantidadItemsProductos: number = 10;
 
   constructor(private presupuestosService: PresupuestosService,
-              private productosService: ProductosService,
-              private ventasService: VentasService,
-              private proveedoresService: ProveedoresService,
-              private presupuestoProductosService: PresupuestoProductosService,
-              private authService: AuthService,
-              private alertService: AlertService,
-              private dataService: DataService) { }
+    private productosService: ProductosService,
+    private ventasService: VentasService,
+    private proveedoresService: ProveedoresService,
+    private presupuestoProductosService: PresupuestoProductosService,
+    private authService: AuthService,
+    private alertService: AlertService,
+    private router: Router,
+    private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.ubicacionActual = 'Dashboard - Listado de presupuestos'; 
+    this.dataService.ubicacionActual = 'Dashboard - Listado de presupuestos';
     this.permisos.all = this.permisosUsuarioLogin();
     this.alertService.loading();
     this.cargaInicial();
@@ -112,12 +111,12 @@ export class PresupuestosComponent implements OnInit {
   cargaInicial(): void {
     // Cargar proveedores
     this.proveedoresService.listarProveedores().subscribe({
-      next: ({proveedores}) => {
+      next: ({ proveedores }) => {
         this.proveedores = proveedores;
-        this.listarPresupuestos();        
+        this.listarPresupuestos();
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
-      
+      error: ({ error }) => this.alertService.errorApi(error.message)
+
     });
   }
 
@@ -131,11 +130,11 @@ export class PresupuestosComponent implements OnInit {
     this.alertService.loading();
     this.idPresupuesto = presupuesto._id;
     this.presupuestoSeleccionado = presupuesto;
-    this.presupuestosService.getPresupuesto(presupuesto._id).subscribe(({presupuesto}) => {
+    this.presupuestosService.getPresupuesto(presupuesto._id).subscribe(({ presupuesto }) => {
       this.descripcion = presupuesto.descripcion;
       this.alertService.close();
       this.showModalPresupuesto = true;
-    },({error})=>{
+    }, ({ error }) => {
       this.alertService.errorApi(error);
     });
   }
@@ -151,31 +150,31 @@ export class PresupuestosComponent implements OnInit {
       parametro: this.filtro.parametro,
     }
     this.presupuestosService.listarPresupuestos(parametros)
-    .subscribe( ({ presupuestos, totalItems }) => {
-      this.presupuestos = presupuestos;
-      this.totalItems = totalItems;
-      this.showModalPresupuesto = false;
-      this.productoSeleccionado = null;
-      
-      // Cuando viene de actualizacion de observacion
-      if(this.observacionActualizadaFlag){
-        this.alertService.success('Observación actualizada');
-        this.observacionActualizadaFlag = false;
-      }else if(this.productoAgregadoFlag){
-        this.productoAgregadoFlag = false;
-        this.listarProductos();       
-      }else this.alertService.close();
+      .subscribe(({ presupuestos, totalItems }) => {
+        this.presupuestos = presupuestos;
+        this.totalItems = totalItems;
+        this.showModalPresupuesto = false;
+        this.productoSeleccionado = null;
 
-    }, (({error}) => {
-      this.alertService.errorApi(error.msg);
-    }));
+        // Cuando viene de actualizacion de observacion
+        if (this.observacionActualizadaFlag) {
+          this.alertService.success('Observación actualizada');
+          this.observacionActualizadaFlag = false;
+        } else if (this.productoAgregadoFlag) {
+          this.productoAgregadoFlag = false;
+          this.listarProductos();
+        } else this.alertService.close();
+
+      }, (({ error }) => {
+        this.alertService.errorApi(error.msg);
+      }));
   }
 
   // Nuevo presupuesto
   nuevoPresupuesto(): void {
 
     // Verificacion: Descripción vacia
-    if(this.descripcion.trim() === ""){
+    if (this.descripcion.trim() === "") {
       this.alertService.info('Debes colocar una descripción');
       return;
     }
@@ -190,17 +189,17 @@ export class PresupuestosComponent implements OnInit {
 
     this.presupuestosService.nuevoPresupuesto(data).subscribe(() => {
       this.listarPresupuestos();
-    },({error})=>{
-      this.alertService.errorApi(error.message);  
+    }, ({ error }) => {
+      this.alertService.errorApi(error.message);
     });
-    
+
   }
 
   // Actualizar presupuesto
   actualizarPresupuesto(): void {
 
     // Verificacion: Descripción vacia
-    if(this.descripcion.trim() === ""){
+    if (this.descripcion.trim() === "") {
       this.alertService.info('Debes colocar una descripción');
       return;
     }
@@ -214,7 +213,7 @@ export class PresupuestosComponent implements OnInit {
 
     this.presupuestosService.actualizarPresupuesto(this.idPresupuesto, data).subscribe(() => {
       this.listarPresupuestos();
-    },({error})=>{
+    }, ({ error }) => {
       this.alertService.errorApi(error.message);
     });
 
@@ -222,24 +221,24 @@ export class PresupuestosComponent implements OnInit {
 
   // Actualizar estado Activo/Inactivo
   actualizarEstado(presupuesto: any): void {
-    
+
     const { _id, activo } = presupuesto;
-    
-    if(!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
+
+    if (!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
 
     this.alertService.question({ msg: '¿Quieres actualizar el estado?', buttonText: 'Actualizar' })
-        .then(({isConfirmed}) => {  
-          if (isConfirmed) {
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.presupuestosService.actualizarPresupuesto(_id, { activo: !activo }).subscribe(() => {
             this.alertService.loading();
-            this.presupuestosService.actualizarPresupuesto(_id, {activo: !activo}).subscribe(() => {
-              this.alertService.loading();
-              this.listarPresupuestos();
-            }, ({error}) => {
-              this.alertService.close();
-              this.alertService.errorApi(error.message);
-            });
-          }
-        });
+            this.listarPresupuestos();
+          }, ({ error }) => {
+            this.alertService.close();
+            this.alertService.errorApi(error.message);
+          });
+        }
+      });
 
   }
 
@@ -255,13 +254,13 @@ export class PresupuestosComponent implements OnInit {
     this.alertService.loading();
 
     this.presupuestoProductosService.listarProductos(parametros).subscribe({
-      next: ({productos}) => {
+      next: ({ productos }) => {
         this.productos = productos;
         this.presupuestoSeleccionado = presupuesto;
         this.showModalPresupuesto = true;
         this.alertService.close();
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
 
   }
@@ -297,12 +296,12 @@ export class PresupuestosComponent implements OnInit {
     this.alertService.loading();
 
     this.presupuestoProductosService.listarProductos(parametros).subscribe({
-      next: ({productos}) => {
-        
+      next: ({ productos }) => {
+
         this.productos = productos;
 
         // Se le agregan los precios de reguardo
-        this.productos.map( producto => {
+        this.productos.map(producto => {
           producto.precio_unitario_resguardo = producto.precio_unitario;
           producto.precio_total_resguardo = producto.precio_total;
         });
@@ -311,7 +310,7 @@ export class PresupuestosComponent implements OnInit {
         this.showModalEditarPresupuesto = true;
         this.alertService.close();
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
 
   }
@@ -331,12 +330,12 @@ export class PresupuestosComponent implements OnInit {
 
   // Seleccionar producto - Para actualizar
   seleccionarProducto(producto): void {
-    
-    if(this.porcentajeAplicadoTotal){
+
+    if (this.porcentajeAplicadoTotal) {
       this.alertService.info('Debe completar la modificación por porcentajes');
       return;
     }
-    
+
     this.porcentajes = '';
     this.porcentajeAplicado = false;
     this.productoSeleccionado = producto;
@@ -347,12 +346,12 @@ export class PresupuestosComponent implements OnInit {
   // Actualizar producto
   actualizarProducto(): void {
 
-    if(!this.cantidad || this.cantidad < 0){
+    if (!this.cantidad || this.cantidad < 0) {
       this.alertService.info('Debe colocar una cantidad válida');
       return;
     }
 
-    if(!this.precio_unitario || this.precio_unitario < 0){
+    if (!this.precio_unitario || this.precio_unitario < 0) {
       this.alertService.info('Debe colocar un precio válido');
       return;
     }
@@ -363,15 +362,15 @@ export class PresupuestosComponent implements OnInit {
       precio_total: this.dataService.redondear(this.cantidad * this.precio_unitario, 2),
       updatorUser: this.authService.usuario.userId
     };
-    
+
     this.alertService.loading();
-    
+
     // Se actualiza el producto
     this.presupuestoProductosService.actualizarProducto(this.productoSeleccionado._id, data).subscribe({
       next: () => {
         let precio_total_presupuesto = 0;
-        this.productos.map( producto => {
-          if(this.productoSeleccionado._id === producto._id){
+        this.productos.map(producto => {
+          if (this.productoSeleccionado._id === producto._id) {
             producto.cantidad = data.cantidad;
             producto.precio_unitario = data.precio_unitario;
             producto.precio_total = data.precio_total
@@ -383,41 +382,41 @@ export class PresupuestosComponent implements OnInit {
         // Se actualiza el precio total del presupuesto
         this.presupuestosService.actualizarPresupuesto(this.presupuestoSeleccionado._id, { precio_total: precio_total_presupuesto }).subscribe({
           next: () => this.listarPresupuestos(),
-          error: ({error}) => this.alertService.errorApi(error.message)
+          error: ({ error }) => this.alertService.errorApi(error.message)
         })
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 
   // Eliminar producto
   eliminarProducto(): void {
     this.alertService.question({ msg: '¿Quieres eliminar el producto?', buttonText: 'Eliminar' })
-    .then(({isConfirmed}) => {  
-      if (isConfirmed) {
-        this.alertService.loading();
-        this.presupuestoProductosService.eliminarProducto(this.productoSeleccionado._id).subscribe({
-          next: () => {
-    
-            // Se filtra el producto
-            this.productos = this.productos.filter( producto => producto._id !== this.productoSeleccionado._id);
-    
-            // Se calcula el precio total
-            let precio_total_presupuesto = 0;
-            this.productos.map( producto => precio_total_presupuesto += producto.precio_total ); 
-            this.presupuestoSeleccionado.precio_total = precio_total_presupuesto;
-    
-            // Se actualiza el precio total del presupuesto
-            this.presupuestosService.actualizarPresupuesto(this.presupuestoSeleccionado._id, { precio_total: precio_total_presupuesto }).subscribe({
-              next: () => this.listarPresupuestos(),
-              error: ({error}) => this.alertService.errorApi(error.message)
-            })
-    
-          },
-          error: ({error}) => this.alertService.errorApi(error.message)
-        })
-      }
-    });
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.presupuestoProductosService.eliminarProducto(this.productoSeleccionado._id).subscribe({
+            next: () => {
+
+              // Se filtra el producto
+              this.productos = this.productos.filter(producto => producto._id !== this.productoSeleccionado._id);
+
+              // Se calcula el precio total
+              let precio_total_presupuesto = 0;
+              this.productos.map(producto => precio_total_presupuesto += producto.precio_total);
+              this.presupuestoSeleccionado.precio_total = precio_total_presupuesto;
+
+              // Se actualiza el precio total del presupuesto
+              this.presupuestosService.actualizarPresupuesto(this.presupuestoSeleccionado._id, { precio_total: precio_total_presupuesto }).subscribe({
+                next: () => this.listarPresupuestos(),
+                error: ({ error }) => this.alertService.errorApi(error.message)
+              })
+
+            },
+            error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
 
 
   }
@@ -425,11 +424,11 @@ export class PresupuestosComponent implements OnInit {
   // Listar productos
   listarProductos(): void {
     this.alertService.loading();
-    this.productosService.listarProductos({ 
+    this.productosService.listarProductos({
       desde: this.desdeProductos,
       cantidadItems: this.cantidadItemsProductos,
-      parametro: this.filtro.parametroProductos, 
-      activo: true 
+      parametro: this.filtro.parametroProductos,
+      activo: true
     }).subscribe({
       next: ({ productos, totalItems }) => {
         this.totalItemsProductos = totalItems;
@@ -438,7 +437,7 @@ export class PresupuestosComponent implements OnInit {
         this.showModalEditarPresupuesto = false;
         this.showProductos = true;
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 
@@ -448,13 +447,13 @@ export class PresupuestosComponent implements OnInit {
     this.filtro.parametroProductos = '';
 
     // Verificacion: Cantidad valida
-    if(!this.cantidad || this.cantidad < 0){
+    if (!this.cantidad || this.cantidad < 0) {
       this.alertService.info('Debe ingresar una cantidad válida');
       return;
     }
 
     // Verificacion: Precio valido
-    if(!this.precio_unitario || this.precio_unitario < 0){
+    if (!this.precio_unitario || this.precio_unitario < 0) {
       this.alertService.info('Debe ingresar un precio válido');
       return;
     }
@@ -462,8 +461,8 @@ export class PresupuestosComponent implements OnInit {
     let repetido = false;
     let idRepetido: string;
 
-    this.productos.map( producto => {
-      if(producto.producto === this.productoSeleccionado._id) {
+    this.productos.map(producto => {
+      if (producto.producto === this.productoSeleccionado._id) {
         repetido = true;
         idRepetido = producto._id
       };
@@ -471,7 +470,7 @@ export class PresupuestosComponent implements OnInit {
 
     this.alertService.loading();
 
-    if(repetido){
+    if (repetido) {
 
       const data = {
         presupuesto: this.presupuestoSeleccionado,
@@ -481,13 +480,13 @@ export class PresupuestosComponent implements OnInit {
       }
 
       this.presupuestoProductosService.actualizarProducto(idRepetido, data).subscribe({
-        next: ({productos}) => {
+        next: ({ productos }) => {
 
           this.productos = productos;
 
           // Se calcula el precio total
           let precio_total_presupuesto = 0;
-          this.productos.map( producto => precio_total_presupuesto += producto.precio_total ); 
+          this.productos.map(producto => precio_total_presupuesto += producto.precio_total);
           this.presupuestoSeleccionado.precio_total = precio_total_presupuesto;
 
           // Se actualiza el precio total del presupuesto
@@ -496,14 +495,14 @@ export class PresupuestosComponent implements OnInit {
               this.productoAgregadoFlag = true;
               this.listarPresupuestos();
             },
-            error: ({error}) => this.alertService.errorApi(error.message)
+            error: ({ error }) => this.alertService.errorApi(error.message)
           })
 
         },
-        error: ({error}) => this.alertService.errorApi(error.message)
+        error: ({ error }) => this.alertService.errorApi(error.message)
       })
-      
-    }else{
+
+    } else {
 
       const data = {
         presupuesto: this.presupuestoSeleccionado._id,
@@ -515,18 +514,18 @@ export class PresupuestosComponent implements OnInit {
         precio_unitario: this.precio_unitario,
         precio_total: this.dataService.redondear(this.precio_unitario * this.cantidad, 2),
         creatorUser: this.authService.usuario.userId,
-        updatorUser: this.authService.usuario.userId,  
+        updatorUser: this.authService.usuario.userId,
       }
 
       this.presupuestoProductosService.nuevoProducto(data).subscribe({
-        
-        next: ({productos}) => {
+
+        next: ({ productos }) => {
           // this.filtro.parametroProductos = '';
           this.productos = productos;
 
           // Se calcula el precio total
           let precio_total_presupuesto = 0;
-          this.productos.map( producto => precio_total_presupuesto += producto.precio_total ); 
+          this.productos.map(producto => precio_total_presupuesto += producto.precio_total);
           this.presupuestoSeleccionado.precio_total = precio_total_presupuesto;
 
           // Se actualiza el precio total del presupuesto
@@ -535,117 +534,114 @@ export class PresupuestosComponent implements OnInit {
               this.productoAgregadoFlag = true;
               this.listarPresupuestos();
             },
-            error: ({error}) => this.alertService.errorApi(error.message)
+            error: ({ error }) => this.alertService.errorApi(error.message)
           })
 
         },
-        error: ({error}) => this.alertService.errorApi(error.message)
+        error: ({ error }) => this.alertService.errorApi(error.message)
       });
-    
+
     }
-    
+
   }
 
   // Abrir generar venta
   abrirGenerarVenta(presupuesto: any): void {
-    
-    this.venta_nro_factura = '';
-    this.venta_tipo = 'Directa';
-    this.venta_proveedor = '';
-    this.venta_observacion = '';
-
+    this.venta_tipo = 'Propia';
     this.presupuestoSeleccionado = presupuesto;
     this.showModalVenta = true;
     this.showModalEditarPresupuesto = false;
-
   }
 
   generarVenta(): void {
 
-    // Verificacion
-
-    if(this.venta_nro_factura === ''){
-      this.alertService.info('Debe colocar un número de factura');
-      return;
-    }
-
-    if(this.venta_proveedor === ''){
-      this.alertService.info('Debe seleccionar un proveedor');
-      return;
-    }
-
-    const { cliente, 
-            precio_total 
-          } = this.presupuestoSeleccionado;
+    this.alertService.loading();
 
     const parametros = {
-      direccion: 1,
-      columna: 'descripcion',
+      direccion: this.ordenar.direccion,
+      columna: this.ordenar.columna,
       presupuesto: this.presupuestoSeleccionado._id
     }
 
-    this.alertService.loading();
-
     this.presupuestoProductosService.listarProductos(parametros).subscribe({
-      next: ({productos}) => {
-        
-        this.productos = productos;
+      next: ({ productos }) => {
 
-        const data = {
-          nro_factura: this.venta_nro_factura,
-          tipo_venta: this.venta_tipo,
-          cliente: cliente._id,
-          cliente_descripcion: cliente.descripcion,
-          cliente_identificacion: cliente.identificacion,
-          cliente_tipo_identificacion: cliente.tipo_identificacion,
-          cliente_correo_electronico: cliente.correo_electronico,
-          cliente_condicion_iva: cliente.condicion_iva,
-          proveedor: this.venta_proveedor,
-          observacion: this.venta_observacion,
-          precio_total,
-          productos,
-          creatorUser: this.authService.usuario.userId,
-          updatorUser: this.authService.usuario.userId,
-        }
+        let productosVenta = [];
+        let precioTotal = 0;
 
-        this.ventasService.nuevaVenta(data).subscribe({
-          next: () => {
-            this.showModalVenta = false;
-            window.open(`${base_url}/pdf/venta.pdf`, '_blank');
-            this.alertService.close();
-          },
-          error: ({error}) => this.alertService.errorApi(error.message)
+        productos.map( producto => {
+          productosVenta.push({
+            cantidad: producto.cantidad,
+            creatorUser: this.authService.usuario.userId,
+            descripcion: producto.descripcion,
+            familia: producto.familia,
+            precio_original: producto.precio_unitario,
+            precio_total: producto.precio_total,
+            precio_unitario: producto.precio_unitario,
+            producto: producto.producto,
+            unidad_medida: producto.unidad_medida,
+            updatorUser: this.authService.usuario.userId,
+          })
+          precioTotal += producto.precio_total;
         })
 
+        // Adaptacion de localstorage
+
+        localStorage.setItem('venta_productosVenta', JSON.stringify(productosVenta));
+        localStorage.setItem('venta_tipo_venta', JSON.stringify(this.venta_tipo));
+        localStorage.setItem('venta_clienteSeleccionado', JSON.stringify(this.presupuestoSeleccionado.cliente));
+        localStorage.setItem('venta_porcentajesTotal', "");
+        localStorage.setItem('venta_porcentajeAplicadoTotal', JSON.stringify(false));
+        localStorage.setItem('venta_precio_total', JSON.stringify(precioTotal));
+        
+        if(this.presupuestoSeleccionado.cliente._id === '000000000000000000000000'){
+          if(this.venta_tipo === 'Directa'){
+            localStorage.setItem('venta_etapa', JSON.stringify("productos"));
+            localStorage.setItem('venta_tipo_cliente', JSON.stringify("consumidor_final"));
+            localStorage.setItem('venta_clienteSeleccionado', JSON.stringify("consumidor_final"));
+          }else{
+            localStorage.setItem('venta_etapa', JSON.stringify("cliente"));
+            localStorage.setItem('venta_tipo_cliente', JSON.stringify("cliente"));
+            localStorage.setItem('venta_clienteSeleccionado', JSON.stringify(null));
+          }
+        }else{
+          localStorage.setItem('venta_etapa', JSON.stringify("cliente"));
+          localStorage.setItem('venta_tipo_cliente', JSON.stringify("cliente"));
+        }
+
+        this.router.navigateByUrl('/dashboard/nueva-venta');
+
+        this.alertService.close();
+      
       },
-      error: ({error}) => this.alertService.errorApi(error.message)
+      error: ({ error }) => this.alertService.errorApi(error.message)
     })
 
   }
 
   // Seleccionar producto
-  seleccionarProductoNuevo(producto: any): void { 
-    
+  seleccionarProductoNuevo(producto: any): void {
+
     this.porcentajes = '';
     this.porcentajeAplicado = false;
     this.cantidad = null;
     this.productoSeleccionado = producto;
-    
+
     // Se verifica si el producto ya esta cargado
     let cargado = false;
     let productoCargado: any;
 
-    this.productos.map( productoMap => { 
-      if(productoMap.producto === producto._id){
+    this.productos.map(productoMap => {
+      if (productoMap.producto === producto._id) {
         cargado = true;
         productoCargado = productoMap;
       }
     });
-    
+
     cargado ? this.precio_unitario = productoCargado.precio_unitario : this.precio_unitario = producto.precio;
     this.productoCargado = cargado;
 
-  } 
+  }
 
   // Listado de productos -> Editar producto
   volverEditar(): void {
@@ -653,20 +649,20 @@ export class PresupuestosComponent implements OnInit {
     this.showProductos = false;
     this.showModalEditarPresupuesto = true;
   }
-  
+
   buscarProductos(): void {
-  
-    if(this.porcentajeAplicadoTotal){
+
+    if (this.porcentajeAplicadoTotal) {
       this.alertService.info('Debe completar la modificación por porcentajes');
       return;
     }
-    
+
     this.productoSeleccionado = null;
     this.cantidad = null;
     this.filtro.parametroProductos = '';
     this.cantidadItemsProductos = 10;
-    this.listarProductos();   
-  
+    this.listarProductos();
+
   }
 
   // Aplicar variacion porcentual
@@ -674,7 +670,7 @@ export class PresupuestosComponent implements OnInit {
 
     this.precioResguardo = this.precio_unitario;
 
-    if(!Number(this.precio_unitario)){
+    if (!Number(this.precio_unitario)) {
       this.alertService.info('Primero debe colocar un precio');
       return;
     }
@@ -682,34 +678,34 @@ export class PresupuestosComponent implements OnInit {
     let error = false;
     let precioTMP = this.precio_unitario;
     const porcentajesArray = this.porcentajes.trim().split(' ');
-    
-    porcentajesArray.map( porcentaje => {
-      
+
+    porcentajesArray.map(porcentaje => {
+
       const signo = porcentaje.charAt(0);
-      
-      if(signo === '+'){
+
+      if (signo === '+') {
         const valor = Number(porcentaje);
-        if(!valor){
+        if (!valor) {
           this.alertService.info('Formato incorrecto');
           error = true;
         }
-        precioTMP = (1 + (valor/100)) * precioTMP;
-      
-      }else if(signo === '-'){
+        precioTMP = (1 + (valor / 100)) * precioTMP;
+
+      } else if (signo === '-') {
         const valor = Number(porcentaje);
-        if(!valor){
+        if (!valor) {
           this.alertService.info('Formato incorrecto');
           error = true;
         }
-        precioTMP = (1 + (valor/100)) * precioTMP;
-      
-      }else{
+        precioTMP = (1 + (valor / 100)) * precioTMP;
+
+      } else {
         this.alertService.info('Formato incorrecto');
         error = true;
       }
     });
 
-    if(!error){
+    if (!error) {
       this.precio_unitario = this.dataService.redondear(precioTMP, 2);
       this.porcentajeAplicado = true;
     }
@@ -718,52 +714,52 @@ export class PresupuestosComponent implements OnInit {
 
   // Aplicar porcentajes - Todo los productos
   aplicarPorcentajesTotal(): void {
-  
+
     let error = false;
     const porcentajesArray = this.porcentajesTotal.trim().split(' ');
 
     // Verificacion
-    porcentajesArray.map( porcentaje => {
+    porcentajesArray.map(porcentaje => {
       const signo = porcentaje.charAt(0);
-      if(signo === '+'){
+      if (signo === '+') {
         const valor = Number(porcentaje);
-        if(!valor) error = true;
-      }else if(signo === '-'){
+        if (!valor) error = true;
+      } else if (signo === '-') {
         const valor = Number(porcentaje);
-        if(!valor) error = true;
-      }else{
+        if (!valor) error = true;
+      } else {
         error = true;
       }
     });
 
-    if(error){
+    if (error) {
       this.alertService.info('Formato incorrecto');
       return;
     }
 
     this.porcentajeAplicadoTotal = true;
 
-    this.productos.map( producto => {
-      
+    this.productos.map(producto => {
+
       let precioTMP = producto.precio_unitario;
 
-      porcentajesArray.map( porcentaje => {     
+      porcentajesArray.map(porcentaje => {
         const valor = Number(porcentaje);
-        precioTMP = (1 + (valor/100)) * precioTMP; 
+        precioTMP = (1 + (valor / 100)) * precioTMP;
       });
-      
+
       producto.precio_unitario = this.dataService.redondear(precioTMP, 2);
       producto.precio_total = this.dataService.redondear(precioTMP * producto.cantidad, 2);
-    
+
     });
 
     this.calcularPrecioPorcentaje();
-      
+
   }
 
   // Eliminar porcentajes
   eliminarPorcentajesTotal(): void {
-    this.productos.map( producto => {
+    this.productos.map(producto => {
       producto.precio_unitario = producto.precio_unitario_resguardo;
       producto.precio_total = producto.precio_total_resguardo;
     });
@@ -782,7 +778,7 @@ export class PresupuestosComponent implements OnInit {
   // Calcular nuevo precio con porcentaje aplicado
   calcularPrecioPorcentaje(): void {
     let precioTMP = 0;
-    this.productos.map( producto => {
+    this.productos.map(producto => {
       precioTMP += producto.precio_total;
     });
     this.precioConPorcentaje = this.dataService.redondear(precioTMP, 2);;
@@ -794,7 +790,7 @@ export class PresupuestosComponent implements OnInit {
 
     let data = [];
 
-    this.productos.map( producto => {
+    this.productos.map(producto => {
       data.push({
         _id: producto._id,
         presupuesto: producto.presupuesto,
@@ -818,25 +814,25 @@ export class PresupuestosComponent implements OnInit {
 
   // Reiniciando formulario
   reiniciarFormulario(): void {
-    this.descripcion = '';  
+    this.descripcion = '';
   }
 
   // Filtrar Activo/Inactivo
-  filtrarActivos(activo: any): void{
+  filtrarActivos(activo: any): void {
     this.paginaActualProductos = 1;
     this.filtro.activo = activo;
   }
 
   // Filtrar por Parametro
-  filtrarParametro(parametro: string): void{
+  filtrarParametro(parametro: string): void {
     this.paginaActualProductos = 1;
     this.filtro.parametro = parametro;
   }
 
   // Ordenar por columna
-  ordenarPorColumna(columna: string){
+  ordenarPorColumna(columna: string) {
     this.ordenar.columna = columna;
-    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1; 
+    this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
     this.alertService.loading();
     this.listarPresupuestos();
   }

@@ -21,35 +21,21 @@
           <p class="mt-2"> <span class="font-semibold"> Precio total: </span> <span> ${{ presupuestoSeleccionado?.precio_total | moneda }} </span> </p>
         </div>
       </div>
-      <div class="px-4 text-sm pb-4">
-        <div class="md:flex md:items-center">
-          <div class="md:w-1/2">
-            <p class="font-semibold"> Tipo de venta </p>
-            <select [(ngModel)]="venta_tipo" class="p-2 border border-gray-400 rounded w-full mt-2 focus:outline-none">
-              <option value="Directa"> Directa </option>
-            </select>
-          </div>
-          <div class="md:w-1/2 md:ml-2 mt-2 md:mt-0">
-            <p class="font-semibold"> <span class="text-red-700"> * </span> Nro de factura </p>
-            <input [(ngModel)]="venta_nro_factura" type="text" placeholder="Colocar nro de factura" class="p-2 border border-gray-400 rounded w-full mt-2 focus:outline-none">
-          </div>      
-        </div>
-        <div class="mt-2">
-          <p class="font-semibold"> <span class="text-red-700"> * </span> Proveedores </p>
-          <select [(ngModel)]="venta_proveedor" class="p-2 border border-gray-400 rounded w-full mt-2 focus:outline-none">
-            <option value=""> Seleccionar proveedor </option>
-            <option *ngFor="let proveedor of proveedores" [value]="proveedor._id"> {{ proveedor.descripcion }} </option>
+
+      <hr>
+
+      <div class="text-sm px-4 mt-2 mb-4 md:flex md:items-center">
+        <div class="md:w-1/2">
+          <p class="font-semibold"> Tipo de venta </p>
+          <select [(ngModel)]="venta_tipo" class="p-2 border z-2 border-gray-400 rounded w-full mt-2 focus:outline-none">
+            <option value="Propia"> Propia </option>
+            <option value="Directa"> Directa </option>
           </select>
-        </div>      
-        <div class="mt-2">
-          <p class="font-semibold"> Observaciones </p>
-          <input [(ngModel)]="venta_observacion" type="text" placeholder="Colocar observaciones" class="p-2 border border-gray-400 rounded w-full mt-2 focus:outline-none">
+        </div>
+        <div class="md:w-1/2 md:ml-2 mt-3 md:mt-6 w-full">
+          <button (click)="generarVenta()" class="bg-primary-800 text-white p-2 focus:outline-none rounded shadow w-full"> Generar venta </button> 
         </div>
       </div>
-    </div>
-
-    <div class="px-4 pb-2 text-sm">
-      <button (click)="generarVenta()" class="bg-primary-800 text-white p-2 focus:outline-none rounded shadow w-full"> Generar venta </button> 
     </div>
   </div>
 </app-modal>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { ComprasChequesService } from 'src/app/services/compras-cheques.service';
@@ -22,6 +22,10 @@ const base_url = environment.base_url;
   ]
 })
 export class ComprasComponent implements OnInit {
+
+  // Ventas
+  public venta_tipo = 'Propia';
+  public showModalVenta = false;
 
   // Fechas
   public reportes = { 
@@ -116,6 +120,7 @@ export class ComprasComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private alertService: AlertService,
     private dataService: DataService,
+    private router: Router,
     private reportesService: ReportesService
     ) { }
 
@@ -822,6 +827,66 @@ export class ComprasComponent implements OnInit {
           })
         }
       });
+  }
+
+  // Abrir generar venta
+  abrirGenerarVenta(compra: any): void {
+    this.venta_tipo = 'Propia';
+    this.compraSeleccionada = compra;
+    this.showModalVenta = true;
+    this.showModalEditarCompra = false;
+  }
+
+  generarVenta(): void {
+
+    this.alertService.loading();
+
+    const parametros = {
+      direccion: this.ordenar.direccion,
+      columna: this.ordenar.columna,
+      compra: this.compraSeleccionada._id
+    }
+
+    this.comprasProductosService.listarProductos(parametros).subscribe({
+      next: ({ productos }) => {
+
+        let productosCompra = [];
+        let precioTotal = 0;
+
+        productos.map( producto => {
+          productosCompra.push({
+            cantidad: producto.cantidad,
+            creatorUser: this.authService.usuario.userId,
+            descripcion: producto.producto.descripcion,
+            familia: producto.producto.familia.descripcion,
+            precio_original: producto.precio_unitario,
+            precio_total: producto.precio_total,
+            precio_unitario: producto.precio_unitario,
+            producto: producto.producto._id,
+            unidad_medida: producto.producto.unidad_medida.descripcion,
+            updatorUser: this.authService.usuario.userId,
+          })
+          precioTotal += producto.precio_total;
+        })
+
+        // Adaptacion de localstorage
+
+        localStorage.setItem('venta_productosVenta', JSON.stringify(productosCompra));
+        localStorage.setItem('venta_tipo_venta', JSON.stringify(this.venta_tipo));
+        localStorage.setItem('venta_porcentajesTotal', "");
+        localStorage.setItem('venta_porcentajeAplicadoTotal', JSON.stringify(false));
+        localStorage.setItem('venta_precio_total', JSON.stringify(precioTotal));
+        localStorage.setItem('venta_clienteSeleccionado', JSON.stringify(null));
+        localStorage.setItem('venta_etapa', JSON.stringify("tipo_venta"));
+
+        this.router.navigateByUrl('/dashboard/nueva-venta');
+
+        this.alertService.close();
+      
+      },
+      error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
   }
 
   // Reiniciando formulario
