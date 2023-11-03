@@ -145,6 +145,7 @@ export class GastosComponent implements OnInit {
     const parametros = {
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
+      creatorUser: this.authService.usuario.role !== 'ADMIN_ROLE' ? this.authService.usuario.userId : '',
       desde: this.desde,
       cantidadItems: this.cantidadItems,
       activo: this.filtro.activo,

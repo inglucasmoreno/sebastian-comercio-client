@@ -37,6 +37,7 @@ export class GastosService {
     return this.http.get(`${base_url}/gastos`, {
       params: {
         columna: parametros?.columna || 'descripcion',
+        creatorUser: parametros?.creatorUser || '',
         direccion: parametros?.direccion || 1,
         desde: parametros?.desde || 0,
         registerpp: parametros?.cantidadItems || 100000,

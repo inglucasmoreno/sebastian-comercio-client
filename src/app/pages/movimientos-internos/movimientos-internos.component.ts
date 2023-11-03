@@ -99,7 +99,6 @@ export class MovimientosInternosComponent implements OnInit {
     })
   }
 
-
   // Abrir modal
   abrirModal(estado: string, movimiento: any = null): void {
     window.scrollTo(0, 0);
@@ -133,12 +132,12 @@ export class MovimientosInternosComponent implements OnInit {
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
       desde: this.desde,
+      usuario: this.authService.usuario.userId,
       cantidadItems: this.cantidadItems,
       parametro: this.filtro.parametro   
     }
     this.movimientosInternosService.listarMovimientos(parametros)
       .subscribe(({ movimientos, totalItems }) => {
-        console.log(movimientos);
         this.totalItems = totalItems;
         this.movimientos = movimientos;
         this.showModalMovimiento = false;

@@ -41,6 +41,7 @@ export class MovimientosInternosService {
         desde: parametros?.desde || 0,
         registerpp: parametros?.cantidadItems || 100000,
         estado: parametros?.estado || '',
+        usuario: parametros?.usuario || '',
         parametro: parametros?.parametro || '',
       },
       headers: this.getToken
