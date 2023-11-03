@@ -57,7 +57,7 @@ export class BancosComponent implements OnInit {
 
   // Asignar permisos de usuario login
   permisosUsuarioLogin(): boolean {
-    return this.authService.usuario.permisos.includes('TESORERIA_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
+    return this.authService.usuario.permisos.includes('BANCOS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
   }
 
   // Abrir modal

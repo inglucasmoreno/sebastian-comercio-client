@@ -115,7 +115,7 @@ export class VentasPropiasComponent implements OnInit {
     private productosService: ProductosService,
     private reportesService: ReportesService,
     private ventasPropiasProductosService: VentasPropiasProductosService,
-    private authService: AuthService,
+    public authService: AuthService,
     private alertService: AlertService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -133,7 +133,7 @@ export class VentasPropiasComponent implements OnInit {
 
   // Asignar permisos de usuario login
   permisosUsuarioLogin(): boolean {
-    return this.authService.usuario.permisos.includes('VENTAS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
+    return this.authService.usuario.permisos.includes('VENTAS_PROPIAS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
   }
 
   // Traer datos de ventas

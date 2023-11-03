@@ -110,7 +110,7 @@ export class NuevaCompraComponent implements OnInit {
     private dataService: DataService,
     private cajasService: CajasService,
     private chequesService: ChequesService,
-    private authService: AuthService,
+    public authService: AuthService,
     private alertService: AlertService,
     private comprasService: ComprasService,
     private proveedoresService: ProveedoresService,
@@ -152,7 +152,7 @@ export class NuevaCompraComponent implements OnInit {
     }
 
     // Verificcion - Cuenta corriente cuando hay saldo a favor
-    if(this.estadoCuentaCorriente === 'No tiene' && (this.totalPagado - this.precio_total) > 0){
+    if (this.estadoCuentaCorriente === 'No tiene' && (this.totalPagado - this.precio_total) > 0) {
       this.alertService.info('Tienes saldo a favor pero no tienes una cuenta corriente creada en este proveedor.');
       return;
     }
@@ -262,6 +262,9 @@ export class NuevaCompraComponent implements OnInit {
       next: ({ cajas }) => {
 
         this.cajas = cajas.filter(caja => (caja.activo && caja._id !== '222222222222222222222222'));
+
+        if (this.authService.usuario.role !== 'ADMIN_ROLE')
+        this.cajas = this.cajas.filter(caja => this.authService.usuario.permisos_cajas.includes(caja._id.toString()))
 
         this.ccProveedoresService.getCuentaCorrientePorProveedor(this.proveedorSeleccionado._id).subscribe({
           next: ({ cuenta_corriente }) => {
@@ -832,11 +835,11 @@ export class NuevaCompraComponent implements OnInit {
       updatorUser: this.authService.usuario.userId,
     };
     this.proveedoresService.nuevoProveedor(data).subscribe({
-      next: ({proveedor}) => {
+      next: ({ proveedor }) => {
         this.proveedorSeleccionado = proveedor;
         this.showNuevoProveedor = false;
         this.listarProveedores();
-      }, error: ({error}) => this.alertService.errorApi(error.message)
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 

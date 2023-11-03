@@ -27,6 +27,8 @@ export class MovimientosInternosComponent implements OnInit {
   // Caja
   public cajas: any[] = [];
   public caja: any;
+  public cajasSelectorOrigen: any[] = [];
+  public cajasSelectorDestino: any[] = [];
 
   // Movimiento
   public idMovimiento: string = '';
@@ -74,7 +76,13 @@ export class MovimientosInternosComponent implements OnInit {
   ngOnInit(): void {
     this.dataService.ubicacionActual = 'Dashboard - Movimientos internos';
     this.alertService.loading();
+    this.permisos.all = this.permisosUsuarioLogin();
     this.calculosIniciales();
+  }
+
+  // Asignar permisos de usuario login
+  permisosUsuarioLogin(): boolean {
+    return this.authService.usuario.permisos.includes('MOVIMIENTOS_INTERNOS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
   }
 
   // Calculos iniciales
@@ -82,7 +90,10 @@ export class MovimientosInternosComponent implements OnInit {
     this.alertService.loading();
     this.cajasService.listarCajas().subscribe({
       next: ({ cajas }) => {
-        this.cajas = cajas.filter(caja => caja.activo && caja.id !== '222222222222222222222222');
+        this.cajas = cajas.filter(caja => caja.activo && caja._id.toString() !== '222222222222222222222222');
+        if(this.authService.usuario.role === 'ADMIN_ROLE') this.cajasSelectorOrigen = this.cajas;
+        else this.cajasSelectorOrigen = this.cajas.filter( caja => this.authService.usuario.permisos_cajas.includes(caja._id.toString()));
+        this.cajasSelectorDestino = this.cajas;
         this.listarMovimientos();
       }, error: ({ error }) => this.alertService.errorApi(error.message)
     })

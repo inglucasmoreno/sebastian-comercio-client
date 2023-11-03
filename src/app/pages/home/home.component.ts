@@ -10,7 +10,9 @@ import gsap from 'gsap';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private dataService: DataService) { }
+  constructor(
+    private dataService: DataService,
+  ) { }
 
   ngOnInit(): void { 
     gsap.from('.gsap-contenido', { y:100, opacity: 0, duration: .2 });

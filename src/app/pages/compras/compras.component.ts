@@ -116,7 +116,7 @@ export class ComprasComponent implements OnInit {
     private productosService: ProductosService,
     private comprasProductosService: ComprasProductosService,
     private ordenesPagoCompraService: OrdenesPagoCompraService,
-    private authService: AuthService,
+    public authService: AuthService,
     private activatedRoute: ActivatedRoute,
     private alertService: AlertService,
     private dataService: DataService,

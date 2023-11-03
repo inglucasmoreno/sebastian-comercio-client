@@ -141,7 +141,7 @@ export class CajasMovimientosComponent implements OnInit {
     private gastosService: GastosService,
     private activatedRoute: ActivatedRoute,
     private cajasService: CajasService,
-    private authService: AuthService,
+    public authService: AuthService,
     private chequesService: ChequesService,
     private alertService: AlertService,
     private reportesService: ReportesService,

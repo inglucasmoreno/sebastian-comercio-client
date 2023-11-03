@@ -41,7 +41,8 @@ export class CajasComponent implements OnInit {
   // Caja
   public idCaja: string = '';
   public cajas: any = [];
-  public cajasSelector: any = [];
+  public cajasSelectorOrigen: any = [];
+  public cajasSelectorDestino: any = [];
   public monto: number = null;
   public cajaSeleccionada: any;
   public descripcion: string = '';
@@ -75,7 +76,7 @@ export class CajasComponent implements OnInit {
 
   constructor(private cajasService: CajasService,
     private inicializacionService: InicializacionService,
-    private authService: AuthService,
+    public authService: AuthService,
     private alertService: AlertService,
     private reportesService: ReportesService,
     private dataService: DataService) { }
@@ -128,8 +129,12 @@ export class CajasComponent implements OnInit {
     }
     this.cajasService.listarCajas(parametros)
       .subscribe(({ cajas }) => {
-        this.cajas = cajas;
-        this.cajasSelector = cajas.filter(caja => caja.activo && caja._id !== '222222222222222222222222');
+        if (this.authService.usuario.role !== 'ADMIN_ROLE')
+          this.cajas = cajas.filter(caja => this.authService.usuario.permisos_cajas.includes(caja._id));
+        else this.cajas = cajas;
+        const cajasSelector = cajas.filter(caja => caja.activo && caja._id !== '222222222222222222222222');
+        this.cajasSelectorOrigen = this.authService.usuario.role === 'ADMIN_ROLE' ? cajasSelector : this.cajas.filter(caja => caja.activo && caja._id !== '222222222222222222222222');
+        this.cajasSelectorDestino = cajasSelector;
         this.showModalCaja = false;
 
         // FLAG - INICIALIZACION
@@ -165,8 +170,8 @@ export class CajasComponent implements OnInit {
     }
 
     // Verificacion: Monto inicial vacia
-    if (!this.monto) {
-      this.alertService.info('Debes colocar un monto');
+    if (this.monto < 0) {
+      this.alertService.info('Debes colocar un monto válido');
       return;
     }
 
@@ -203,8 +208,8 @@ export class CajasComponent implements OnInit {
     }
 
     // Verificacion: Monto inicial vacia
-    if (!this.monto) {
-      this.alertService.info('Debes colocar un monto');
+    if (this.monto < 0) {
+      this.alertService.info('Debes colocar un monto válido');
       return;
     }
 

@@ -104,7 +104,7 @@ export class CcClientesMovimientosComponent implements OnInit {
     private ventasPropiasService: VentasPropiasService,
     private ventasPropiasChequesService: VentasPropiasChequesService,
     private ventasPropiasProductosService: VentasPropiasProductosService,
-    private authService: AuthService,
+    public authService: AuthService,
     private alertService: AlertService,
     private reportesService: ReportesService,
     private dataService: DataService) { }

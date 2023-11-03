@@ -106,7 +106,7 @@ export class CcProveedoresMovimientosComponent implements OnInit {
     private ordenesPagoCompraService: OrdenesPagoCompraService,
     private ordenesPagoChequesService: OrdenesPagoChequesService,
     private comprasChequesService: ComprasChequesService,
-    private authService: AuthService,
+    public authService: AuthService,
     private reportesService: ReportesService,
     private alertService: AlertService,
     private dataService: DataService) { }

@@ -124,6 +124,8 @@ export class NuevoCobroComponent implements OnInit {
         this.cajasService.listarCajas().subscribe({
           next: ({ cajas }) => {
             this.cajas = cajas.filter(caja => caja._id !== '222222222222222222222222' && caja.activo);
+            if (this.authService.usuario.role !== 'ADMIN_ROLE')
+            this.cajas = this.cajas.filter(caja => this.authService.usuario.permisos_cajas.includes(caja._id.toString()))
             this.alertService.close();
           }, error: ({ error }) => this.alertService.errorApi(error.message)
         })

@@ -59,8 +59,6 @@ export class NuevoUsuarioComponent implements OnInit {
     const { status } = this.usuarioForm;
     const {usuario, apellido, nombre, dni, email, role, password, repetir} = this.usuarioForm.value;
     
-    console.log(this.usuarioForm.valid);
-
     // Se verifica que los campos no tengan un espacio vacio
     const campoVacio = usuario.trim() === '' || 
                        apellido.trim() === '' ||
@@ -91,9 +89,10 @@ export class NuevoUsuarioComponent implements OnInit {
     this.alertService.loading();  // Comienzo de loading
 
     // Se crear el nuevo usuario
-    this.usuariosService.nuevoUsuario(data).subscribe(() => {
+    this.usuariosService.nuevoUsuario(data).subscribe(({ usuario }) => {
+      if(usuario.role === 'ADMIN_ROLE') this.router.navigateByUrl('dashboard/usuarios');
+      else this.router.navigateByUrl('dashboard/usuarios/permisos/' + usuario._id);
       this.alertService.close();  // Finaliza el loading
-      this.router.navigateByUrl('dashboard/usuarios');
     },( ({error}) => {
       this.alertService.close();  // Finaliza el loading
       this.alertService.errorApi(error.message);

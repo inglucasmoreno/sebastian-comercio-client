@@ -21,6 +21,7 @@ export class PermisosDirective implements OnInit {
   // Se reciben los permisos
   @Input()
   set appPermisos(val: Array<string>){
+    console.log(val);
     this.permisos = val;     // Permisos del elemento
     this.actualizarVista();
   }

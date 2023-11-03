@@ -73,6 +73,7 @@ export class HeaderComponent implements OnInit {
 
   // Abrir/Cerrar navegacion
   abrirCerrarMenu(menu: string): void {
+
     switch (menu) {
       case 'ventas':
         this.showVentas = !this.showVentas;
@@ -93,7 +94,7 @@ export class HeaderComponent implements OnInit {
     menu != 'ventas' ? this.showVentas = false : null;
     menu != 'compras' ? this.showCompras = false : null;
     menu != 'tesoreria' ? this.showTesoreria = false : null;
-    menu != 'configurariones' ? this.showConfiguraciones = false : null;
+    menu != 'configuraciones' ? this.showConfiguraciones = false : null;
 
   }
 

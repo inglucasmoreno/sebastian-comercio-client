@@ -65,7 +65,7 @@ export class CcClientesComponent implements OnInit {
 
   constructor(private ccClientesService: CcClientesService,
     private clientesService: ClientesService,
-    private authService: AuthService,
+    public authService: AuthService,
     private reportesService: ReportesService,
     private alertService: AlertService,
     private dataService: DataService) { }
@@ -93,7 +93,7 @@ export class CcClientesComponent implements OnInit {
 
   // Asignar permisos de usuario login
   permisosUsuarioLogin(): boolean {
-    return this.authService.usuario.permisos.includes('TESORERIA_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
+    return this.authService.usuario.permisos.includes('CUENTAS_CORRIENTES_CLIENTES_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
   }
 
   // Abrir modal

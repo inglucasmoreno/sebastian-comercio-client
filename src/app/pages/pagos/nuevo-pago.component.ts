@@ -131,6 +131,8 @@ export class NuevoPagoComponent implements OnInit {
         this.cajasService.listarCajas().subscribe({
           next: ({ cajas }) => {
             this.cajas = cajas.filter(caja => caja._id !== '222222222222222222222222' && caja.activo);
+            if (this.authService.usuario.role !== 'ADMIN_ROLE')
+              this.cajas = this.cajas.filter(caja => this.authService.usuario.permisos_cajas.includes(caja._id.toString()))
             this.alertService.close();
           }, error: ({ error }) => this.alertService.errorApi(error.message)
         })
@@ -616,11 +618,11 @@ export class NuevoPagoComponent implements OnInit {
     this.ccProveedoresService.getCuentaCorrientePorProveedor(this.proveedorSeleccionado._id).subscribe({
       next: ({ cuenta_corriente }) => {
 
-        if(cuenta_corriente){
+        if (cuenta_corriente) {
           this.cuentaCorriente = cuenta_corriente;
           this.flagCC = true;
         }
-        
+
         // Listado de compras
         this.comprasService.listarCompras({ proveedor: this.proveedorSeleccionado._id, cancelada: 'false', activo: true }).subscribe({
           next: ({ compras }) => {
@@ -630,7 +632,7 @@ export class NuevoPagoComponent implements OnInit {
           },
           error: ({ error }) => this.alertService.errorApi(error.message)
         });
-      
+
       }, error: ({ error }) => this.alertService.errorApi(error.message)
     })
 
@@ -694,14 +696,14 @@ export class NuevoPagoComponent implements OnInit {
             updatorUser: this.authService.usuario.userId,
           }
           this.ccProveedoresService.nuevaCuentaCorriente(data).subscribe({
-            next: ({cuenta_corriente}) => {
+            next: ({ cuenta_corriente }) => {
               this.flagCC = true;
               this.cuentaCorriente = cuenta_corriente;
               this.alertService.success('Cuenta corriente creada correctamente');
-            }, error: ({error}) => this.alertService.errorApi(error.message)
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
           })
         }
-    });
+      });
   }
 
   // Calcular total en cheques

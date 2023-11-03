@@ -18,8 +18,7 @@
                     'empleado' }} </p>
             </div>
         </div>
-        <button (click)="this.dataService.showMenu = false"
-            class="p-2 focus:outline-none focus:bg-gray-600 rounded-md">
+        <button (click)="this.dataService.showMenu = false" class="p-2 focus:outline-none focus:bg-gray-600 rounded-md">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -45,8 +44,13 @@
         </ng-container>
 
         <!-- Ventas -->
-        <li *ngIf="authService.usuario.permisos.includes('VENTAS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
-            (click)="abrirCerrarMenu('ventas')"
+        <li *ngIf="authService.usuario.permisos.includes('PRESUPUESTOS_NAV') ||
+            authService.usuario.permisos.includes('VENTAS_DIRECTAS_NAV') || 
+            authService.usuario.permisos.includes('VENTAS_PROPIAS_NAV') ||
+            authService.usuario.permisos.includes('RECIBOS_COBRO_NAV') ||
+            authService.usuario.permisos.includes('CLIENTES_NAV') ||
+            authService.usuario.permisos.includes('CUENTAS_CORRIENTES_CLIENTES_NAV') ||
+            authService.usuario.role === 'ADMIN_ROLE'" (click)="abrirCerrarMenu('ventas')"
             class="flex items-center justify-between outline-none cursor-pointer p-2">
 
             <div class="flex items-center">
@@ -74,8 +78,14 @@
 
         </li>
 
-        <div *ngIf="showVentas && (authService.usuario.permisos.includes('VENTAS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
-            class="bg-primary-600 rounded pl-2">
+        <div *ngIf="showVentas && (
+            authService.usuario.permisos.includes('PRESUPUESTOS_NAV') ||
+            authService.usuario.permisos.includes('VENTAS_DIRECTAS_NAV') || 
+            authService.usuario.permisos.includes('VENTAS_PROPIAS_NAV') ||
+            authService.usuario.permisos.includes('RECIBOS_COBRO_NAV') ||
+            authService.usuario.permisos.includes('CLIENTES_NAV') ||
+            authService.usuario.permisos.includes('CUENTAS_CORRIENTES_CLIENTES_NAV') ||
+            authService.usuario.role === 'ADMIN_ROLE')" class="bg-primary-600 rounded pl-2">
             <ng-container *ngFor="let element of itemsVentas">
                 <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
                     [item]="element.item"></app-items>
@@ -83,8 +93,12 @@
         </div>
 
         <!-- Compras -->
-        <li *ngIf="authService.usuario.permisos.includes('COMPRAS_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
-            (click)="abrirCerrarMenu('compras')"
+        <li *ngIf="
+            authService.usuario.permisos.includes('COMPRAS_NAV') ||
+            authService.usuario.permisos.includes('ORDENES_PAGO_NAV') || 
+            authService.usuario.permisos.includes('PROVEEDORES_NAV') ||
+            authService.usuario.permisos.includes('CUENTAS_CORRIENTES_PROVEEDORES_NAV') || 
+            authService.usuario.role === 'ADMIN_ROLE'" (click)="abrirCerrarMenu('compras')"
             class="flex items-center justify-between outline-none cursor-pointer p-2">
 
             <div class="flex items-center">
@@ -113,8 +127,12 @@
 
         </li>
 
-        <div *ngIf="showCompras && (authService.usuario.permisos.includes('COMPRAS_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
-            class="bg-primary-600 rounded pl-2">
+        <div *ngIf="showCompras && (
+            authService.usuario.permisos.includes('COMPRAS_NAV') ||
+            authService.usuario.permisos.includes('ORDENES_PAGO_NAV') || 
+            authService.usuario.permisos.includes('PROVEEDORES_NAV') ||
+            authService.usuario.permisos.includes('CUENTAS_CORRIENTES_PROVEEDORES_NAV') ||     
+            authService.usuario.role === 'ADMIN_ROLE')" class="bg-primary-600 rounded pl-2">
             <ng-container *ngFor="let element of itemsCompras">
                 <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
                     [item]="element.item"></app-items>
@@ -122,14 +140,21 @@
         </div>
 
         <!-- Tesoreria -->
-        <li *ngIf="authService.usuario.permisos.includes('TESORERIA_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
-            (click)="abrirCerrarMenu('tesoreria')"
+        <li *ngIf="
+            authService.usuario.permisos.includes('CAJAS_NAV') ||
+            authService.usuario.permisos.includes('MOVIMIENTOS_INTERNOS_NAV') || 
+            authService.usuario.permisos.includes('CHEQUES_NAV') ||
+            authService.usuario.permisos.includes('BANCOS_NAV') ||
+            authService.usuario.permisos.includes('GASTOS_NAV') || 
+            authService.usuario.role === 'ADMIN_ROLE'" (click)="abrirCerrarMenu('tesoreria')"
             class="flex items-center justify-between outline-none cursor-pointer p-2">
 
             <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
                 <span class="ml-1"> Tesoreria </span>
             </div>
 
@@ -149,17 +174,27 @@
 
         </li>
 
-        <div *ngIf="showTesoreria && (authService.usuario.permisos.includes('TESORERIA_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
-            class="bg-primary-600 rounded pl-2">
+        <div *ngIf="showTesoreria && (
+            authService.usuario.permisos.includes('CAJAS_NAV') ||
+            authService.usuario.permisos.includes('MOVIMIENTOS_INTERNOS_NAV') || 
+            authService.usuario.permisos.includes('CHEQUES_NAV') ||
+            authService.usuario.permisos.includes('BANCOS_NAV') ||
+            authService.usuario.permisos.includes('GASTOS_NAV') ||     
+            authService.usuario.role === 'ADMIN_ROLE')" class="bg-primary-600 rounded pl-2">
             <ng-container *ngFor="let element of itemsTesoreria">
                 <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
                     [item]="element.item"></app-items>
             </ng-container>
-        </div>        
+        </div>
 
         <!-- Configuraciones -->
-        <li *ngIf="authService.usuario.permisos.includes('CONFIGURACIONES_NAV') || authService.usuario.role === 'ADMIN_ROLE'"
-            (click)="showConfiguraciones = !showConfiguraciones"
+        <li *ngIf="
+            authService.usuario.permisos.includes('USUARIOS_NAV') ||
+            authService.usuario.permisos.includes('TIPOS_GASTOS_NAV') || 
+            authService.usuario.permisos.includes('UNIDADES_MEDIDA_NAV') ||
+            authService.usuario.permisos.includes('FAMILIA_PRODUCTOS_NAV') ||
+            authService.usuario.permisos.includes('PRODUCTOS_NAV') || 
+            authService.usuario.role === 'ADMIN_ROLE'" (click)="abrirCerrarMenu('configuraciones')"
             class="flex items-center justify-between outline-none cursor-pointer p-2">
 
             <div class="flex items-center">
@@ -189,8 +224,13 @@
 
         </li>
 
-        <div *ngIf="showConfiguraciones && (authService.usuario.permisos.includes('CONFIGURACIONES_NAV') || authService.usuario.role === 'ADMIN_ROLE')"
-            class="bg-primary-600 rounded pl-2">
+        <div *ngIf="showConfiguraciones && (
+            authService.usuario.permisos.includes('USUARIOS_NAV') ||
+            authService.usuario.permisos.includes('TIPOS_GASTOS_NAV') || 
+            authService.usuario.permisos.includes('UNIDADES_MEDIDA_NAV') ||
+            authService.usuario.permisos.includes('FAMILIA_PRODUCTOS_NAV') ||
+            authService.usuario.permisos.includes('PRODUCTOS_NAV') ||     
+            authService.usuario.role === 'ADMIN_ROLE')" class="bg-primary-600 rounded pl-2">
             <ng-container *ngFor="let element of itemsConfiguraciones">
                 <app-items *appPermisos="element.permiso" [svg]="element.svg" [route]="element.route"
                     [item]="element.item"></app-items>

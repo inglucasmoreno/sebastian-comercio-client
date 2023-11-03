@@ -324,7 +324,7 @@
                                         </span>
                                     </div>
                                     </th>
-                                    <th *ngIf="permisos.all"
+                                    <th
                                         class="px-5 border-b-2 border-gray-200 bg-gray-100 text-center text-sm font-semibold text-gray-900 tracking-wider">
                                         Acción
                                     </th>
@@ -363,10 +363,10 @@
                                             ${{ gasto.monto | moneda }}
                                         </p>
                                     </td>
-                                    <td *ngIf="permisos.all"
+                                    <td
                                         class="px-5 py-2 border-b border-gray-200 text-xs text-center">
                                         <span class="flex items-center justify-center text-gray-900 whitespace-no-wrap">
-                                            <app-boton-tabla (click)="altaBajaGasto(gasto)" [title]="gasto.activo ? 'Baja de gasto' : 'Alta de gasto'">
+                                            <app-boton-tabla *ngIf="permisos.all" (click)="altaBajaGasto(gasto)" [title]="gasto.activo ? 'Baja de gasto' : 'Alta de gasto'">
                                                 <svg *ngIf="gasto.activo" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                                 </svg>

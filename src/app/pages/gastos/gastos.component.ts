@@ -74,21 +74,25 @@ export class GastosComponent implements OnInit {
   }
 
   calculosIniciales(): void {
-    
+
     // Listando cajas
     this.cajasService.listarCajas().subscribe({
       next: ({ cajas }) => {
-        this.cajas = cajas.filter( caja => caja.activo && caja._id !== '222222222222222222222222' );
+
+        this.cajas = cajas.filter(caja => caja.activo && caja._id !== '222222222222222222222222');
+
+        if (this.authService.usuario.role !== 'ADMIN_ROLE')
+          this.cajas = this.cajas.filter(caja => this.authService.usuario.permisos_cajas.includes(caja._id.toString()))
 
         // Listando tipos de gastos
         this.tiposGastosService.listarTipos().subscribe({
           next: ({ tipos }) => {
-            this.tiposGastos = tipos.filter( tipo => tipo.activo );
+            this.tiposGastos = tipos.filter(tipo => tipo.activo);
             this.listarGastos();
-          }, error: ({error}) => this.alertService.errorApi(error.message)
+          }, error: ({ error }) => this.alertService.errorApi(error.message)
         })
 
-      }, error: ({error}) => this.alertService.errorApi(error.message)
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
 
@@ -162,19 +166,19 @@ export class GastosComponent implements OnInit {
 
     // Validacion
 
-    if(this.dataGasto.caja.trim() === ''){
+    if (this.dataGasto.caja.trim() === '') {
       this.alertService.info('Debe seleccionar una caja');
-      return;      
+      return;
     }
 
-    if(this.dataGasto.tipo_gasto.trim() === ''){
+    if (this.dataGasto.tipo_gasto.trim() === '') {
       this.alertService.info('Debe seleccionar un tipo de gasto');
-      return;      
+      return;
     }
 
-    if(!this.dataGasto.monto || this.dataGasto.monto <= 0){
+    if (!this.dataGasto.monto || this.dataGasto.monto <= 0) {
       this.alertService.info('Debe colocar un monto');
-      return;      
+      return;
     }
 
     this.alertService.loading();
@@ -240,21 +244,21 @@ export class GastosComponent implements OnInit {
   altaBajaGasto(gasto: any): void {
 
     this.alertService.question({ msg: gasto.activo ? 'Baja de gasto' : 'Alta de gasto', buttonText: gasto.activo ? 'Baja' : 'Alta' })
-    .then(({ isConfirmed }) => {
-      if (isConfirmed) {
-        this.alertService.loading();
-        const data = {
-          activo: gasto.activo ? false : true,
-          creatorUser: this.authService.usuario.userId,
-          updatorUser: this.authService.usuario.userId,
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          const data = {
+            activo: gasto.activo ? false : true,
+            creatorUser: this.authService.usuario.userId,
+            updatorUser: this.authService.usuario.userId,
+          }
+          this.gastosService.altaBajaGasto(gasto._id, data).subscribe({
+            next: () => {
+              this.listarGastos();
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          });
         }
-        this.gastosService.altaBajaGasto(gasto._id, data).subscribe({
-          next: () => {
-            this.listarGastos();
-          }, error: ({error}) => this.alertService.errorApi(error.message)
-        });
-      }
-    });
+      });
 
   }
 
@@ -296,7 +300,7 @@ export class GastosComponent implements OnInit {
     this.alertService.loading();
     this.listarGastos();
   }
-  
+
   // Cambiar cantidad de items
   cambiarCantidadItems(): void {
     this.paginaActual = 1

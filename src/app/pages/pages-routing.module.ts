@@ -42,6 +42,7 @@ import { NuevaCompraComponent } from './compras/nueva-compra.component';
 import { PagosComponent } from './pagos/pagos.component';
 import { NuevoPagoComponent } from './pagos/nuevo-pago.component';
 import { MovimientosInternosComponent } from './movimientos-internos/movimientos-internos.component';
+import { PermisosComponent } from './usuarios/permisos/permisos.component';
 
 const routes: Routes = [
     {
@@ -62,6 +63,9 @@ const routes: Routes = [
             { path: 'usuarios/editar/:id', data: { permisos: 'USUARIOS_NAV' }, canActivate: [PermisosGuard], component: EditarUsuarioComponent },
             { path: 'usuarios/password/:id', data: { permisos: 'USUARIOS_NAV' }, canActivate: [PermisosGuard], component: EditarPasswordComponent },
 
+            // Usuarios - Permisos
+            { path: 'usuarios/permisos/:id', data: { permisos: 'USUARIOS_PERMISOS_NAV' }, canActivate: [PermisosGuard], component: PermisosComponent },
+
             // Clientes
             { path: 'clientes', data: { permisos: 'CLIENTES_NAV' }, canActivate: [PermisosGuard], component: ClientesComponent },
     
@@ -69,7 +73,7 @@ const routes: Routes = [
             { path: 'proveedores', data: { permisos: 'PROVEEDORES_NAV' }, canActivate: [PermisosGuard], component: ProveedoresComponent },
 
             // Unidad medida
-            { path: 'unidad-medida', data: { permisos: 'UNIDAD_MEDIDA_NAV' }, canActivate: [PermisosGuard], component: UnidadMedidaComponent },
+            { path: 'unidad-medida', data: { permisos: 'UNIDADES_MEDIDA_NAV' }, canActivate: [PermisosGuard], component: UnidadMedidaComponent },
             
             // Familia de productos
             { path: 'familia-productos', data: { permisos: 'FAMILIA_PRODUCTOS_NAV' }, canActivate: [PermisosGuard], component: FamiliaProductosComponent },
@@ -82,48 +86,48 @@ const routes: Routes = [
             { path: 'nuevo-presupuesto', data: { permisos: 'PRESUPUESTOS_NAV' }, canActivate: [PermisosGuard], component: NuevoPresupuestoComponent },
 
             // Ventas
-            { path: 'ventas', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasComponent },
-            { path: 'nueva-venta', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: NuevaVentaComponent },
-            { path: 'ventas-propias', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasPropiasComponent },
-            { path: 'ventas-propias/:codigo', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: VentasPropiasComponent },
-            { path: 'cc-clientes', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: CcClientesComponent },
-            { path: 'cc-clientes-movimientos/:id', data: { permisos: 'VENTAS_NAV' }, canActivate: [PermisosGuard], component: CcClientesMovimientosComponent },
+            { path: 'ventas', data: { permisos: 'VENTAS_DIRECTAS_NAV' }, canActivate: [PermisosGuard], component: VentasComponent },
+            { path: 'nueva-venta', data: { permisos: 'VENTAS_DIRECTAS_NAV' }, canActivate: [PermisosGuard], component: NuevaVentaComponent },
+            { path: 'ventas-propias', data: { permisos: 'VENTAS_PROPIAS_NAV' }, canActivate: [PermisosGuard], component: VentasPropiasComponent },
+            { path: 'ventas-propias/:codigo', data: { permisos: 'VENTAS_PROPIAS_NAV' }, canActivate: [PermisosGuard], component: VentasPropiasComponent },
+            { path: 'cc-clientes', component: CcClientesComponent },
+            { path: 'cc-clientes-movimientos/:id', component: CcClientesMovimientosComponent },
 
             // Cobros
-            { path: 'cobros', data: { permisos: 'COBROS_NAV' }, canActivate: [PermisosGuard], component: CobrosComponent },
-            { path: 'cobros/:codigo', data: { permisos: 'COBROS_NAV' }, canActivate: [PermisosGuard], component: CobrosComponent },
-            { path: 'nuevo-cobro', data: { permisos: 'COBROS_NAV' }, canActivate: [PermisosGuard], component: NuevoCobroComponent },
+            { path: 'cobros', data: { permisos: 'RECIBOS_COBRO_NAV' }, canActivate: [PermisosGuard], component: CobrosComponent },
+            { path: 'cobros/:codigo', data: { permisos: 'RECIBOS_COBRO_NAV' }, canActivate: [PermisosGuard], component: CobrosComponent },
+            { path: 'nuevo-cobro', data: { permisos: 'RECIBOS_COBRO_NAV' }, canActivate: [PermisosGuard], component: NuevoCobroComponent },
 
             // Caja
             { path: 'cajas', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: CajasComponent },
+            { path: 'cajas-movimientos/:id', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: CajasMovimientosComponent },
             { path: 'tipos-movimientos', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: TiposMovimientosComponent },
             { path: 'movimientos', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: MovimientosComponent },
-            { path: 'cajas-movimientos/:id', data: { permisos: 'CAJAS_NAV' }, canActivate: [PermisosGuard], component: CajasMovimientosComponent },
 
             // Movimientos internos
-            { path: 'movimientos-internos', data: { permisos: 'TESORERIA_NAV' }, canActivate: [PermisosGuard], component: MovimientosInternosComponent },
+            { path: 'movimientos-internos', data: { permisos: 'MOVIMIENTOS_INTERNOS_NAV' }, canActivate: [PermisosGuard], component: MovimientosInternosComponent },
 
             // Cheques
             { path: 'cheques', data: { permisos: 'CHEQUES_NAV' }, canActivate: [PermisosGuard], component: ChequesComponent },
 
             // Gastos
             { path: 'gastos', data: { permisos: 'GASTOS_NAV' }, canActivate: [PermisosGuard], component: GastosComponent },
-            { path: 'tipos-gastos', data: { permisos: 'GASTOS_NAV' }, canActivate: [PermisosGuard], component: GastosTiposComponent },
+            { path: 'tipos-gastos', data: { permisos: 'TIPOS_GASTOS_NAV' }, canActivate: [PermisosGuard], component: GastosTiposComponent },
 
             // Compras
             { path: 'compras', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: ComprasComponent },
             { path: 'compras/:codigo', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: ComprasComponent },
             { path: 'nueva-compra', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: NuevaCompraComponent },
-            { path: 'cc-proveedores', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: CcProveedoresComponent },
-            { path: 'cc-proveedores-movimientos/:id', data: { permisos: 'COMPRAS_NAV' }, canActivate: [PermisosGuard], component: CcProveedoresMovimientosComponent },
+            { path: 'cc-proveedores', component: CcProveedoresComponent },
+            { path: 'cc-proveedores-movimientos/:id', component: CcProveedoresMovimientosComponent },
 
             // Pagos
-            { path: 'pagos', data: { permisos: 'PAGOS_NAV' }, canActivate: [PermisosGuard], component: PagosComponent },
-            { path: 'pagos/:codigo', data: { permisos: 'PAGOS_NAV' }, canActivate: [PermisosGuard], component: PagosComponent },
-            { path: 'nuevo-pago', data: { permisos: 'PAGOS_NAV' }, canActivate: [PermisosGuard], component: NuevoPagoComponent },
+            { path: 'pagos', data: { permisos: 'ORDENES_PAGO_NAV' }, canActivate: [PermisosGuard], component: PagosComponent },
+            { path: 'pagos/:codigo', data: { permisos: 'ORDENES_PAGO_NAV' }, canActivate: [PermisosGuard], component: PagosComponent },
+            { path: 'nuevo-pago', data: { permisos: 'ORDENES_PAGO_NAV' }, canActivate: [PermisosGuard], component: NuevoPagoComponent },
 
             // Configuraciones
-            { path: 'bancos', data: { permisos: 'CONFIGURACIONES_NAV' }, canActivate: [PermisosGuard], component: BancosComponent },
+            { path: 'bancos', data: { permisos: 'BANCOS_NAV' }, canActivate: [PermisosGuard], component: BancosComponent },
 
         ]
     }

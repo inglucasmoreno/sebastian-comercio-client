@@ -85,7 +85,7 @@ export class CobrosComponent implements OnInit {
     private recibosService: RecibosCobroService,
     private chequesService: RecibosCobroChequeService,
     private recibosVentasService: RecibosCobroVentaService,
-    private authService: AuthService,
+    public authService: AuthService,
     private ventasPropiasService: VentasPropiasService,
     private ventasPropiasChequesService: VentasPropiasChequesService,
     private ventasPropiasProductosService: VentasPropiasProductosService,
@@ -107,7 +107,7 @@ export class CobrosComponent implements OnInit {
 
   // Asignar permisos de usuario login
   permisosUsuarioLogin(): boolean {
-    return this.authService.usuario.permisos.includes('COBROS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
+    return this.authService.usuario.permisos.includes('RECIBOS_COBRO_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
   }
 
   // Traer datos de recibo de cobro

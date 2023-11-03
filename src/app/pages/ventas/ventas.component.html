@@ -211,10 +211,10 @@
       <div>
         <p class="font-semibold"> <span class="text-red-700"> * </span> Nro de factura </p>
         <div class="flex items-center">
-          <input (keyup.enter)="actualizarNroFactura()" [(ngModel)]="nro_factura" type="text"
+          <input [disabled]="!permisos.all" (keyup.enter)="actualizarNroFactura()" [(ngModel)]="nro_factura" type="text"
             class="border mt-1 focus:outline-none border-gray-400 p-2 rounded w-full"
             placeholder="Colocar aquí el número de factura">
-          <button (click)="actualizarNroFactura()" title="Actualizar número de factura"
+          <button *ngIf="permisos.all" (click)="actualizarNroFactura()" title="Actualizar número de factura"
             class="border focus:outline-none bg-gray-100 border-gray-400 rounded p-2 ml-1 mt-1 hover:text-secondaryColor">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="w-5 h-5">
@@ -226,10 +226,10 @@
       <div class="mt-2">
         <p class="font-semibold"> Observacion personalizada </p>
         <div class="flex items-center">
-          <input (keyup.enter)="actualizarObservacion()" [(ngModel)]="observacion" type="text"
+          <input [disabled]="!permisos.all" (keyup.enter)="actualizarObservacion()" [(ngModel)]="observacion" type="text"
             class="border mt-1 focus:outline-none border-gray-400 p-2 rounded w-full"
             placeholder="Colocar aquí la observación">
-          <button (click)="actualizarObservacion()" title="Actualizar observación"
+          <button *ngIf="permisos.all" (click)="actualizarObservacion()" title="Actualizar observación"
             class="border focus:outline-none bg-gray-100 border-gray-400 rounded p-2 ml-1 mt-1 hover:text-secondaryColor">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="w-5 h-5">
@@ -244,10 +244,10 @@
     <div *ngIf="productos?.length > 0" class="md:w-1/2 mt-2">
       <p class="font-semibold"> Variación porcentual </p>
       <div class="flex items-center">
-        <input [disabled]="porcentajeAplicadoTotal" (keyup.enter)="aplicarPorcentajesTotal()" type="text"
+        <input [disabled]="porcentajeAplicadoTotal || !permisos.all" (keyup.enter)="aplicarPorcentajesTotal()" type="text"
           [(ngModel)]="porcentajesTotal" placeholder="Ej. +5 -10 +12"
           class="border p-2 w-full border-gray-400 text-sm focus:outline-none mt-2 mb-1 rounded">
-        <button [title]="!porcentajeAplicadoTotal ? 'Aplicar porcentajes' : 'Eliminar porcentajes'"
+        <button *ngIf="permisos.all" [title]="!porcentajeAplicadoTotal ? 'Aplicar porcentajes' : 'Eliminar porcentajes'"
           (click)="!porcentajeAplicadoTotal ? aplicarPorcentajesTotal() : eliminarPorcentajesTotal()"
           class="p-2 ml-1 border bg-gray-100 focus:outline-none hover:text-green-700 border-gray-400 rounded mt-1">
 
@@ -278,7 +278,7 @@
       <div class="flex items-center">
         <input [(ngModel)]="filtro.parametroProductos" type="text"
           class="p-2 my-2 border focus:outline-none text-sm border-gray-400 rounded" placeholder="Buscar">
-        <button (click)="buscarProductos()" title="Agregar producto"
+        <button *ngIf="permisos.all" (click)="buscarProductos()" title="Agregar producto"
           class="border bg-gray-100 border-gray-400 hover:text-secondaryColor focus:outline-none ml-2 rounded p-2">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="w-5 h-5">
@@ -293,7 +293,7 @@
               d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
           </svg>
         </button>
-        <button title="Generar compra" (click)="abrirGenerarCompra(ventaSeleccionada)"
+        <button *ngIf="permisos.all" title="Generar compra" (click)="abrirGenerarCompra(ventaSeleccionada)"
           class="border bg-gray-100 border-gray-400 hover:text-secondaryColor focus:outline-none ml-2 rounded p-2">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
@@ -302,7 +302,7 @@
       </div>
 
       <div>
-        <div (click)="seleccionarProducto(producto)"
+        <div (click)="permisos.all && seleccionarProducto(producto)"
           class="text-sm cursor-pointer hover:border-secondaryColor border border-gray-400 mt-2 p-2"
           *ngFor="let producto of productos | filtroProductos:filtro.parametroProductos:''">
           <h1 class="font-semibold"> {{ producto.descripcion }} </h1>
@@ -396,8 +396,8 @@
             </h2>
             <p> Total de ventas: {{ totalItems }} </p>
           </div>
-          <div *ngIf="permisos.all">
-            <button title="Generar reporte" (click)="abrirReportes()"
+          <div>
+            <button *ngIf="authService.usuario.role === 'ADMIN_ROLE'" title="Generar reporte" (click)="abrirReportes()"
               class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-5 h-5">
@@ -405,7 +405,7 @@
                   d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
               </svg>
             </button>
-            <button title="Nueva venta" routerLink="/dashboard/nueva-venta"
+            <button *ngIf="permisos.all" title="Nueva venta" routerLink="/dashboard/nueva-venta"
               class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-5 h-5">
@@ -458,7 +458,7 @@
             <table class="min-w-full leading-normal">
               <thead>
                 <tr class="border">
-                  <th *ngIf="permisos.all"
+                  <th
                     class="px-5 border-b-2 border-gray-200 bg-gray-100 text-center text-sm font-semibold text-gray-900 tracking-wider">
                     Acción
                   </th>
@@ -623,7 +623,7 @@
               <tbody *ngIf="ventas">
                 <tr class="animate__animated animate__fadeIn"
                   *ngFor="let venta of ventas | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual, totalItems: totalItems}">
-                  <td *ngIf="permisos.all" class="px-5 py-2 border-b border-gray-200 text-xs text-center">
+                  <td class="px-5 py-2 border-b border-gray-200 text-xs text-center">
                     <span class="flex items-center justify-center text-gray-900 whitespace-no-wrap">
                       <app-boton-tabla (click)="abrirEditarVenta(venta)" title="Ver detalles">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -639,12 +639,12 @@
                             d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
                         </svg>
                       </app-boton-tabla>
-                      <app-boton-tabla (click)="abrirGenerarCompra(venta)" class="ml-2" title="Generar compra">
+                      <app-boton-tabla *ngIf="permisos.all" (click)="abrirGenerarCompra(venta)" class="ml-2" title="Generar compra">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
                         </svg>
                       </app-boton-tabla>
-                      <app-boton-tabla (click)="actualizarEstado(venta)" class="ml-2"
+                      <app-boton-tabla *ngIf="permisos.all" (click)="actualizarEstado(venta)" class="ml-2"
                         [title]=" venta.activo ? 'Baja de venta' : 'Alta de venta'">
 
                         <svg *ngIf="venta.activo" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"

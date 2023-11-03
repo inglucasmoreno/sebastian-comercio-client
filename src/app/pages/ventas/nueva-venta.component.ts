@@ -149,7 +149,7 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   constructor(private clientesService: ClientesService,
-    private authService: AuthService,
+    public authService: AuthService,
     private proveedoresService: ProveedoresService,
     private ventasService: VentasService,
     private ventasPropiasService: VentasPropiasService,
@@ -758,6 +758,9 @@ export class NuevaVentaComponent implements OnInit {
       next: ({ cajas }) => {
 
         this.cajas = cajas.filter(caja => (caja.activo && caja._id !== '222222222222222222222222'));
+
+        if (this.authService.usuario.role !== 'ADMIN_ROLE')
+          this.cajas = this.cajas.filter(caja => this.authService.usuario.permisos_cajas.includes(caja._id.toString()))
 
         // Se buscar el cliente y su cuenta corriente
         this.clientesService.getCliente(this.clienteSeleccionado._id).subscribe({

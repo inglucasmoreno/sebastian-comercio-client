@@ -47,14 +47,14 @@
           <div class="md:w-1/2">
               <select [(ngModel)]="movimientoInterno.caja_origen" class="p-2 w-full mt-2 border focus:outline-none border-gray-400 rounded">
                   <option value=""> Caja origen </option>
-                  <option *ngFor="let caja of cajas" [value]="caja._id"> {{ caja.descripcion }} </option>
+                  <option *ngFor="let caja of cajasSelectorOrigen" [value]="caja._id"> {{ caja.descripcion }} </option>
               </select>
               <input (keyup)="duplicarMonto()" (keyup.enter)="generarMovimientoInterno()" [(ngModel)]="movimientoInterno.monto_origen" type="number" placeholder="Saldo origen" class="p-2 mt-2 w-full border focus:outline-none border-gray-400 rounded">
           </div>
           <div class="md:w-1/2 md:ml-2">
               <select [(ngModel)]="movimientoInterno.caja_destino" class="p-2 mt-2 w-full border focus:outline-none border-gray-400 rounded">
                   <option value=""> Caja destino </option>
-                  <option *ngFor="let caja of cajas" [value]="caja._id"> {{ caja.descripcion }} </option>
+                  <option *ngFor="let caja of cajasSelectorDestino" [value]="caja._id"> {{ caja.descripcion }} </option>
               </select>
               <input (keyup.enter)="generarMovimientoInterno()" [(ngModel)]="movimientoInterno.monto_destino" type="number" placeholder="Saldo destino" class="p-2 mt-2 w-full border focus:outline-none border-gray-400 rounded">
           </div>
@@ -86,7 +86,7 @@
                       <p> Total de movimientos: {{ totalItems }} </p>
                   </div>
                   <div>
-                    <button title="Nuevo movimiento interno" (click)="abrirMovimientoInterno()" class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
+                    <button *ngIf="permisos.all" title="Nuevo movimiento interno" (click)="abrirMovimientoInterno()" class="p-2 border mr-3 focus:outline-none hover:text-secondaryColor border-gray-300 bg-white rounded shadow">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>                          

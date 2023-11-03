@@ -86,7 +86,7 @@ export class PagosComponent implements OnInit {
     private ordenesPagoService: OrdenesPagoService,
     private chequesService: OrdenesPagoChequesService,
     private ordenesPagoCompraService: OrdenesPagoCompraService,
-    private authService: AuthService,
+    public authService: AuthService,
     private comprasService: ComprasService,
     private activatedRoute: ActivatedRoute,
     private comprasChequesService: ComprasChequesService,
@@ -108,7 +108,7 @@ export class PagosComponent implements OnInit {
 
   // Asignar permisos de usuario login
   permisosUsuarioLogin(): boolean {
-    return this.authService.usuario.permisos.includes('PAGOS_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
+    return this.authService.usuario.permisos.includes('ORDENES_PAGO_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
   }
 
   // Traer datos de orden de pago
