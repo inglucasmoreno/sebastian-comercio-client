@@ -9,13 +9,13 @@
             </div>
             <div *ngIf="authService.usuario.role === 'USER_ROLE'"
                 class="bg-orange-100 flex items-center justify-center w-14 h-14 rounded-full shadow border border-orange-200">
-                <p class="text-3xl font-semibold text-orange-500"> E </p>
+                <p class="text-3xl font-semibold text-orange-500"> U </p>
             </div>
             <div class='ml-2 mt-2'>
                 <p class="capitalize text-sm font-semibold"> {{ authService.usuario.apellido.toLowerCase() + ' ' +
                     authService.usuario.nombre.toLowerCase() }} </p>
                 <p class="capitalize text-sm"> {{ authService.usuario.role === 'ADMIN_ROLE' ? 'administrador' :
-                    'empleado' }} </p>
+                    'usuario' }} </p>
             </div>
         </div>
         <button (click)="this.dataService.showMenu = false" class="p-2 focus:outline-none focus:bg-gray-600 rounded-md">
