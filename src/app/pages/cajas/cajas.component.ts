@@ -233,7 +233,7 @@ export class CajasComponent implements OnInit {
 
     const { _id, activo } = caja;
 
-    if (!this.permisos.all) return this.alertService.info('Usted no tiene permiso para realizar esta acción');
+    if (!this.permisos.all || this.authService.usuario.role !== 'ADMIN_ROLE') return this.alertService.info('Usted no tiene permiso para realizar esta acción');
 
     if (caja._id === '000000000000000000000000' || caja._id === '111111111111111111111111' || caja._id === '222222222222222222222222' || caja._id === '333333333333333333333333') {
       this.alertService.info('No se puede dar de baja a esta caja');

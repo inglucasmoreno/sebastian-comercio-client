@@ -119,7 +119,7 @@
                 </div>
                 <div class="md:w-1/2 md:ml-2 mt-2 md:mt-0">
                     <p class="font-semibold"> <span class="text-red-500"> * </span> Monto </p>
-                    <input [(ngModel)]="monto"
+                    <input [disabled]="authService.usuario.role !== 'ADMIN_ROLE'" [(ngModel)]="monto"
                         class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800"
                         placeholder="Ej. 1000" type="number">
                 </div>
