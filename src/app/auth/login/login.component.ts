@@ -28,9 +28,9 @@ export class LoginComponent implements OnInit {
 
     var tl = gsap.timeline({ defaults: { duration: 0.1 } });
     tl.from('.gsap-formulario', { y:-100, opacity: 0, duration: .5 })
-      .from('.gsap-fondo', { y:100, opacity: 0, duration: .5 })
-      .from('.gsap-imagen', { y:100, opacity: 0, duration: .5 });
-  
+      .from('.gsap-fondo', {  opacity: 0, duration: .5 })
+      .from('.gsap-imagen', { y:100, opacity: 0, duration: .5 })
+      .from('.gsap-slogan', { y:100, opacity: 0, duration: .5 });
   }
 
   login(): void {

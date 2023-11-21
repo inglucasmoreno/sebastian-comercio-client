@@ -5,6 +5,10 @@
 
 /* You can add global styles to this file, and also import other style files */
 
+* {
+    font-family: 'Nunito Sans', sans-serif;
+}
+
 /* Para evitar cuadro azul en celular al hacer clic */
 
 a {

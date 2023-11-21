@@ -43,6 +43,8 @@ import { PagosComponent } from './pagos/pagos.component';
 import { NuevoPagoComponent } from './pagos/nuevo-pago.component';
 import { MovimientosInternosComponent } from './movimientos-internos/movimientos-internos.component';
 import { PermisosComponent } from './usuarios/permisos/permisos.component';
+import { OperacionesComponent } from './operaciones/operaciones.component';
+import { OperacionesDetallesComponent } from './operaciones/operaciones-detalles.component';
 
 const routes: Routes = [
     {
@@ -128,6 +130,10 @@ const routes: Routes = [
 
             // Configuraciones
             { path: 'bancos', data: { permisos: 'BANCOS_NAV' }, canActivate: [PermisosGuard], component: BancosComponent },
+
+            // Operaciones
+            { path: 'operaciones', data: { permisos: 'OPERACIONES_NAV' }, canActivate: [PermisosGuard], component: OperacionesComponent },
+            { path: 'operaciones/detalles/:id', data: { permisos: 'OPERACIONES_NAV' }, canActivate: [PermisosGuard], component: OperacionesDetallesComponent },
 
         ]
     }
