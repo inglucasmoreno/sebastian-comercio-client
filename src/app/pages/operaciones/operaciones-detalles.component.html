@@ -1,16 +1,150 @@
+<!-- Detalles de venta -->
+<app-modal [showModal]="showModalDetallesVenta">
+  <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
+    <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de venta </h1>
+    <div class="flex items-center">
+      <button (click)="eliminarOperacionVentaPropia()" title="Eliminar venta"
+        class="text-white focus:outline-none bg-red-700 p-2 rounded">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+        </svg>
+      </button>
+      <button class="ml-2 bg-gray-100 focus:outline-none hover:text-secondaryColor text-black p-2 rounded"
+        (click)="showModalDetallesVenta = false">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="p-4 max-h-96 overflow-y-auto text-sm">
+    <div>
+      <div class="md:flex md:items-center md:justify-between">
+        <p> <span class="font-semibold"> Código de venta: </span> {{ operacionVentaPropiaSeleccionada?.venta_propia?.nro
+          | codigoVentasPropias }} </p>
+        <p class="mt-2 md:mt-0"> <span class="font-semibold"> Fecha de venta: </span> {{
+          operacionVentaPropiaSeleccionada?.venta_propia?.fecha_venta | fecha }} </p>
+      </div>
+      <div class="mt-2">
+        <p> <span class="font-semibold"> Precio total: </span> ${{
+          operacionVentaPropiaSeleccionada?.venta_propia?.precio_total | moneda }} </p>
+        <p class="mt-2"> <span class="font-semibold"> Cliente: </span> {{
+          operacionVentaPropiaSeleccionada?.venta_propia?.cliente?.descripcion }} </p>
+        <p class="mt-2"> <span class="font-semibold"> Estado: </span>
+          <span class="px-2 border font-semibold text-xs py-1 rounded ml-1"
+            [ngClass]="{'bg-green-100 text-green-800 border-green-400':operacionVentaPropiaSeleccionada?.venta_propia?.cancelada, 'bg-red-100 text-red-800 border-red-400' : !operacionVentaPropiaSeleccionada?.venta_propia?.cancelada}">
+            {{ operacionVentaPropiaSeleccionada?.venta_propia?.cancelada ? 'Completada' : 'No cancelada' }}
+          </span>
+        </p>
+      </div>
+      <div class="mt-2">
+        <p class="font-semibold"> Observacion personalizada </p>
+        <p class="p-2 border border-gray-400 rounded w-full bg-gray-100 mt-2">
+          {{ operacionVentaPropiaSeleccionada?.venta_propia?.observacion ?
+          operacionVentaPropiaSeleccionada?.venta_propia?.observacion : 'Sin observacion' }}
+        </p>
+      </div>
+    </div>
+  </div>
+</app-modal>
+
+<!-- Detalles de compra -->
+<app-modal [showModal]="showModalDetallesCompra">
+  <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
+    <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de compra </h1>
+    <div class="flex items-center">
+      <button (click)="eliminarOperacionCompra()" title="Eliminar compra"
+        class="text-white focus:outline-none bg-red-700 p-2 rounded">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+        </svg>
+      </button>
+      <button class="ml-2 bg-gray-100 focus:outline-none hover:text-secondaryColor text-black p-2 rounded"
+        (click)="showModalDetallesCompra = false">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="p-4 text-sm">
+    <div>
+      <div class="md:flex md:items-center md:justify-between">
+        <p> <span class="font-semibold"> Código de compra: </span> {{ operacionCompraSeleccionada?.compra?.nro
+          | codigoVentasPropias }} </p>
+        <p class="mt-2 md:mt-0"> <span class="font-semibold"> Fecha de compra: </span> {{
+          operacionCompraSeleccionada?.compra?.fecha_compra | fecha }} </p>
+      </div>
+      <div class="mt-2">
+        <p> <span class="font-semibold"> Precio total: </span> ${{
+          operacionCompraSeleccionada?.compra?.precio_total | moneda }} </p>
+        <p class="mt-2"> <span class="font-semibold"> Proveedor: </span> {{
+          operacionCompraSeleccionada?.compra?.proveedor?.descripcion }} </p>
+      </div>
+      <div class="mt-2">
+        <p class="font-semibold"> Número de factura </p>
+        <p class="p-2 border border-gray-400 rounded w-full bg-gray-100 mt-2">
+          {{ operacionCompraSeleccionada?.compra?.nro_factura ?
+          operacionCompraSeleccionada?.compra?.nro_factura : 'Sin observacion' }}
+        </p>
+      </div>
+      <div class="mt-2">
+        <p class="font-semibold"> Observacion personalizada </p>
+        <p class="p-2 border border-gray-400 rounded w-full bg-gray-100 mt-2">
+          {{ operacionCompraSeleccionada?.compra?.observacion ?
+          operacionCompraSeleccionada?.compra?.observacion : 'Sin observacion' }}
+        </p>
+      </div>
+    </div>
+  </div>
+</app-modal>
+
 <!-- Vinculando ventas -->
 <app-modal [showModal]="showModalVincularVenta">
   <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
     <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Vinculando venta </h1>
-    <svg (click)="showModalVincularVenta = false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+    <svg (click)="showModalVincularVenta = false" width="20" height="20" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
       class="cursor-pointer feather feather-x text-white mr-2">
       <line x1="18" y1="6" x2="6" y2="18"></line>
       <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
   </div>
-  <div class="p-2">
-    Contenido 1
+  <div class="p-2 max-h-96 overflow-y-auto">
+    <div class="flex text-sm items-center">
+      <input (change)="listarVentasPropias()" [(ngModel)]="parametroVentasPropias" placeholder="Buscar venta" type="text"
+        class="p-2 border focus:outline-none w-full mx-auto border-gray-400 rounded">
+      <button (click)="listarVentasPropias()" title="Buscar venta"
+        class="p-2 ml-2 focus:outline-none hover:text-secondaryColor border rounded border-gray-400 bg-gray-100">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Listado de ventas -->
+    <div (click)="agregarVenta(venta._id)" title="Seleccionar venta" *ngFor="let venta of ventasPropias"
+      class="border mt-2 text-sm hover:border-secondaryColor cursor-pointer border-gray-400">
+      <div class="bg-gray-50 border-b border-gray-400 p-2 flex items-center justify-between">
+        <p class="font-semibold"> {{ venta.nro | codigoVentasPropias }} </p>
+        <p class="font-semibold"> {{ venta.fecha_venta | fecha }} </p>
+      </div>
+      <div class="bg-white p-2">
+        <p class="mt-1"> <span class="font-semibold"> Cliente: </span> <span> {{
+            venta.cliente.descripcion }}</span> </p>
+        <p class="mt-2"> <span class="font-semibold"> Precio total: </span> <span> ${{ venta.precio_total |
+            moneda }}</span> </p>
+      </div>
+    </div>
+
   </div>
 </app-modal>
 
@@ -18,20 +152,47 @@
 <app-modal [showModal]="showModalVincularCompra">
   <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
     <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Vinculando compra </h1>
-    <svg (click)="showModalVincularCompra = false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+    <svg (click)="showModalVincularCompra = false" width="20" height="20" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
       class="cursor-pointer feather feather-x text-white mr-2">
       <line x1="18" y1="6" x2="6" y2="18"></line>
       <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
   </div>
-  <div class="p-2">
-    Contenido 2
+  <div class="p-2 max-h-96 overflow-y-auto">
+    <div class="flex text-sm items-center">
+      <input (change)="listarCompras()" [(ngModel)]="parametroCompras" placeholder="Buscar venta" type="text"
+        class="p-2 border focus:outline-none w-full mx-auto border-gray-400 rounded">
+      <button (click)="listarCompras()" title="Buscar venta"
+        class="p-2 ml-2 focus:outline-none hover:text-secondaryColor border rounded border-gray-400 bg-gray-100">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Listado de compras -->
+    <div (click)="agregarCompra(compra._id)" title="Seleccionar compra" *ngFor="let compra of compras"
+      class="border mt-2 text-sm hover:border-secondaryColor cursor-pointer border-gray-400">
+      <div class="bg-gray-50 border-b border-gray-400 p-2 flex items-center justify-between">
+        <p class="font-semibold"> {{ compra.nro | codigoCompras }} </p>
+        <p class="font-semibold"> {{ compra.fecha_compra | fecha }} </p>
+      </div>
+      <div class="bg-white p-2">
+        <p class="mt-1"> <span class="font-semibold"> Proveedor: </span> <span> {{
+            compra.proveedor.descripcion }}</span> </p>
+        <p class="mt-2"> <span class="font-semibold"> Precio total: </span> <span> ${{ compra.precio_total |
+            moneda }}</span> </p>
+      </div>
+    </div>
+
   </div>
 </app-modal>
 
 
-<div class="mt-4 gsap-contenido w-full md:w-1/2 mx-auto">
+<div class="mt-4 gsap-contenido w-full md:w-1/2 mx-auto pb-10">
 
   <!-- Header -->
   <div class="bg-primary-800 flex w-11/12 md:w-full items-center mx-auto text-white p-3">
@@ -151,7 +312,9 @@
     <!-- Ventas vinculadas -->
 
     <div *ngIf="operacionVentasPropias.length > 0">
-      <div class="border border-gray-400 mt-2" *ngFor="let relacion of operacionVentasPropias">
+      <div (click)="openModalDetallesVenta(relacion)"
+        class="border hover:border-secondaryColor cursor-pointer border-gray-400 mt-2"
+        *ngFor="let relacion of operacionVentasPropias">
         <div class="flex font-semibold items-center justify-between bg-green-100 border-b border-gray-400 p-2">
           <p> <span> {{ relacion.venta_propia.nro | codigoVentasPropias
               }}</span> </p>
@@ -207,7 +370,9 @@
     <!-- Compras vinculadas -->
 
     <div *ngIf="operacionCompras.length > 0">
-      <div class="border border-gray-400 mt-2" *ngFor="let relacion of operacionCompras">
+      <div (click)="openModalDetallesCompra(relacion)"
+        class="border hover:border-secondaryColor cursor-pointer border-gray-400 mt-2"
+        *ngFor="let relacion of operacionCompras">
         <div class="flex font-semibold items-center justify-between bg-red-100 border-b border-gray-400 p-2">
           <p> <span> {{ relacion.compra.nro | codigoCompras }}</span> </p>
           <p> <span> {{ relacion.compra.fecha_compra | fecha
