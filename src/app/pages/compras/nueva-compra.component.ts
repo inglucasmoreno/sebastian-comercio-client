@@ -8,9 +8,11 @@ import { ChequesService } from 'src/app/services/cheques.service';
 import { ComprasService } from 'src/app/services/compras.service';
 import { DataService } from 'src/app/services/data.service';
 import { ProductosService } from 'src/app/services/productos.service';
+import { Location } from '@angular/common';
 import { ProveedoresService } from 'src/app/services/proveedores.service';
 import gsap from 'gsap';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 
 const base_url = environment.base_url;
 
@@ -93,6 +95,10 @@ export class NuevaCompraComponent implements OnInit {
   public proveedorSeleccionado: any = null;
   public proveedores: any[] = [];
 
+  // Operacion
+  public operacion_id = '';
+  public operacion_nro = 0;
+
   // Paginacion - Productos
   public totalItems: number;
   public desde: number = 0;
@@ -109,6 +115,8 @@ export class NuevaCompraComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private cajasService: CajasService,
+    private location: Location,
+    private router: Router,
     private chequesService: ChequesService,
     public authService: AuthService,
     private alertService: AlertService,
@@ -165,6 +173,7 @@ export class NuevaCompraComponent implements OnInit {
 
           const data = {
             proveedor: this.proveedorSeleccionado._id,
+            operacion: this.operacion_id,
             observacion: this.observacion,
             fecha_compra: this.fecha_compra,
             nro_factura: this.nro_factura,
@@ -194,6 +203,7 @@ export class NuevaCompraComponent implements OnInit {
               this.observacion = '';
               this.showCompletarCompra = false;
               this.almacenamientoLocalStorage();
+              this.router.navigateByUrl(`/dashboard/operaciones/detalles/${this.operacion_id}`);
               window.open(`${base_url}/pdf/compra.pdf`, '_blank');
               this.alertService.close();
             }, error: ({ error }) => this.alertService.errorApi(error.message)
@@ -843,6 +853,11 @@ export class NuevaCompraComponent implements OnInit {
     })
   }
 
+  // Regresar
+  regresar(): void {
+    this.location.back();
+  }
+
   // Paginacion - Cambiar pagina
   cambiarPagina(nroPagina): void {
     this.paginaActualProductos = nroPagina;
@@ -865,6 +880,8 @@ export class NuevaCompraComponent implements OnInit {
 
   // recupearar localstorage
   recuperarLocalStorage(): void {
+    this.operacion_id = localStorage.getItem('operacion_id') ? JSON.parse(localStorage.getItem('operacion_id')) : '';
+    this.operacion_nro = Number(localStorage.getItem('operacion_nro')) ? JSON.parse(localStorage.getItem('operacion_nro')) : 0;
     this.etapa = localStorage.getItem('compra-etapa') ? JSON.parse(localStorage.getItem('compra-etapa')) : 'proveedores';
     this.porcentajesTotal = localStorage.getItem('compra-porcentajesTotal') ? JSON.parse(localStorage.getItem('compra-porcentajesTotal')) : '';
     this.porcentajeAplicadoTotal = localStorage.getItem('compra-porcentajeAplicadoTotal') ? JSON.parse(localStorage.getItem('compra-porcentajeAplicadoTotal')) : false;

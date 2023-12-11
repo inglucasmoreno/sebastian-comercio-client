@@ -1,71 +1,89 @@
-
 <!-- Modal: Nuevo proveedor -->
 <app-modal [showModal]="showNuevoProveedor">
   <div (keyup.enter)="nuevoProveedor()">
-      <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
-          <h1 class=" text-white px-2 py-1 rounded-t md:text-lg"> Nuevo proveedor </h1>
-          <svg (click)="showNuevoProveedor = false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
+      <h1 class=" text-white px-2 py-1 rounded-t md:text-lg"> Nuevo proveedor </h1>
+      <svg (click)="showNuevoProveedor = false" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="cursor-pointer feather feather-x text-white mr-2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </div>
+    <div class="px-2 pt-2 max-h-96 overflow-y-auto text-sm">
+      <div>
+        <p class="font-semibold"> <span class="text-red-500"> * </span> Razón social </p>
+        <input [(ngModel)]="proveedoresForm.descripcion"
+          class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800"
+          placeholder="Ej. Equinoccio Technology" type="text">
       </div>
-      <div class="px-2 pt-2 max-h-96 overflow-y-auto text-sm">
-          <div>
-            <p class="font-semibold"> <span class="text-red-500"> * </span> Razón social </p>
-            <input [(ngModel)]="proveedoresForm.descripcion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Equinoccio Technology" type="text">
-          </div>
-          <div class="md:flex md:items-center mt-4">
-            <div class="md:w-1/2">
-              <p class="font-semibold"> Tipo de identificación </p>
-              <select [(ngModel)]="proveedoresForm.tipo_identificacion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
-                <option value="DNI"> DNI </option>
-                <option value="CUIL"> CUIL </option>
-                <option value="CUIT"> CUIT </option>
-              </select>
-            </div>
-            <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
-              <p class="font-semibold"> Identificación </p>
-              <input [(ngModel)]="proveedoresForm.identificacion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 34060398" type="text">
-            </div>
-          </div>
-          <div class="md:flex md:items-center mt-4">
-            <div class="md:w-1/2">
-              <p class="font-semibold"> Teléfono </p>
-              <input [(ngModel)]="proveedoresForm.telefono" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. 2664869642" type="text">
-            </div>
-            <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
-              <p class="font-semibold"> Correo electrónico </p>
-              <input [(ngModel)]="proveedoresForm.correo_electronico" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. equinocciotech@gmail.com" type="text">
-            </div>
-          </div>
-          <div class="md:flex md:items-center mt-4">
-              <div class="md:w-1/2">
-                  <p class="font-semibold"> Dirección </p>
-                  <input [(ngModel)]="proveedoresForm.direccion" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800" placeholder="Ej. Portugal 1030" type="text">              
-              </div>
-              <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
-                  <p class="font-semibold"> Condición frente al IVA </p>
-                  <select [(ngModel)]="proveedoresForm.condicion_iva" class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
-                      <option value="Consumidor Final"> Consumidor Final </option>
-                      <option value="IVA Responsable Inscripto"> IVA Responsable Inscripto </option>
-                      <option value="IVA Responsable no Inscripto"> IVA Responsable no Inscripto </option>
-                      <option value="IVA no Responsable"> IVA no Responsable </option>
-                      <option value="IVA Sujeto Exento"> IVA Sujeto Exento </option>
-                      <option value="Responsable Monotributo"> Responsable Monotributo </option>
-                      <option value="Sujeto no Categorizado"> Sujeto no Categorizado </option>
-                      <option value="Proveedor del Exterior"> Proveedor del Exterior </option>
-                      <option value="Cliente del Exterior"> Cliente del Exterior </option>
-                      <option value="IVA Liberado"> IVA Liberado </option>
-                      <option value="IVA Responsable Inscripto – Agente de Percepción"> IVA Responsable Inscripto – Agente de Percepción </option>
-                      <option value="Pequeño Contribuyente Eventual"> Pequeño Contribuyente Eventual </option>
-                      <option value="Monotributista Social"> Monotributista Social </option>
-                      <option value="Pequeño Contribuyente Eventual Social"> Pequeño Contribuyente Eventual Social </option>                    
-                  </select>
-              </div>
-            </div> 
+      <div class="md:flex md:items-center mt-4">
+        <div class="md:w-1/2">
+          <p class="font-semibold"> Tipo de identificación </p>
+          <select [(ngModel)]="proveedoresForm.tipo_identificacion"
+            class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+            <option value="DNI"> DNI </option>
+            <option value="CUIL"> CUIL </option>
+            <option value="CUIT"> CUIT </option>
+          </select>
+        </div>
+        <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+          <p class="font-semibold"> Identificación </p>
+          <input [(ngModel)]="proveedoresForm.identificacion"
+            class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800"
+            placeholder="Ej. 34060398" type="text">
+        </div>
       </div>
-      <div class="px-2 pb-2">
-        <button (click)="nuevoProveedor()" class="bg-secondaryColor text-sm text-white p-2 w-full mt-4 rounded focus:outline-none font-semibold">
-          Nuevo proveedor
-        </button>
+      <div class="md:flex md:items-center mt-4">
+        <div class="md:w-1/2">
+          <p class="font-semibold"> Teléfono </p>
+          <input [(ngModel)]="proveedoresForm.telefono"
+            class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800"
+            placeholder="Ej. 2664869642" type="text">
+        </div>
+        <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+          <p class="font-semibold"> Correo electrónico </p>
+          <input [(ngModel)]="proveedoresForm.correo_electronico"
+            class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800"
+            placeholder="Ej. equinocciotech@gmail.com" type="text">
+        </div>
       </div>
+      <div class="md:flex md:items-center mt-4">
+        <div class="md:w-1/2">
+          <p class="font-semibold"> Dirección </p>
+          <input [(ngModel)]="proveedoresForm.direccion"
+            class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800"
+            placeholder="Ej. Portugal 1030" type="text">
+        </div>
+        <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+          <p class="font-semibold"> Condición frente al IVA </p>
+          <select [(ngModel)]="proveedoresForm.condicion_iva"
+            class="py-2 mt-1 border-b-2 border-gray-300 tranform duration-500 focus:border-secondaryColor outline-none w-full text-gray-800">
+            <option value="Consumidor Final"> Consumidor Final </option>
+            <option value="IVA Responsable Inscripto"> IVA Responsable Inscripto </option>
+            <option value="IVA Responsable no Inscripto"> IVA Responsable no Inscripto </option>
+            <option value="IVA no Responsable"> IVA no Responsable </option>
+            <option value="IVA Sujeto Exento"> IVA Sujeto Exento </option>
+            <option value="Responsable Monotributo"> Responsable Monotributo </option>
+            <option value="Sujeto no Categorizado"> Sujeto no Categorizado </option>
+            <option value="Proveedor del Exterior"> Proveedor del Exterior </option>
+            <option value="Cliente del Exterior"> Cliente del Exterior </option>
+            <option value="IVA Liberado"> IVA Liberado </option>
+            <option value="IVA Responsable Inscripto – Agente de Percepción"> IVA Responsable Inscripto – Agente de
+              Percepción </option>
+            <option value="Pequeño Contribuyente Eventual"> Pequeño Contribuyente Eventual </option>
+            <option value="Monotributista Social"> Monotributista Social </option>
+            <option value="Pequeño Contribuyente Eventual Social"> Pequeño Contribuyente Eventual Social </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="px-2 pb-2">
+      <button (click)="nuevoProveedor()"
+        class="bg-secondaryColor text-sm text-white p-2 w-full mt-4 rounded focus:outline-none font-semibold">
+        Nuevo proveedor
+      </button>
+    </div>
   </div>
 </app-modal>
 
@@ -84,7 +102,7 @@
   <div class="px-2 py-1 mt-2 text-sm">
     <p> <span class="font-semibold"> Pago con cheques: </span> ${{ totalTmpCheques | moneda }} </p>
   </div>
-  
+
   <div class="p-2 overflow-y-auto max-h-96">
     <div [ngClass]="{'bg-green-50 border-green-700' : cheque?.seleccionado}" (click)="seleccionarCheque(cheque)"
       class="border mb-2 hover:border-secondaryColor cursor-pointer flex items-center justify-between border-gray-400 text-sm p-2"
@@ -97,7 +115,7 @@
       <p class="font-semibold text-md"> ${{ cheque.importe | moneda }} </p>
     </div>
   </div>
-  
+
   <div class="p-2 flex items-center text-sm border-t-2">
     <button (click)="finalizarSeleccionCheques()"
       class="bg-green-700 focus:outline-none text-white shadow rounded p-2 w-1/2"> Aceptar </button>
@@ -156,9 +174,10 @@
           <div class="pt-2 md:pt-0">
             <button title="Agregar forma de pago" *ngIf="!flagCC" (click)="agregarFormaPago()"
               class="p-2 border focus:outline-none border-gray-400 rounded ml-1 hover:text-secondaryColor">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>              
+              </svg>
             </button>
           </div>
         </div>
@@ -174,7 +193,8 @@
           </svg>
           <p> Cheques </p>
         </button>
-        <button *ngIf="estadoCuentaCorriente === 'No tiene' && this.authService.usuario.role === 'ADMIN_ROLE'" (click)="crearCuentaCorriente()"
+        <button *ngIf="estadoCuentaCorriente === 'No tiene' && this.authService.usuario.role === 'ADMIN_ROLE'"
+          (click)="crearCuentaCorriente()"
           class="flex ml-2 items-center mt-2 p-1 focus:outline-none bg-gray-100 border rounded border-gray-400 hover:text-secondaryColor">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"
             stroke-width="2">
@@ -294,9 +314,10 @@
             class="w-full focus:outline-none mt-1 border rounded border-gray-400 p-2">
           <button *ngIf="!porcentajeAplicado" title="Agregar variacion porcentual" (click)="aplicarPorcentajes()"
             class="p-2 border border-gray-400 ml-2 mt-1 text-sm focus:outline-none hover:text-green-700 rounded">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-5 h-5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>            
+            </svg>
           </button>
           <button *ngIf="porcentajeAplicado" title="Recuperar precio original" (click)="eliminarPorcentaje()"
             class="p-2 border border-gray-400 ml-2 mt-1 text-sm focus:outline-none hover:text-red-700 rounded">
@@ -338,10 +359,10 @@
     </div>
 
     <div class="max-h-96 overflow-y-auto">
-      
+
       <!-- Busqueda de productos -->
       <div *ngIf="!productoSeleccionado" class="p-4">
-  
+
         <div class="block relative md:w-1/3">
           <span class="h-full absolute inset-y-0 left-0 flex items-center pl-2">
             <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current text-gray-500 cursor-pointer hover:text-secondary-500">
@@ -353,7 +374,7 @@
           <input placeholder="Buscar" (change)="cambiarPagina(1)" [(ngModel)]="filtro.parametroProductos"
             class="appearance-none rounded-r rounded-l border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none" />
         </div>
-  
+
         <div class="mt-2 text-sm">
           <div (click)="seleccionarProducto(producto)"
             class="border shadow hover:border-secondaryColor cursor-pointer border-gray-400 p-2 w-full my-2"
@@ -362,14 +383,14 @@
             <p class="text-gray-600 text-xs"> {{ producto.unidad_medida.descripcion }} </p>
           </div>
         </div>
-  
+
         <div class="p-2 text-xs md:text-sm mt-4 bg-white flex flex-col xs:flex-row items-center xs:justify-between">
           <pagination-controls id="productos" nextLabel="Siguiente" previousLabel="Anterior"
             (pageChange)="cambiarPagina($event)"></pagination-controls>
         </div>
-  
+
       </div>
-  
+
       <!-- Producto seleccionado -->
       <div *ngIf="productoSeleccionado" class="p-4">
         <p class="font-semibold text-sm"> {{ productoSeleccionado?.descripcion }} </p>
@@ -396,13 +417,15 @@
                 class="w-full focus:outline-none mt-1 border rounded border-gray-400 p-2">
               <button *ngIf="!porcentajeAplicado" title="Agregar variacion porcentual" (click)="aplicarPorcentajes()"
                 class="p-2 border border-gray-400 ml-2 mt-1 focus:outline-none hover:text-green-700 rounded">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-5 h-5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               </button>
               <button *ngIf="porcentajeAplicado" title="Recuperar precio original" (click)="eliminarPorcentaje()"
                 class="p-2 border border-gray-400 ml-2 mt-1 focus:outline-none hover:text-red-700 rounded">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-5 h-5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -420,18 +443,25 @@
           </button>
         </div>
       </div>
-    
+
     </div>
 
 
   </div>
 </app-modal>
 
+<!-- Asignando a operacion Nro ******** -->
+
+<div class="flex items-center gsap-contenido justify-center my-5">
+  <div class="bg-green-50 border text-sm rounded w-max border-green-400 p-2">
+    Agregando a operación <span class="font-semibold"> Nro {{ operacion_nro | codigoOperaciones }} </span>
+  </div>
+</div>
 
 <!-- ETAPA: PROVEEDORES -->
 <div class="gsap-contenido">
 
-  <div *ngIf="etapa === 'proveedores'" class="mt-4 md:mt-10 w-11/12 mx-auto">
+  <div *ngIf="etapa === 'proveedores'" class="w-11/12 mx-auto">
     <div class="flex items-center justify-center">
       <div class="text-center">
         <h1 class="font-semibold text-2xl"> GENERADOR DE COMPRA </h1>
@@ -441,8 +471,11 @@
         <div class="text-center w-full">
           <div *ngIf="!proveedorSeleccionado" class="mt-4">
             <input [(ngModel)]="filtro.parametroProveedor" type="text" (focus)="showOptions = true"
-              class="border shadow border-gray-400 p-2 text-sm w-80 md:w-96 mx-auto focus:outline-none" placeholder="Buscar proveedor">
-            <p (click)="abrirNuevoProveedor()" class="text-center font-semibold mt-2 p-1 cursor-pointer bg-gray-100 border hover:text-secondaryColor border-gray-400 rounded text-sm w-80 md:w-96 mx-auto"> Nuevo proveedor </p>
+              class="border shadow border-gray-400 p-2 text-sm w-80 md:w-96 mx-auto focus:outline-none"
+              placeholder="Buscar proveedor">
+            <p (click)="abrirNuevoProveedor()"
+              class="text-center font-semibold mt-2 p-1 cursor-pointer bg-gray-100 border hover:text-secondaryColor border-gray-400 rounded text-sm w-80 md:w-96 mx-auto">
+              Nuevo proveedor </p>
             <div class="bg-white border mt-2 border-gray-400 absolute w-80 md:w-96" *ngIf="showOptions">
               <div class="bg-gray-100 p-2 px-4 flex items-center justify-between border-b border-gray-400">
                 <p class="font-semibold text-sm"> Listado de proveedores </p>
@@ -491,19 +524,22 @@
 
     </div>
 
-    <div class="flex items-center justify-center">
+    <div class="flex items-center mx-auto text-sm w-80 md:w-96 mt-4 justify-center">
+      <button (click)="regresar()" class="bg-primary-800 w-1/2 text-white rounded p-2">
+        Regresar
+      </button>
       <button (click)="cambiarEtapa('compra')"
-        class="bg-primary-800 mt-4 hover:bg-secondaryColor text-sm focus:outline-none transition duration-200 p-2 rounded text-white">
+        class="ml-2 bg-secondaryColor w-1/2 focus:outline-none transition duration-200 p-2 rounded text-white">
         Continuar
       </button>
     </div>
 
     <img class="md:w-1/2 w-11/12 mx-auto mt-10" src="/assets/compras.svg">
-  
+
   </div>
 
   <!-- ETAPA: COMPRA -->
-  <div *ngIf="etapa === 'compra'" class="mt-4 md:mt-10">
+  <div *ngIf="etapa === 'compra'">
 
     <div class="w-full">
 
@@ -519,15 +555,18 @@
             <div>
               <button *ngIf="productosCompra.length > 0" (click)="abrirCompletarCompra()" title="Completar compra"
                 class="p-2 text-primary-900 focus:outline-none bg-white rounded hover:text-secondaryColor">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-5 h-5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                </svg>                
+                </svg>
               </button>
               <button (click)="buscarProductos()" title="Buscar producto"
                 class="p-2 ml-2 text-primary-900 focus:outline-none bg-white rounded hover:text-secondaryColor">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>                
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
               </button>
             </div>
           </div>
@@ -558,14 +597,16 @@
                     (click)="!porcentajeAplicadoTotal ? aplicarPorcentajesTotal() : eliminarPorcentajesTotal()"
                     class="p-2 ml-1 border focus:outline-none hover:text-green-700 border-gray-400 rounded mt-1">
 
-                    <svg *ngIf="!porcentajeAplicadoTotal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <svg *ngIf="!porcentajeAplicadoTotal" xmlns="http://www.w3.org/2000/svg" fill="none"
+                      viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
-                    
-                    <svg *ngIf="porcentajeAplicadoTotal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+
+                    <svg *ngIf="porcentajeAplicadoTotal" xmlns="http://www.w3.org/2000/svg" fill="none"
+                      viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                  
+
                   </button>
                 </div>
               </div>

@@ -37,12 +37,15 @@ export class OperacionesComponent implements OnInit {
   }
 
   // Paginacion
+  public totalItems: number;
   public paginaActual: number = 1;
   public cantidadItems: number = 10;
+  public desde: number = 0;
 
   // Filtrado
   public filtro = {
     activo: 'true',
+    estado: 'Abierta',
     parametro: ''
   }
 
@@ -102,7 +105,12 @@ export class OperacionesComponent implements OnInit {
   listarOperaciones(): void {
     const parametros = {
       direccion: this.ordenar.direccion,
-      columna: this.ordenar.columna
+      columna: this.ordenar.columna,
+      desde: this.desde,
+      estado: this.filtro.estado,
+      cantidadItems: this.cantidadItems,
+      activo: this.filtro.activo,
+      parametro: this.filtro.parametro
     }
     this.operacionesService.listarOperaciones(parametros)
       .subscribe(({ operaciones }) => {
@@ -161,6 +169,20 @@ export class OperacionesComponent implements OnInit {
   ordenarPorColumna(columna: string) {
     this.ordenar.columna = columna;
     this.ordenar.direccion = this.ordenar.direccion == 1 ? -1 : 1;
+    this.alertService.loading();
+    this.listarOperaciones();
+  }
+
+  // Cambiar cantidad de items
+  cambiarCantidadItems(): void {
+    this.paginaActual = 1
+    this.cambiarPagina(1);
+  }
+
+  // Paginacion - Cambiar pagina
+  cambiarPagina(nroPagina): void {
+    this.paginaActual = nroPagina;
+    this.desde = (this.paginaActual - 1) * this.cantidadItems;
     this.alertService.loading();
     this.listarOperaciones();
   }

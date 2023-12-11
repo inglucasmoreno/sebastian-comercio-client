@@ -2,7 +2,7 @@
 <app-modal-small [showModal]="showModalOperacion">
   <div (keyup.enter)="nuevaOperacion()">
     <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
-      <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Creando operacion </h1>
+      <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Creando operación </h1>
       <svg (click)="showModalOperacion = false" width="20" height="20" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
         class="cursor-pointer feather feather-x text-white mr-2">
@@ -51,11 +51,11 @@
           <div class="my-2 flex sm:flex-row flex-col">
             <div class="flex flex-row mb-1 sm:mb-0">
               <div class="relative">
-                <select #txtActivo (change)="filtrarActivos(txtActivo.value)"
+                <select  (change)="cambiarPagina(1)" [(ngModel)]="filtro.estado"
                   class="h-full text-sm rounded-r border-t border-l rounded-l sm:rounded-r-none sm:border-r-0 border-r border-b block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500">
-                  <option value='true'> Estado </option>
-                  <option value='false'> Inactivos </option>
-                  <option value=''> Todos </option>
+                  <option value='Completada'> Completadas </option>
+                  <option value='Abierta'> Abiertas </option>
+                  <option value=''> Todas </option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                   <svg class="fill-current h-4 w-4" viewBox="0 0 20 20">
@@ -73,10 +73,10 @@
                   </path>
                 </svg>
               </span>
-              <input #txtParametro placeholder="Buscar" (change)="filtrarParametro(txtParametro.value)"
+              <input placeholder="Buscar" (change)="cambiarPagina(1)" [(ngModel)]="filtro.parametro"
                 class="appearance-none rounded-r rounded-l sm:rounded-l-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none" />
             </div>
-            <select (change)="paginaActual = 1"
+            <select (change)="cambiarCantidadItems()"
               class="bg-white text-sm focus:outline-none w-max px-2 py-2 md:py-0 md:ml-2 mt-2 md:mt-0 border text-gray-600 border-gray-400 rounded"
               [(ngModel)]="cantidadItems">
               <option value="10"> 10 elementos </option>
@@ -117,6 +117,54 @@
                   </th>
                   <th
                     class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-900 tracking-wider">
+                    <div (click)="ordenarPorColumna('total_ventas')"
+                      class="cursor-pointer flex items-center focus:outline-none">
+                      <span> Total ventas </span>
+                      <span class="ml-2 text-gray-600">
+                        <svg *ngIf="ordenar.columna == 'total_ventas' && ordenar.direccion == 1" width="15" height="15"
+                          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round" class="feather feather-chevron-down">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                        <svg *ngIf="ordenar.columna == 'total_ventas' && ordenar.direccion == -1" width="15" height="15"
+                          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round" class="feather feather-chevron-up">
+                          <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg>
+                        <svg *ngIf="ordenar.columna != 'total_ventas'" width="15" height="15" viewBox="0 0 24 24"
+                          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round" class="feather feather-minus">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      </span>
+                    </div>
+                  </th>
+                  <th
+                    class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-900 tracking-wider">
+                    <div (click)="ordenarPorColumna('total_compras')"
+                      class="cursor-pointer flex items-center focus:outline-none">
+                      <span> Total ventas </span>
+                      <span class="ml-2 text-gray-600">
+                        <svg *ngIf="ordenar.columna == 'total_compras' && ordenar.direccion == 1" width="15" height="15"
+                          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round" class="feather feather-chevron-down">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                        <svg *ngIf="ordenar.columna == 'total_compras' && ordenar.direccion == -1" width="15"
+                          height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                          stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up">
+                          <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg>
+                        <svg *ngIf="ordenar.columna != 'total_compras'" width="15" height="15" viewBox="0 0 24 24"
+                          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round" class="feather feather-minus">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      </span>
+                    </div>
+                  </th>
+                  <th
+                    class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-900 tracking-wider">
                     <div (click)="ordenarPorColumna('saldo')"
                       class="cursor-pointer flex items-center focus:outline-none">
                       <span> Saldo </span>
@@ -132,30 +180,6 @@
                           <polyline points="18 15 12 9 6 15"></polyline>
                         </svg>
                         <svg *ngIf="ordenar.columna != 'saldo'" width="15" height="15" viewBox="0 0 24 24" fill="none"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                          class="feather feather-minus">
-                          <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                      </span>
-                    </div>
-                  </th>
-                  <th
-                    class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-900 tracking-wider">
-                    <div (click)="ordenarPorColumna('total')"
-                      class="cursor-pointer flex items-center focus:outline-none">
-                      <span> Total </span>
-                      <span class="ml-2 text-gray-600">
-                        <svg *ngIf="ordenar.columna == 'total' && ordenar.direccion == 1" width="15" height="15"
-                          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                          stroke-linejoin="round" class="feather feather-chevron-down">
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                        <svg *ngIf="ordenar.columna == 'total' && ordenar.direccion == -1" width="15" height="15"
-                          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                          stroke-linejoin="round" class="feather feather-chevron-up">
-                          <polyline points="18 15 12 9 6 15"></polyline>
-                        </svg>
-                        <svg *ngIf="ordenar.columna != 'total'" width="15" height="15" viewBox="0 0 24 24" fill="none"
                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                           class="feather feather-minus">
                           <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -220,10 +244,20 @@
               <tbody *ngIf="operaciones">
                 <tr [routerLink]="['/dashboard/operaciones/detalles/', operacion._id]" title="Ingresar a la operacion"
                   class="animate__animated hover:bg-yellow-50 cursor-pointer  animate__fadeIn"
-                  *ngFor="let operacion of operaciones | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual}">
+                  *ngFor="let operacion of operaciones | paginate: {itemsPerPage: cantidadItems, currentPage: paginaActual, totalItems: totalItems}">
                   <td class="px-5 py-5 border-b border-gray-200 text-xs">
                     <p class="text-gray-900 w-max whitespace-no-wrap">
                       {{ operacion.numero | codigoOperaciones }}
+                    </p>
+                  </td>
+                  <td class="px-5 py-2 border-b border-gray-200 text-xs">
+                    <p class="text-gray-900 w-max whitespace-no-wrap">
+                      ${{ operacion.total_ventas | moneda }}
+                    </p>
+                  </td>
+                  <td class="px-5 py-2 border-b border-gray-200 text-xs">
+                    <p class="text-gray-900 w-max whitespace-no-wrap">
+                      ${{ operacion.total_compras | moneda }}
                     </p>
                   </td>
                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
@@ -233,17 +267,12 @@
                   </td>
                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
                     <p class="text-gray-900 whitespace-no-wrap">
-                      ${{ operacion.total | moneda }}
-                    </p>
-                  </td>
-                  <td class="px-5 py-2 border-b border-gray-200 text-xs">
-                    <p class="text-gray-900 whitespace-no-wrap">
                       {{ operacion.fecha_operacion | fecha }}
                     </p>
                   </td>
                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
-                    <span class="p-2 border rounded-full"
-                      [ngClass]="{'bg-yellow-100 text-yellow-600 font-semibold w-max border-yellow-300':operacion.estado === 'Abierta', 'bg-green-100 text-green-600 font-semibold w-max border-green-300':operacion.estado === 'Completada'}">
+                    <span class="p-2 border rounded-full font-semibold"
+                      [ngClass]="{'bg-yellow-100 text-yellow-600 w-max border-yellow-300':operacion.estado === 'Abierta', 'bg-green-100 text-green-600 w-max border-green-300':operacion.estado === 'Completada'}">
                       {{ operacion.estado }}
                     </span>
                   </td>
@@ -253,10 +282,10 @@
           </div>
         </div>
       </div>
-      <div *ngIf="operaciones.length > cantidadItems"
-        class="px-5 text-sm py-5 mt-4 bg-white border-t flex shadow flex-col xs:flex-row items-center xs:justify-between">
+      <div
+        class="px-5 py-5 text-sm mt-4 bg-white border-t flex shadow flex-col xs:flex-row items-center xs:justify-between">
         <pagination-controls nextLabel="Siguiente" previousLabel="Anterior"
-          (pageChange)="paginaActual = $event"></pagination-controls>
+          (pageChange)="cambiarPagina($event)"></pagination-controls>
       </div>
     </div>
   </app-tarjeta-lista>

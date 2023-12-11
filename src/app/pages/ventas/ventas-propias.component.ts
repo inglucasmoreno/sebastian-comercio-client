@@ -24,7 +24,7 @@ export class VentasPropiasComponent implements OnInit {
 
   // Compra
 
-  public showModalCompra = false; 
+  public showModalCompra = false;
 
   // Reportes
   public reportes = {

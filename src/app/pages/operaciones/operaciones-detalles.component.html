@@ -1,9 +1,56 @@
-<!-- Detalles de venta -->
-<app-modal [showModal]="showModalDetallesVenta">
-  <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
-    <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de venta </h1>
+<!-- Detalles de cheque -->
+<app-modal [showModal]="showDetallesCheque">
+  <div>
+    <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
+        <h1 class=" text-white px-2 py-1 rounded-t md:text-lg"> Detalles de cheque </h1>
+        <svg (click)="cerrarDetallesCheque()" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer feather feather-x text-white mr-2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </div>
+    <div class="px-2 py-2 max-h-96 overflow-y-auto text-sm">
+      <div class="md:flex md:items-center">
+          <div class="md:w-1/2">
+              <p class="font-semibold"> <span class="text-red-500"> * </span> Nro de cheque </p>
+              <div class="p-2 mt-1 border rounded bg-gray-50 border-gray-400 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800">
+                {{ chequeSeleccionado?.nro_cheque }}
+              </div>
+          </div>
+          <div class="md:w-1/2 md:ml-4 mt-2 md:mt-0">
+              <p class="font-semibold"> <span class="text-red-500"> * </span> Importe </p>
+              <div class="p-2 mt-1 bg-gray-50 border rounded border-gray-400 tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800">
+                ${{ chequeSeleccionado?.importe | moneda }}
+              </div>
+          </div>
+      </div>
+      <div class="mt-4">
+          <p class="font-semibold"> <span class="text-red-500"> * </span> Emisor </p>
+          <div class="p-2 mt-1 border bg-gray-50 border-gray-400 rounded tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800">
+            {{ chequeSeleccionado?.emisor }}
+          </div>
+      </div>
+      <div class="md:flex md:items-center mt-4">
+          <div class="md:w-1/2">
+              <p class="font-semibold"> <span class="text-red-500"> * </span> Banco </p>
+              <div class="p-2 mt-1 bg-gray-50 border border-gray-400 rounded tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800">
+                {{ chequeSeleccionado?.banco.descripcion }}
+              </div>
+          </div>
+          <div class="md:w-1/2 md:ml-4 mt-4 md:mt-0">
+              <p class="font-semibold"> <span class="text-red-500"> * </span> Fecha de cobro </p>
+              <div class="p-2 mt-1 bg-gray-50 border border-gray-400 rounded tranform duration-500 focus:border-secondaryColor appearance-none outline-none w-full text-gray-800">
+                {{ chequeSeleccionado?.fecha_cobro | fecha }}
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</app-modal>
+
+<!-- Detalles de la compra -->
+<app-modal [showModal]="showModalDetallesCompra">
+
+  <div class="bg-primary-900 text-white flex items-center justify-between p-2 rounded-t">
+    <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de compra </h1>
     <div class="flex items-center">
-      <button (click)="eliminarOperacionVentaPropia()" title="Eliminar venta"
+      <button *ngIf="operacion?.estado !== 'Completada'" (click)="eliminarOperacionCompra()" title="Eliminar compra"
         class="text-white focus:outline-none bg-red-700 p-2 rounded">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="w-5 h-5">
@@ -11,7 +58,185 @@
             d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
         </svg>
       </button>
-      <button class="ml-2 bg-gray-100 focus:outline-none hover:text-secondaryColor text-black p-2 rounded"
+      <button title="Generar venta"
+        class="ml-2 bg-gray-100 focus:outline-none hover:text-secondaryColor text-black p-2 rounded"
+        (click)="generarVenta()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+        </svg>
+      </button>
+      <button title="Cerrar ventana"
+        class="ml-2 bg-gray-100 focus:outline-none hover:text-secondaryColor text-black p-2 rounded"
+        (click)="showModalDetallesCompra = false">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="p-2 max-h-96 overflow-y-auto text-sm">
+    <div class="w-full md:flex md:items-center md:justify-between">
+      <p> <span class="font-semibold"> Código de compra: </span> {{ operacionCompraSeleccionada.compra?.nro |
+        codigoCompras }} </p>
+      <p class="mt-2 md:mt-0"> <span class="font-semibold"> Fecha de compra: </span> {{
+        operacionCompraSeleccionada.compra?.fecha_compra ? (operacionCompraSeleccionada.compra?.fecha_compra | fecha) :
+        (operacionCompraSeleccionada.compra?.createdAt | fecha) }} </p>
+    </div>
+    <p class="mt-2"> <span class="font-semibold"> Número de factura: </span> {{
+      operacionCompraSeleccionada.compra?.nro_factura }} </p>
+    <p class="mt-2"> <span class="font-semibold"> Precio total: </span> ${{
+      operacionCompraSeleccionada.compra?.precio_total | moneda }}
+
+    </p>
+    <p class="mt-2"> <span class="font-semibold"> Proveedor: </span> {{
+      operacionCompraSeleccionada.compra?.proveedor.descripcion }} </p>
+    <p class="mt-2"> <span class="font-semibold"> Estado: </span> <span
+        [ngClass]="{'bg-green-100 text-green-800 border-green-400':operacionCompraSeleccionada.compra?.cancelada, 'bg-red-100 text-red-800 border-red-400' : !operacionCompraSeleccionada.compra?.cancelada}"
+        class="p-1 border rounded text-xs font-semibold"> {{ operacionCompraSeleccionada.compra?.cancelada ?
+        'Completada' : 'Sin cancelar'}} </span> </p>
+    <div class="mt-2 border-t">
+      <div class="mt-2">
+        <p class="font-semibold"> Observacion personalizada </p>
+        <div class="flex items-center">
+          <input (keyup.enter)="actualizarObservacionCompra()" [(ngModel)]="observacionCompra"
+            type="text" class="border mt-1 focus:outline-none border-gray-400 p-2 rounded w-full"
+            placeholder="Colocar aquí la observación">
+          <button (click)="actualizarObservacionCompra()" title="Actualizar observación"
+            class="border focus:outline-none bg-gray-100 border-gray-400 rounded p-2 ml-1 mt-1 hover:text-secondaryColor">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="mt-2">
+        <p class="font-semibold p-1 border-t"> Formas de pago </p>
+        <div>
+          <p class="p-1 flex items-center justify-between" *ngFor="let forma of operacionCompraSeleccionada.compra?.formas_pago">
+            <span>
+              {{ forma.descripcion }}
+            </span>
+            <span class="font-semibold">
+              ${{ forma.monto | moneda }}
+            </span>
+          </p>
+        </div>
+        <div>
+          <div class="p-1 flex items-center justify-between" *ngFor="let relacion of cheques_compra">
+            <div class="flex items-center">
+              <span>
+                CHEQUE - #{{ relacion.cheque.nro_cheque }}
+              </span>
+              <button (click)="abrirDetallesCheque(relacion.cheque)"
+                class="hover:text-secondaryColor focus:outline-none cursor-pointer ml-1" title="Detalles de cheque">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                </svg>
+              </button>
+            </div>
+            <span class="font-semibold">
+              ${{ relacion.cheque.importe | moneda }}
+            </span>
+          </div>
+        </div>
+        <p class="p-1 mt-1 font-semibold border border-gray-400 bg-gray-50 flex items-center justify-between"> <span>
+            Pago total </span> <span> ${{ pagoTotalCompra | moneda }} </span> </p>
+        <p *ngIf="!operacionCompraSeleccionada.compra?.cancelada"
+          class="p-1 mt-2 font-semibold text-red-700 border border-red-300 bg-red-50 flex items-center justify-between">
+          <span> Monto sin cancelar </span> <span> ${{ operacionCompraSeleccionada.compra?.monto_deuda | moneda }} </span> </p>
+        <p *ngIf="pagoTotalCompra > operacionCompraSeleccionada.compra?.precio_total"
+          class="p-1 mt-2 font-semibold text-green-700 border border-green-300 bg-green-50 flex items-center justify-between">
+          <span> A favor </span> <span> ${{ (pagoTotalCompra - operacionCompraSeleccionada.compra?.precio_total) | moneda }} </span> </p>
+      </div>
+    </div>
+
+    <div *ngIf="ordenesPago?.length > 0" class="pt-2 mt-3 border-t">
+      <div>
+        <h2 class="font-semibold"> Ordenes de pago </h2>
+        <div class="flex flex-wrap items-center">
+          <p [routerLink]="['/dashboard/pagos', relacion?.orden_pago.nro]"
+            class="p-2 border-l-8 border-gray-400 w-max mr-2 hover:border-secondaryColor hover:text-secondaryColor cursor-pointer border mt-2"
+            *ngFor="let relacion of ordenesPago">
+            <span>
+              {{ relacion?.orden_pago.nro | codigoOrdenesPago }}
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-2 mt-3 border-t">
+      <h2 class="font-semibold"> Listado de productos </h2>
+      <div class="flex items-center">
+        <input [(ngModel)]="filtro.parametroProductosCompra" type="text"
+          class="p-2 my-2 border focus:outline-none text-sm border-gray-400 rounded" placeholder="Buscar">
+
+        <button title="Imprimir compra" (click)="generarPDFCompra(operacionCompraSeleccionada.compra)"
+          class="border bg-gray-100 border-gray-400 hover:text-secondaryColor focus:outline-none ml-2 rounded p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
+          </svg>
+        </button>
+
+        <button title="Generar venta" (click)="generarVenta()"
+          class="border bg-gray-100 border-gray-400 hover:text-secondaryColor focus:outline-none ml-2 rounded p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+          </svg>
+        </button>
+
+      </div>
+
+      <div>
+        <div class="text-sm border border-gray-400 mt-2 p-2"
+          *ngFor="let producto of productosCompra | filtroProductosCompra:filtro.parametroProductosCompra:''">
+          <h1 class="font-semibold"> {{ producto.producto.descripcion }} </h1>
+          <p class="text-xs text-gray-500"> <span> ${{ producto.precio_unitario |
+              moneda }} </span> x {{ producto.producto.unidad_medida.descripcion }} </p>
+          <p class="text-xs"> Cantidad: {{ producto.cantidad }} </p>
+          <p class="text-xs font-semibold"> Precio: ${{
+            producto.precio_total | moneda }} </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</app-modal>
+
+<!-- Detalles de venta -->
+<app-modal [showModal]="showModalDetallesVenta">
+  <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
+    <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de venta </h1>
+    <div class="flex items-center">
+      <button *ngIf="operacion?.estado !== 'Completada'" (click)="eliminarOperacionVentaPropia()" title="Eliminar venta"
+        class="text-white focus:outline-none bg-red-700 p-2 rounded">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+        </svg>
+      </button>
+      <button *ngIf="operacionCompras.length <= 0" title="Generar compra"
+        class="ml-2 bg-gray-100 focus:outline-none hover:text-secondaryColor text-black p-2 rounded"
+        (click)="generarCompra()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+        </svg>
+      </button>
+      <button title="Cerrar ventana"
+        class="ml-2 bg-gray-100 focus:outline-none hover:text-secondaryColor text-black p-2 rounded"
         (click)="showModalDetallesVenta = false">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="w-5 h-5">
@@ -22,84 +247,144 @@
   </div>
   <div class="p-4 max-h-96 overflow-y-auto text-sm">
     <div>
-      <div class="md:flex md:items-center md:justify-between">
-        <p> <span class="font-semibold"> Código de venta: </span> {{ operacionVentaPropiaSeleccionada?.venta_propia?.nro
-          | codigoVentasPropias }} </p>
-        <p class="mt-2 md:mt-0"> <span class="font-semibold"> Fecha de venta: </span> {{
-          operacionVentaPropiaSeleccionada?.venta_propia?.fecha_venta | fecha }} </p>
+      <div class="pb-3 border-b">
+        <div class="md:flex md:items-center md:justify-between">
+          <p> <span class="font-semibold"> Código de venta: </span> {{
+            operacionVentaPropiaSeleccionada?.venta_propia?.nro
+            | codigoVentasPropias }} </p>
+          <p class="mt-2 md:mt-0"> <span class="font-semibold"> Fecha de venta: </span> {{
+            operacionVentaPropiaSeleccionada?.venta_propia?.fecha_venta | fecha }} </p>
+        </div>
+        <div class="mt-2">
+          <p> <span class="font-semibold"> Precio total: </span> ${{
+            operacionVentaPropiaSeleccionada?.venta_propia?.precio_total | moneda }} </p>
+          <p class="mt-2"> <span class="font-semibold"> Cliente: </span> {{
+            operacionVentaPropiaSeleccionada?.venta_propia?.cliente?.descripcion }} </p>
+          <p class="mt-2"> <span class="font-semibold"> Estado: </span>
+            <span class="px-2 border font-semibold text-xs py-1 rounded ml-1"
+              [ngClass]="{'bg-green-100 text-green-800 border-green-400':operacionVentaPropiaSeleccionada?.venta_propia?.cancelada, 'bg-red-100 text-red-800 border-red-400' : !operacionVentaPropiaSeleccionada?.venta_propia?.cancelada}">
+              {{ operacionVentaPropiaSeleccionada?.venta_propia?.cancelada ? 'Completada' : 'No cancelada' }}
+            </span>
+          </p>
+        </div>
       </div>
-      <div class="mt-2">
-        <p> <span class="font-semibold"> Precio total: </span> ${{
-          operacionVentaPropiaSeleccionada?.venta_propia?.precio_total | moneda }} </p>
-        <p class="mt-2"> <span class="font-semibold"> Cliente: </span> {{
-          operacionVentaPropiaSeleccionada?.venta_propia?.cliente?.descripcion }} </p>
-        <p class="mt-2"> <span class="font-semibold"> Estado: </span>
-          <span class="px-2 border font-semibold text-xs py-1 rounded ml-1"
-            [ngClass]="{'bg-green-100 text-green-800 border-green-400':operacionVentaPropiaSeleccionada?.venta_propia?.cancelada, 'bg-red-100 text-red-800 border-red-400' : !operacionVentaPropiaSeleccionada?.venta_propia?.cancelada}">
-            {{ operacionVentaPropiaSeleccionada?.venta_propia?.cancelada ? 'Completada' : 'No cancelada' }}
-          </span>
-        </p>
-      </div>
-      <div class="mt-2">
-        <p class="font-semibold"> Observacion personalizada </p>
-        <p class="p-2 border border-gray-400 rounded w-full bg-gray-100 mt-2">
-          {{ operacionVentaPropiaSeleccionada?.venta_propia?.observacion ?
-          operacionVentaPropiaSeleccionada?.venta_propia?.observacion : 'Sin observacion' }}
-        </p>
-      </div>
-    </div>
-  </div>
-</app-modal>
 
-<!-- Detalles de compra -->
-<app-modal [showModal]="showModalDetallesCompra">
-  <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
-    <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de compra </h1>
-    <div class="flex items-center">
-      <button (click)="eliminarOperacionCompra()" title="Eliminar compra"
-        class="text-white focus:outline-none bg-red-700 p-2 rounded">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-          class="w-5 h-5">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-        </svg>
-      </button>
-      <button class="ml-2 bg-gray-100 focus:outline-none hover:text-secondaryColor text-black p-2 rounded"
-        (click)="showModalDetallesCompra = false">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-          class="w-5 h-5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-  </div>
-  <div class="p-4 text-sm">
-    <div>
-      <div class="md:flex md:items-center md:justify-between">
-        <p> <span class="font-semibold"> Código de compra: </span> {{ operacionCompraSeleccionada?.compra?.nro
-          | codigoVentasPropias }} </p>
-        <p class="mt-2 md:mt-0"> <span class="font-semibold"> Fecha de compra: </span> {{
-          operacionCompraSeleccionada?.compra?.fecha_compra | fecha }} </p>
-      </div>
-      <div class="mt-2">
-        <p> <span class="font-semibold"> Precio total: </span> ${{
-          operacionCompraSeleccionada?.compra?.precio_total | moneda }} </p>
-        <p class="mt-2"> <span class="font-semibold"> Proveedor: </span> {{
-          operacionCompraSeleccionada?.compra?.proveedor?.descripcion }} </p>
-      </div>
-      <div class="mt-2">
-        <p class="font-semibold"> Número de factura </p>
-        <p class="p-2 border border-gray-400 rounded w-full bg-gray-100 mt-2">
-          {{ operacionCompraSeleccionada?.compra?.nro_factura ?
-          operacionCompraSeleccionada?.compra?.nro_factura : 'Sin observacion' }}
-        </p>
-      </div>
-      <div class="mt-2">
+      <!-- Observacion personalizada -->
+
+      <div class="mt-2 pb-2">
         <p class="font-semibold"> Observacion personalizada </p>
-        <p class="p-2 border border-gray-400 rounded w-full bg-gray-100 mt-2">
-          {{ operacionCompraSeleccionada?.compra?.observacion ?
-          operacionCompraSeleccionada?.compra?.observacion : 'Sin observacion' }}
+        <div class="flex items-center">
+          <input (keyup.enter)="actualizarObservacion()" [(ngModel)]="observacion" type="text"
+            class="border mt-1 focus:outline-none border-gray-400 p-2 rounded w-full"
+            placeholder="Colocar aquí la observación">
+          <button (click)="actualizarObservacion()" title="Actualizar observación"
+            class="border focus:outline-none bg-gray-100 border-gray-400 rounded p-2 ml-1 mt-1 hover:text-secondaryColor">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Formas de pago -->
+
+      <div class="mt-2 pt-1 border-t">
+        <p class="font-semibold p-1"> Formas de pago </p>
+        <div>
+          <p class="p-1 flex items-center justify-between"
+            *ngFor="let forma of operacionVentaPropiaSeleccionada?.venta_propia?.formas_pago">
+            <span>
+              {{ forma.descripcion }}
+            </span>
+            <span class="font-semibold">
+              ${{ forma.monto | moneda }}
+            </span>
+          </p>
+        </div>
+        <div>
+          <p class="p-1 flex items-center justify-between" *ngFor="let relacion of cheques_venta">
+            <span class="flex items-center">
+              CHEQUE - #{{ relacion.cheque.nro_cheque }}
+              <button (click)="abrirDetallesCheque(relacion.cheque)"
+                class="hover:text-secondaryColor focus:outline-none cursor-pointer ml-1" title="Detalles de cheque">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                </svg>
+              </button>
+            </span>
+            <span class="font-semibold">
+              ${{ relacion.cheque.importe | moneda }}
+            </span>
+          </p>
+        </div>
+        <p class="p-1 mt-1 font-semibold border border-gray-400 bg-gray-50 flex items-center justify-between"> <span>
+            Pago total </span> <span> ${{ pagoTotal | moneda }} </span> </p>
+        <p *ngIf="!operacionVentaPropiaSeleccionada?.venta_propia?.cancelada"
+          class="p-1 mt-2 font-semibold text-red-700 border border-red-300 bg-red-50 flex items-center justify-between">
+          <span> Monto sin cancelar </span> <span> ${{ operacionVentaPropiaSeleccionada.venta_propia?.deuda_monto |
+            moneda }} </span>
         </p>
+        <p *ngIf="pagoTotal > operacionVentaPropiaSeleccionada.venta_propia?.precio_total"
+          class="p-1 mt-2 font-semibold text-green-700 border border-green-300 bg-green-50 flex items-center justify-between">
+          <span> A favor del cliente </span> <span> ${{ (pagoTotal -
+            operacionVentaPropiaSeleccionada.venta_propia?.precio_total) | moneda }} </span>
+        </p>
+      </div>
+
+      <!-- Recibos de cobro -->
+      <div *ngIf="recibosCobro.length > 0" class="pt-2 pb-3 mt-3 border-t border-b">
+        <div>
+          <h2 class="font-semibold"> Recibos de cobro </h2>
+          <div class="flex flex-wrap items-center">
+            <p [routerLink]="['/dashboard/cobros', relacion.recibo_cobro.nro]"
+              class="p-2 border-l-8 border-gray-400 w-max mr-2 hover:border-secondaryColor hover:text-secondaryColor cursor-pointer border mt-2"
+              *ngFor="let relacion of recibosCobro">
+              <span>
+                {{ relacion.recibo_cobro.nro | codigoReciboCobro }}
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Listado de productos -->
+      <div class="pt-2 mt-3 border-t">
+        <h2 class="font-semibold"> Listado de productos </h2>
+        <div class="flex items-center">
+          <input [(ngModel)]="filtro.parametroProductos" type="text"
+            class="p-2 my-2 border focus:outline-none text-sm border-gray-400 rounded" placeholder="Buscar">
+          <button title="Imprimir venta" (click)="generarPDF(operacionVentaPropiaSeleccionada.venta_propia)"
+            class="border bg-gray-100 border-gray-400 hover:text-secondaryColor focus:outline-none ml-2 rounded p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
+            </svg>
+          </button>
+          <button *ngIf="operacionCompras.length <= 0" title="Generar compra" (click)="generarCompra()"
+            class="border bg-gray-100 border-gray-400 hover:text-secondaryColor focus:outline-none ml-2 rounded p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+            </svg>
+          </button>
+        </div>
+
+        <div>
+          <div class="text-sm border border-gray-400 mt-2 p-2"
+            *ngFor="let producto of productosVenta | filtroProductos:filtro.parametroProductos:''">
+            <h1 class="font-semibold"> {{ producto.descripcion }} </h1>
+            <p class="text-xs text-gray-500"> <span>
+                ${{ producto.precio_unitario | moneda }} </span> x {{ producto.unidad_medida }} </p>
+            <p class="text-xs"> Cantidad: {{ producto.cantidad }} </p>
+            <p class="text-xs font-semibold"> Precio: ${{
+              producto.precio_total | moneda }} </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -118,8 +403,8 @@
   </div>
   <div class="p-2 max-h-96 overflow-y-auto">
     <div class="flex text-sm items-center">
-      <input (change)="listarVentasPropias()" [(ngModel)]="parametroVentasPropias" placeholder="Buscar venta" type="text"
-        class="p-2 border focus:outline-none w-full mx-auto border-gray-400 rounded">
+      <input (change)="listarVentasPropias()" [(ngModel)]="parametroVentasPropias" placeholder="Buscar venta"
+        type="text" class="p-2 border focus:outline-none w-full mx-auto border-gray-400 rounded">
       <button (click)="listarVentasPropias()" title="Buscar venta"
         class="p-2 ml-2 focus:outline-none hover:text-secondaryColor border rounded border-gray-400 bg-gray-100">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -131,7 +416,15 @@
     </div>
 
     <!-- Listado de ventas -->
-    <div (click)="agregarVenta(venta._id)" title="Seleccionar venta" *ngFor="let venta of ventasPropias"
+
+    <div
+      class="pt-4 text-sm border border-gray-400 mt-4 bg-gray-100 flex flex-col xs:flex-row items-center xs:justify-between">
+      <pagination-controls nextLabel="Siguiente" previousLabel="Anterior"
+        (pageChange)="cambiarPaginaVentas($event)"></pagination-controls>
+    </div>
+
+    <div (click)="agregarVenta(venta._id)" title="Seleccionar venta"
+      *ngFor="let venta of ventasPropias | paginate: {itemsPerPage: cantidadItemsVentas, currentPage: paginaActualVentas, totalItems: totalItemsVentas}"
       class="border mt-2 text-sm hover:border-secondaryColor cursor-pointer border-gray-400">
       <div class="bg-gray-50 border-b border-gray-400 p-2 flex items-center justify-between">
         <p class="font-semibold"> {{ venta.nro | codigoVentasPropias }} </p>
@@ -161,9 +454,9 @@
   </div>
   <div class="p-2 max-h-96 overflow-y-auto">
     <div class="flex text-sm items-center">
-      <input (change)="listarCompras()" [(ngModel)]="parametroCompras" placeholder="Buscar venta" type="text"
+      <input (change)="listarCompras()" [(ngModel)]="parametroCompras" placeholder="Buscar compra" type="text"
         class="p-2 border focus:outline-none w-full mx-auto border-gray-400 rounded">
-      <button (click)="listarCompras()" title="Buscar venta"
+      <button (click)="listarCompras()" title="Buscar compra"
         class="p-2 ml-2 focus:outline-none hover:text-secondaryColor border rounded border-gray-400 bg-gray-100">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="w-5 h-5">
@@ -174,7 +467,15 @@
     </div>
 
     <!-- Listado de compras -->
-    <div (click)="agregarCompra(compra._id)" title="Seleccionar compra" *ngFor="let compra of compras"
+
+    <div
+      class="pt-4 text-sm border border-gray-400 mt-4 bg-gray-100 flex flex-col xs:flex-row items-center xs:justify-between">
+      <pagination-controls nextLabel="Siguiente" previousLabel="Anterior"
+        (pageChange)="cambiarPaginaCompras($event)"></pagination-controls>
+    </div>
+
+    <div (click)="agregarCompra(compra._id)" title="Seleccionar compra"
+      *ngFor="let compra of compras | paginate: {itemsPerPage: cantidadItemsCompras, currentPage: paginaActualCompras, totalItems: totalItemsCompras}"
       class="border mt-2 text-sm hover:border-secondaryColor cursor-pointer border-gray-400">
       <div class="bg-gray-50 border-b border-gray-400 p-2 flex items-center justify-between">
         <p class="font-semibold"> {{ compra.nro | codigoCompras }} </p>
@@ -195,9 +496,34 @@
 <div class="mt-4 gsap-contenido w-full md:w-1/2 mx-auto pb-10">
 
   <!-- Header -->
-  <div class="bg-primary-800 flex w-11/12 md:w-full items-center mx-auto text-white p-3">
-    <app-boton-regresar routerLink="/dashboard/operaciones"></app-boton-regresar>
-    <h1 class="text-lg ml-2"> Detalles de operacion </h1>
+  <div class="bg-primary-800 flex w-11/12 md:w-full items-center justify-between mx-auto text-white p-3">
+    <div class="flex items-center">
+      <app-boton-regresar routerLink="/dashboard/operaciones"></app-boton-regresar>
+      <div class="ml-2">
+        <h1 class="text-lg"> Detalles de operación </h1>
+        <p [ngClass]="{'bg-green-100 text-green-700':operacion?.estado === 'Completada', 'bg-yellow-100 text-yellow-700':operacion?.estado === 'Abierta'}"
+          class="text-xs px-2 py-1 rounded font-semibold w-max"> {{ operacion?.estado }} </p>
+      </div>
+    </div>
+    <div>
+      <button
+        *ngIf="operacionCompras.length > 0 && operacionVentasPropias.length > 0 && operacion?.estado === 'Abierta'"
+        (click)="completarOperacion()" title="Completar operación"
+        class="bg-gray-100 focus:outline-none rounded p-2 text-black hover:text-green-800">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+      </button>
+      <button *ngIf="operacion?.estado === 'Completada'" (click)="reabrirOperacion()" title="Abrir operación"
+        class="bg-gray-100 focus:outline-none rounded p-2 text-black hover:text-green-800">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
+        </svg>
+      </button>
+    </div>
   </div>
 
   <!-- Detalles generales -->
@@ -224,7 +550,7 @@
             Total ventas
           </div>
           <div class="w-1/2 border-l p-2 border-gray-400">
-            ${{ 15000 | moneda }}
+            ${{ operacion.total_ventas | moneda }}
           </div>
         </div>
       </div>
@@ -234,7 +560,7 @@
             Total compras
           </div>
           <div class="w-1/2 border-l p-2 border-gray-400">
-            ${{ 10000 | moneda }}
+            ${{ operacion.total_compras | moneda }}
           </div>
         </div>
       </div>
@@ -243,28 +569,10 @@
           <div class="w-1/2 p-2 bg-gray-100 font-semibold">
             Saldo
           </div>
-          <div class="w-1/2 border-l p-2 border-gray-400">
-            ${{ 5000 | moneda }}
-          </div>
-        </div>
-      </div>
-      <div class="w-full md:w-1/2  mx-auto border border-t-0 border-gray-400">
-        <div class="flex items-center">
-          <div class="w-1/2 p-2 bg-gray-100 font-semibold">
-            Importes
-          </div>
-          <div class="w-1/2 border-l p-2 border-gray-400">
-            ${{ 10000 | moneda }}
-          </div>
-        </div>
-      </div>
-      <div class="w-full md:w-1/2  mx-auto border border-t-0 border-gray-400">
-        <div class="flex items-center">
-          <div class="w-1/2 p-2 bg-gray-100 font-semibold">
-            Total
-          </div>
-          <div class="w-1/2 border-l font-semibold bg-green-100 p-2 border-gray-400">
-            ${{ 10000 | moneda }}
+          <div
+            [ngClass]="{'text-red-700 bg-red-50':operacion.saldo < 0, 'text-green-700 bg-green-50':operacion.saldo > 0, 'bg-white text-black': operacion.saldo === 0}"
+            class="w-1/2 border-l font-semibold p-2 border-gray-400">
+            ${{ operacion.saldo | moneda }}
           </div>
         </div>
       </div>
@@ -278,7 +586,7 @@
       class="p-2 border flex items-center justify-between text-gray-700 shadow border-gray-400 w-full text-center bg-gray-100">
       <h2 class="font-semibold md:text-lg"> Listado de ventas </h2>
       <div class="text-gray-900">
-        <button (click)="openModalVincularVenta()"
+        <button *ngIf="operacion?.estado !== 'Completada'" (click)="openModalVincularVenta()"
           class="p-2 bg-white border focus:outline-none border-gray-500 rounded hover:text-secondaryColor"
           title="Vincular venta">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -287,7 +595,8 @@
               d="M9 3.75H6.912a2.25 2.25 0 00-2.15 1.588L2.35 13.177a2.25 2.25 0 00-.1.661V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 00-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M12 3v8.25m0 0l-3-3m3 3l3-3" />
           </svg>
         </button>
-        <button class="p-2 bg-white ml-2 border focus:outline-none border-gray-500 rounded hover:text-secondaryColor"
+        <button *ngIf="operacion?.estado !== 'Completada'" (click)="navegarNuevaVenta()"
+          class="p-2 bg-white ml-2 border focus:outline-none border-gray-500 rounded hover:text-secondaryColor"
           title="Nueva venta">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="w-5 h-5">
@@ -335,7 +644,7 @@
     <div
       class="p-2 border mt-4 flex items-center justify-between text-gray-700 shadow border-gray-400 w-full text-center bg-gray-100">
       <h2 class="font-semibold md:text-lg"> Listado de compras </h2>
-      <div class="text-gray-900">
+      <div *ngIf="operacionCompras.length <= 0 && operacion?.estado !== 'Completada'" class="text-gray-900">
         <button (click)="openModalVincularCompra()"
           class="p-2 bg-white border focus:outline-none border-gray-500 rounded hover:text-secondaryColor"
           title="Vincular compra">
@@ -345,7 +654,8 @@
               d="M9 3.75H6.912a2.25 2.25 0 00-2.15 1.588L2.35 13.177a2.25 2.25 0 00-.1.661V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 00-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M12 3v8.25m0 0l-3-3m3 3l3-3" />
           </svg>
         </button>
-        <button class="p-2 bg-white ml-2 border focus:outline-none border-gray-500 rounded hover:text-secondaryColor"
+        <button *ngIf="operacion?.estado !== 'Completada'" (click)="navegarNuevaCompra()"
+          class="p-2 bg-white ml-2 border focus:outline-none border-gray-500 rounded hover:text-secondaryColor"
           title="Nueva compra">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="w-5 h-5">

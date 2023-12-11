@@ -13,6 +13,8 @@ import { CcClientesService } from 'src/app/services/cc-clientes.service';
 import { BancosService } from 'src/app/services/bancos.service';
 import { VentasPropiasService } from 'src/app/services/ventas-propias.service';
 import { format } from 'date-fns';
+import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 const base_url = environment.base_url;
 
@@ -122,6 +124,10 @@ export class NuevaVentaComponent implements OnInit {
   public precio: number = null;
   public precioResguardo: number = null;
 
+  // Operacion
+  public operacion_id = '';
+  public operacion_nro = 0;
+
   // Paginacion - Clientes
   public totalItemsClientes: number;
   public desdeClientes: number = 0;
@@ -150,6 +156,8 @@ export class NuevaVentaComponent implements OnInit {
 
   constructor(private clientesService: ClientesService,
     public authService: AuthService,
+    private location: Location,
+    private router: Router,
     private proveedoresService: ProveedoresService,
     private ventasService: VentasService,
     private ventasPropiasService: VentasPropiasService,
@@ -416,7 +424,10 @@ export class NuevaVentaComponent implements OnInit {
 
   // Regresar a etapa anterior
   regresar(etapaActual: string): void {
-    if (etapaActual === 'clientes') this.etapa = 'tipo_venta';
+    if (etapaActual === 'clientes') {
+      // Regresar a la ruta anterior
+      this.location.back();
+    };
     if (etapaActual === 'productos' && this.tipo_cliente === 'cliente') this.etapa = 'cliente';
     if (etapaActual === 'productos' && this.tipo_cliente === 'consumidor_final') this.etapa = 'tipo_venta';
     this.almacenamientoLocalStorage();
@@ -566,7 +577,13 @@ export class NuevaVentaComponent implements OnInit {
       return;
     }
 
-    // Creando - VENTA PROPIA 
+    // Verificacion: Operacion
+    if (!this.operacion_id) {
+      this.alertService.info('No se encuentra operacion');
+      return;
+    }
+
+    // Creando - VENTA PROPIA
     this.alertService.question({ msg: '¿Quieres generar la venta?', buttonText: 'Generar' })
       .then(({ isConfirmed }) => {
         if (isConfirmed) {
@@ -585,6 +602,7 @@ export class NuevaVentaComponent implements OnInit {
           }
 
           const data = {
+            operacion: this.operacion_id,
             cliente: dataCliente,
             tipo_cliente: this.tipo_cliente,
             tipo_venta: this.tipo_venta,
@@ -613,6 +631,7 @@ export class NuevaVentaComponent implements OnInit {
               this.reiniciarValores();
               this.showFormaPago = false;
               this.alertService.success('Venta generada correctamente');
+              this.router.navigateByUrl(`/dashboard/operaciones/detalles/${this.operacion_id}`);
               window.open(`${base_url}/pdf/venta-propia.pdf`, '_blank');
             },
             error: ({ error }) => this.alertService.errorApi(error.message)
@@ -1251,7 +1270,10 @@ export class NuevaVentaComponent implements OnInit {
 
   // recupearar localstorage
   recuperarLocalStorage(): void {
+    this.operacion_id = localStorage.getItem('operacion_id') ? JSON.parse(localStorage.getItem('operacion_id')) : '';
+    this.operacion_nro = Number(localStorage.getItem('operacion_nro')) ? JSON.parse(localStorage.getItem('operacion_nro')) : 0;
     this.etapa = localStorage.getItem('venta_etapa') ? JSON.parse(localStorage.getItem('venta_etapa')) : 'tipo_venta';
+    console.log(this.etapa);
     this.productoCargado = localStorage.getItem('venta_productoCargado') ? JSON.parse(localStorage.getItem('venta_productoCargado')) : false;
     this.clienteSeleccionado = localStorage.getItem('venta_clienteSeleccionado') ? JSON.parse(localStorage.getItem('venta_clienteSeleccionado')) : null;
     this.porcentajesTotal = localStorage.getItem('venta_porcentajesTotal') ? JSON.parse(localStorage.getItem('venta_porcentajesTotal')) : '';
