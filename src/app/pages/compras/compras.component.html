@@ -766,9 +766,9 @@
                   </td>
                   <td class="px-5 py-2 border-b border-gray-200 text-xs">
                     <p class="text-gray-900 whitespace-no-wrap">
-                      <span *ngIf="compra.operacion"
-                        class="p-1 border font-semibold border-green-400 bg-green-50 rounded text-green-700">
-                        {{ compra.operacion | codigoOperaciones }}
+                      <span (click)="navegarOperacion(compra.operacion._id)" *ngIf="compra.operacion"
+                        class="p-1 border cursor-pointer font-semibold border-green-400 bg-green-50 rounded text-green-700">
+                        {{ compra.operacion.numero | codigoOperaciones }}
                       </span>
                       <span *ngIf="!compra.operacion">
                         -

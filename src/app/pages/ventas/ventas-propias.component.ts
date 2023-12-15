@@ -821,6 +821,11 @@ export class VentasPropiasComponent implements OnInit {
       });
   }
 
+  // Navegar a operacion
+  navegarOperacion(operacion: string): void {
+    this.router.navigateByUrl(`/dashboard/operaciones/detalles/${operacion}`);
+  }
+
   // Abrir generar compra
   abrirGenerarCompra(venta: any): void {
     this.ventaSeleccionada = venta;

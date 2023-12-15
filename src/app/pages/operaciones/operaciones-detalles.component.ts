@@ -16,6 +16,7 @@ import { VentasPropiasChequesService } from 'src/app/services/ventas-propias-che
 import { RecibosCobroVentaService } from 'src/app/services/recibos-cobro-venta.service';
 import { OrdenesPagoCompraService } from 'src/app/services/ordenes-pago-compra.service';
 import { ComprasChequesService } from 'src/app/services/compras-cheques.service';
+import { Location } from '@angular/common';
 
 const base_url = environment.base_url;
 
@@ -26,6 +27,9 @@ const base_url = environment.base_url;
   ]
 })
 export class OperacionesDetallesComponent implements OnInit {
+
+  // Permisos de usuarios login
+  public permisos = { all: false };
 
   // Cheques
   public showDetallesCheque = false;
@@ -95,6 +99,7 @@ export class OperacionesDetallesComponent implements OnInit {
     private alertService: AlertService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
+    private location: Location,
     private ventasPropiasService: VentasPropiasService,
     private comprasService: ComprasService,
     private comprasChequesService: ComprasChequesService,
@@ -105,6 +110,7 @@ export class OperacionesDetallesComponent implements OnInit {
 
   // Inicio de componente
   ngOnInit(): void {
+    this.permisos.all = this.permisosUsuarioLogin();
     this.alertService.loading();
     gsap.from('.gsap-contenido', { y: 100, opacity: 0, duration: .2 });
     this.activatedRoute.params.subscribe({
@@ -125,6 +131,16 @@ export class OperacionesDetallesComponent implements OnInit {
 
       }, error: ({ error }) => this.alertService.errorApi(error.message)
     })
+  }
+
+  // Regresar a la pagina anterior
+  public regresar(): void {
+    this.location.back();
+  }
+
+  // Asignar permisos de usuario login
+  permisosUsuarioLogin(): boolean {
+    return this.authService.usuario.permisos.includes('OPERACIONES_ALL') || this.authService.usuario.role === 'ADMIN_ROLE';
   }
 
   // Actualizar fecha de operacion

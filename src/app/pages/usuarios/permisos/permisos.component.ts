@@ -18,6 +18,7 @@ export class PermisosComponent implements OnInit {
   public permisos = [];
   public secciones = [
     'PRESUPUESTOS',
+    'OPERACIONES',
     'VENTAS_DIRECTAS',
     'VENTAS_PROPIAS',
     'RECIBOS_COBRO',
@@ -55,7 +56,7 @@ export class PermisosComponent implements OnInit {
 
   public permisosSecciones = {
 
-    // Seccion - Ventas
+    OPERACIONES: 'OPERACIONES_NOT_ACCESS',
     PRESUPUESTOS: 'PRESUPUESTOS_ALL',
     VENTAS_DIRECTAS: 'VENTAS_DIRECTAS_NOT_ACCESS',
     VENTAS_PROPIAS: 'VENTAS_PROPIAS_NOT_ACCESS',
@@ -117,7 +118,7 @@ export class PermisosComponent implements OnInit {
   }
 
   public adaptandoPermisos = () => {
-    this.secciones.map( seccion => {      
+    this.secciones.map( seccion => {
       if (this.permisos.includes(`${seccion}_READ`)) this.permisosSecciones[seccion] = `${seccion}_READ`;
       else if (this.permisos.includes(`${seccion}_ALL`)) this.permisosSecciones[seccion] = `${seccion}_ALL`;
       else this.permisosSecciones[seccion] = `${seccion}_NOT_ACCESS`;
@@ -137,7 +138,7 @@ export class PermisosComponent implements OnInit {
   }
 
   public guardarPermisos = () => {
-    
+
     this.alertService.loading();
 
     let nuevosPermisos = [];
@@ -164,7 +165,6 @@ export class PermisosComponent implements OnInit {
   cambiarPermisoCaja = (caja: string) => {
     if(this.permisosCajas.includes(caja)) this.permisosCajas = this.permisosCajas.filter(permiso => permiso !== caja);
     else this.permisosCajas.push(caja);
-    console.log(this.permisosCajas);
   }
 
 }

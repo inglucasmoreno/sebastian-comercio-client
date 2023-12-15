@@ -20,6 +20,7 @@ export class HomeComponent implements OnInit {
   public permisoOrdenesPago: boolean = false;
   public permisoCcClientes: boolean = false;
   public permisoCcProveedores: boolean = false;
+  public permisoOperaciones: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -42,6 +43,7 @@ export class HomeComponent implements OnInit {
     this.permisoOrdenesPago = this.usuarioLogin.permisos.includes('ORDENES_PAGO_NAV') || this.usuarioLogin.role === 'ADMIN_ROLE';
     this.permisoCcClientes = this.usuarioLogin.permisos.includes('CUENTAS_CORRIENTES_CLIENTES_NAV') || this.usuarioLogin.role === 'ADMIN_ROLE';
     this.permisoCcProveedores = this.usuarioLogin.permisos.includes('CUENTAS_CORRIENTES_PROVEEDORES_NAV') || this.usuarioLogin.role === 'ADMIN_ROLE';
+    this.permisoOperaciones = this.usuarioLogin.permisos.includes('OPERACIONES_NAV') || this.usuarioLogin.role === 'ADMIN_ROLE';
   }
 
 }

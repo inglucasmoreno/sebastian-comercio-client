@@ -6,7 +6,7 @@
   </div>
 
   <div class="flex items-center justify-center mt-4">
-    <button routerLink="/dashboard/operaciones"
+    <button *ngIf="permisoOperaciones" routerLink="/dashboard/operaciones"
       class="border hover:border-gray-500 hover:bg-secondaryColor hover:text-white md:ml-4 mt-4 md:mt-0 border-gray-400 transform hover:translate-y-3 transition duration-300 focus:outline-none text-center bg-gray-100 flex flex-col justify-center shadow-xl w-11/12 mx-auto md:mx-0 md:w-44 h-44 text-primary-600 p-2">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="w-16 h-16 mx-auto">

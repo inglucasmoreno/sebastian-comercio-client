@@ -10,7 +10,7 @@ import { OrdenesPagoCompraService } from 'src/app/services/ordenes-pago-compra.s
 import { ProductosService } from 'src/app/services/productos.service';
 import { ReportesService } from 'src/app/services/reportes.service';
 import { environment } from 'src/environments/environment';
-import { saveAs } from 'file-saver-es'; 
+import { saveAs } from 'file-saver-es';
 import { format } from 'date-fns';
 
 const base_url = environment.base_url;
@@ -28,8 +28,8 @@ export class ComprasComponent implements OnInit {
   public showModalVenta = false;
 
   // Fechas
-  public reportes = { 
-    fechaDesde: '', 
+  public reportes = {
+    fechaDesde: '',
     fechaHasta: '',
     activas: 'true'
   };
@@ -122,7 +122,7 @@ export class ComprasComponent implements OnInit {
     private dataService: DataService,
     private router: Router,
     private reportesService: ReportesService
-    ) { }
+  ) { }
 
   ngOnInit(): void {
     this.dataService.ubicacionActual = 'Dashboard - Compras';
@@ -820,10 +820,10 @@ export class ComprasComponent implements OnInit {
           this.reportesService.comprasExcel(this.reportes).subscribe({
             next: (buffer) => {
               const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-              saveAs(blob, `Reporte - Compras - ${format(new Date(),'dd-MM-yyyy')}`);
+              saveAs(blob, `Reporte - Compras - ${format(new Date(), 'dd-MM-yyyy')}`);
               this.alertService.close();
               this.showModalReportesCompra = false;
-            }, error: ({error}) => this.alertService.errorApi(error.message)
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
           })
         }
       });
@@ -853,7 +853,7 @@ export class ComprasComponent implements OnInit {
         let productosCompra = [];
         let precioTotal = 0;
 
-        productos.map( producto => {
+        productos.map(producto => {
           productosCompra.push({
             cantidad: producto.cantidad,
             creatorUser: this.authService.usuario.userId,
@@ -882,11 +882,16 @@ export class ComprasComponent implements OnInit {
         this.router.navigateByUrl('/dashboard/nueva-venta');
 
         this.alertService.close();
-      
+
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
     })
 
+  }
+
+  // Navegar a operacion
+  navegarOperacion(operacion: string): void {
+    this.router.navigateByUrl(`/dashboard/operaciones/detalles/${operacion}`);
   }
 
   // Reiniciando formulario

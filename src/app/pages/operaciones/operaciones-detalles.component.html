@@ -50,7 +50,7 @@
   <div class="bg-primary-900 text-white flex items-center justify-between p-2 rounded-t">
     <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de compra </h1>
     <div class="flex items-center">
-      <button *ngIf="operacion?.estado !== 'Completada'" (click)="eliminarOperacionCompra()" title="Eliminar compra"
+      <button *ngIf="operacion?.estado !== 'Completada' && this.permisos.all" (click)="eliminarOperacionCompra()" title="Eliminar compra"
         class="text-white focus:outline-none bg-red-700 p-2 rounded">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="w-5 h-5">
@@ -58,7 +58,7 @@
             d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
         </svg>
       </button>
-      <button title="Generar venta"
+      <button *ngIf="this.permisos.all" title="Generar venta"
         class="ml-2 bg-gray-100 focus:outline-none hover:text-secondaryColor text-black p-2 rounded"
         (click)="generarVenta()">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
@@ -100,10 +100,10 @@
       <div class="mt-2">
         <p class="font-semibold"> Observacion personalizada </p>
         <div class="flex items-center">
-          <input (keyup.enter)="actualizarObservacionCompra()" [(ngModel)]="observacionCompra"
+          <input [disabled]="!this.permisos.all" (keyup.enter)="actualizarObservacionCompra()" [(ngModel)]="observacionCompra"
             type="text" class="border mt-1 focus:outline-none border-gray-400 p-2 rounded w-full"
             placeholder="Colocar aquí la observación">
-          <button (click)="actualizarObservacionCompra()" title="Actualizar observación"
+          <button *ngIf="this.permisos.all" (click)="actualizarObservacionCompra()" title="Actualizar observación"
             class="border focus:outline-none bg-gray-100 border-gray-400 rounded p-2 ml-1 mt-1 hover:text-secondaryColor">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="w-5 h-5">
@@ -185,7 +185,7 @@
           </svg>
         </button>
 
-        <button title="Generar venta" (click)="generarVenta()"
+        <button *ngIf="this.permisos.all" title="Generar venta" (click)="generarVenta()"
           class="border bg-gray-100 border-gray-400 hover:text-secondaryColor focus:outline-none ml-2 rounded p-2">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="w-5 h-5">
@@ -218,7 +218,7 @@
   <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
     <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Detalles de venta </h1>
     <div class="flex items-center">
-      <button *ngIf="operacion?.estado !== 'Completada'" (click)="eliminarOperacionVentaPropia()" title="Eliminar venta"
+      <button *ngIf="operacion?.estado !== 'Completada' && this.permisos.all" (click)="eliminarOperacionVentaPropia()" title="Eliminar venta"
         class="text-white focus:outline-none bg-red-700 p-2 rounded">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="w-5 h-5">
@@ -226,7 +226,7 @@
             d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
         </svg>
       </button>
-      <button *ngIf="operacionCompras.length <= 0" title="Generar compra"
+      <button *ngIf="operacionCompras.length <= 0 && this.permisos.all" title="Generar compra"
         class="ml-2 bg-gray-100 focus:outline-none hover:text-secondaryColor text-black p-2 rounded"
         (click)="generarCompra()">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -274,10 +274,10 @@
       <div class="mt-2 pb-2">
         <p class="font-semibold"> Observacion personalizada </p>
         <div class="flex items-center">
-          <input (keyup.enter)="actualizarObservacion()" [(ngModel)]="observacion" type="text"
+          <input [disabled]="!this.permisos.all" (keyup.enter)="actualizarObservacion()" [(ngModel)]="observacion" type="text"
             class="border mt-1 focus:outline-none border-gray-400 p-2 rounded w-full"
             placeholder="Colocar aquí la observación">
-          <button (click)="actualizarObservacion()" title="Actualizar observación"
+          <button *ngIf="this.permisos.all" (click)="actualizarObservacion()" title="Actualizar observación"
             class="border focus:outline-none bg-gray-100 border-gray-400 rounded p-2 ml-1 mt-1 hover:text-secondaryColor">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="w-5 h-5">
@@ -498,7 +498,7 @@
   <!-- Header -->
   <div class="bg-primary-800 flex w-11/12 md:w-full items-center justify-between mx-auto text-white p-3">
     <div class="flex items-center">
-      <app-boton-regresar routerLink="/dashboard/operaciones"></app-boton-regresar>
+      <app-boton-regresar (click)="regresar()"></app-boton-regresar>
       <div class="ml-2">
         <h1 class="text-lg"> Detalles de operación </h1>
         <p [ngClass]="{'bg-green-100 text-green-700':operacion?.estado === 'Completada', 'bg-yellow-100 text-yellow-700':operacion?.estado === 'Abierta'}"
@@ -507,7 +507,7 @@
     </div>
     <div>
       <button
-        *ngIf="operacionCompras.length > 0 && operacionVentasPropias.length > 0 && operacion?.estado === 'Abierta'"
+        *ngIf="(operacionCompras.length > 0 && operacionVentasPropias.length > 0 && operacion?.estado === 'Abierta') && this.permisos.all"
         (click)="completarOperacion()" title="Completar operación"
         class="bg-gray-100 focus:outline-none rounded p-2 text-black hover:text-green-800">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -536,7 +536,7 @@
     </div>
     <div class="w-full mt-4 md:mt-0 md:w-1/3 md:ml-7">
       <p class="font-semibold text-center"> Fecha de operacion </p>
-      <input (change)="actualizarFechaOperacion()" onkeydown="return false" [(ngModel)]="fecha_operacion" type="date"
+      <input [disabled]="!this.permisos.all" (change)="actualizarFechaOperacion()" onkeydown="return false" [(ngModel)]="fecha_operacion" type="date"
         class="border mt-2 focus:outline-none text-center w-full border-gray-400 p-2">
     </div>
   </div>
@@ -586,7 +586,7 @@
       class="p-2 border flex items-center justify-between text-gray-700 shadow border-gray-400 w-full text-center bg-gray-100">
       <h2 class="font-semibold md:text-lg"> Listado de ventas </h2>
       <div class="text-gray-900">
-        <button *ngIf="operacion?.estado !== 'Completada'" (click)="openModalVincularVenta()"
+        <button *ngIf="operacion?.estado !== 'Completada' && this.permisos.all" (click)="openModalVincularVenta()"
           class="p-2 bg-white border focus:outline-none border-gray-500 rounded hover:text-secondaryColor"
           title="Vincular venta">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -595,7 +595,7 @@
               d="M9 3.75H6.912a2.25 2.25 0 00-2.15 1.588L2.35 13.177a2.25 2.25 0 00-.1.661V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 00-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M12 3v8.25m0 0l-3-3m3 3l3-3" />
           </svg>
         </button>
-        <button *ngIf="operacion?.estado !== 'Completada'" (click)="navegarNuevaVenta()"
+        <button *ngIf="operacion?.estado !== 'Completada' && this.permisos.all" (click)="navegarNuevaVenta()"
           class="p-2 bg-white ml-2 border focus:outline-none border-gray-500 rounded hover:text-secondaryColor"
           title="Nueva venta">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -644,7 +644,7 @@
     <div
       class="p-2 border mt-4 flex items-center justify-between text-gray-700 shadow border-gray-400 w-full text-center bg-gray-100">
       <h2 class="font-semibold md:text-lg"> Listado de compras </h2>
-      <div *ngIf="operacionCompras.length <= 0 && operacion?.estado !== 'Completada'" class="text-gray-900">
+      <div *ngIf="(operacionCompras.length <= 0 && operacion?.estado !== 'Completada') && this.permisos.all" class="text-gray-900">
         <button (click)="openModalVincularCompra()"
           class="p-2 bg-white border focus:outline-none border-gray-500 rounded hover:text-secondaryColor"
           title="Vincular compra">
@@ -654,7 +654,7 @@
               d="M9 3.75H6.912a2.25 2.25 0 00-2.15 1.588L2.35 13.177a2.25 2.25 0 00-.1.661V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 00-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M12 3v8.25m0 0l-3-3m3 3l3-3" />
           </svg>
         </button>
-        <button *ngIf="operacion?.estado !== 'Completada'" (click)="navegarNuevaCompra()"
+        <button *ngIf="operacion?.estado !== 'Completada' && this.permisos.all" (click)="navegarNuevaCompra()"
           class="p-2 bg-white ml-2 border focus:outline-none border-gray-500 rounded hover:text-secondaryColor"
           title="Nueva compra">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

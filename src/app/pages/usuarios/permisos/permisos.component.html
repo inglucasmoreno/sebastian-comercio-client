@@ -41,6 +41,16 @@
 
     <div *ngIf="muestraSistema" class="p-2">
 
+      <div class="flex items-center border border-gray-400 bg-yellow-50 justify-between pt-4 px-4 mb-2 pb-4">
+        <p class="font-semibold"> Operaciones </p>
+        <select [(ngModel)]="permisosSecciones.OPERACIONES"
+          class="p-2 w-max text-sm border border-gray-400 rounded">
+          <option value="OPERACIONES_NOT_ACCESS"> Sin acceso </option>
+          <option value="OPERACIONES_READ"> Solo lectura </option>
+          <option value="OPERACIONES_ALL"> Permisos totales </option>
+        </select>
+      </div>
+
       <!-- Seccion - Ventas -->
 
       <div class="text-sm">
@@ -315,7 +325,7 @@
             </svg>
             <svg *ngIf="!permisosCajas.includes(caja._id.toString())" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-red-700 font-semibold">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>            
+            </svg>
           </div>
         </div>
       </div>

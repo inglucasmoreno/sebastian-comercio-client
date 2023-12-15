@@ -22,6 +22,11 @@ import { itemsPagos } from './items-pagos';
 })
 export class HeaderComponent implements OnInit {
 
+  public usuarioLogin: any = null;
+
+  // Permisos
+  public permisoOperaciones: boolean = false;
+
   // Items
   public items: any[];
   public itemsPresupuestos: any[];
@@ -69,6 +74,8 @@ export class HeaderComponent implements OnInit {
     this.itemsTerceros = itemsTerceros;
     this.itemsConfiguraciones = itemsConfiguraciones;
     this.itemsGastos = itemsGastos;
+    this.usuarioLogin = this.authService.usuario;
+    this.permisoOperaciones = this.usuarioLogin.permisos.includes('OPERACIONES_NAV') || this.usuarioLogin.role === 'ADMIN_ROLE';
   }
 
   // Abrir/Cerrar navegacion
