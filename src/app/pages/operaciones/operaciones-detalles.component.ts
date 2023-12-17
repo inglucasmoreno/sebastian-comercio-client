@@ -657,6 +657,17 @@ export class OperacionesDetallesComponent implements OnInit {
 
   }
 
+  // Imprimir detalles
+  imprimirDetalles(): void {
+    this.alertService.loading();
+    this.operacionesService.imprimirDetalles(this.operacion._id).subscribe({
+      next: () => {
+        window.open(`${base_url}/pdf/detalles-operacion.pdf`, '_blank');
+        this.alertService.close();
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+  }
+
   // Cerrar detalles de cheque
   cerrarDetallesCheque(): void {
     this.showDetallesCheque = false;

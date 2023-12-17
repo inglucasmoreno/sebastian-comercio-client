@@ -33,6 +33,14 @@ export class OperacionesService {
     });
   };
 
+  // Imprimir - Detalles de operacion
+  imprimirDetalles(id: string): Observable<any> {
+    return this.http.get(`${base_url}/operaciones/imprimir-detalles/${id}`, {
+      headers: this.getToken
+    });
+  };
+
+
   // Listar operaciones
   listarOperaciones(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/operaciones`, {
