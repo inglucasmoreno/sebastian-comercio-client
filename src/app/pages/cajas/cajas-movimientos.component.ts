@@ -36,8 +36,8 @@ const base_url = environment.base_url;
 export class CajasMovimientosComponent implements OnInit {
 
   // Fechas
-  public reportes = { 
-    fechaDesde: '', 
+  public reportes = {
+    fechaDesde: '',
     fechaHasta: '',
     caja: ''
   };
@@ -57,7 +57,7 @@ export class CajasMovimientosComponent implements OnInit {
   public showModalDetallesGasto = false;
   public showModalReportesMovimientos = false;
 
-  // Estado formulario 
+  // Estado formulario
   public estadoFormulario = 'crear';
 
   // Caja
@@ -340,8 +340,11 @@ export class CajasMovimientosComponent implements OnInit {
     this.origen = origen;
 
     this.ventasPropiasService.getVenta(venta_propia !== '' ? venta_propia : this.movimientoSeleccionado.venta_propia).subscribe({
-      next: ({ venta }) => {
+      next: ({ venta, operacion }) => {
+
         this.ventaPropia = venta;
+        this.ventaPropia.operacion = operacion;
+        console.log(this.ventaPropia.operacion);
 
         this.ventasPropiasProductosService.listarProductos({ venta: venta._id }).subscribe({
           next: ({ productos }) => {
