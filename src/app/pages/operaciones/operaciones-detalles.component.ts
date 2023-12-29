@@ -135,7 +135,7 @@ export class OperacionesDetallesComponent implements OnInit {
 
   // Regresar a la pagina anterior
   public regresar(): void {
-    this.location.back();
+    this.router.navigateByUrl('/dashboard/operaciones');
   }
 
   // Asignar permisos de usuario login

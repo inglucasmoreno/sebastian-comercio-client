@@ -157,4 +157,17 @@ export class ReportesService {
     });
   }
 
+  // Reporte -> Operaciones
+  operacionesExcel(parametros: {
+    fechaDesde: string,
+    fechaHasta: string,
+  }): Observable<any> {
+    return this.http.get(`${base_url}/reportes/excel/operaciones`, {
+      headers: this.getToken,
+      responseType: 'blob',
+      observe: 'response',
+      params: parametros
+    });
+  }
+
 }

@@ -5,6 +5,8 @@ import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { OperacionesService } from 'src/app/services/operaciones.service';
+import { ReportesService } from 'src/app/services/reportes.service';
+import { saveAs } from 'file-saver-es';
 
 @Component({
   selector: 'app-operaciones',
@@ -13,6 +15,15 @@ import { OperacionesService } from 'src/app/services/operaciones.service';
   ]
 })
 export class OperacionesComponent implements OnInit {
+
+  // Reportes
+  public reportes = {
+    fechaDesde: '',
+    fechaHasta: '',
+    estado: ''
+  };
+
+  public showModalReportesOperaciones = false;
 
 
   // Permisos de usuarios login
@@ -57,7 +68,8 @@ export class OperacionesComponent implements OnInit {
 
   constructor(
     private operacionesService: OperacionesService,
-    private authService: AuthService,
+    private reportesService: ReportesService,
+    public authService: AuthService,
     private alertService: AlertService,
     private dataService: DataService,
     private router: Router
@@ -146,6 +158,32 @@ export class OperacionesComponent implements OnInit {
       this.alertService.errorApi(error.message);
     });
 
+  }
+
+  // Abrir reportes - Excel
+  abrirReportes(): void {
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.reportes.estado = '';
+    this.showModalReportesOperaciones = true;
+  }
+
+  // Reporte - Excel
+  reporteExcel(): void {
+    this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.reportesService.operacionesExcel(this.reportes).subscribe({
+            next: (buffer) => {
+              const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              saveAs(blob, `Reporte - Operaciones - ${format(new Date(), 'dd-MM-yyyy')}`);
+              this.alertService.close();
+              this.showModalReportesOperaciones = false;
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          })
+        }
+      });
   }
 
   // Reiniciando formulario
