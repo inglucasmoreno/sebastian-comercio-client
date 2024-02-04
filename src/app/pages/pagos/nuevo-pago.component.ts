@@ -26,6 +26,7 @@ const base_url = environment.base_url;
 export class NuevoPagoComponent implements OnInit {
 
   public fecha_pago: string = format(new Date(), 'yyyy-MM-dd');
+  public observacion: string = '';
 
   // FLAGS
   public showOptions = false;
@@ -217,6 +218,7 @@ export class NuevoPagoComponent implements OnInit {
   // ** ABRIR MODAL -> COMPLETANDO PAGO
   abrirModalPago(): void {
     this.fecha_pago = format(new Date(), 'yyyy-MM-dd');
+    this.observacion = '';
     this.limpiarCheques();
     this.formas_pago = [];
     this.cheques = [];
@@ -457,6 +459,7 @@ export class NuevoPagoComponent implements OnInit {
             pago_total: this.montoTotalPagado,
             carro_pago: this.carro_pago,
             cheques: this.cheques,
+            observacion: this.observacion,
             creatorUser: this.authService.usuario.userId,
             updatorUser: this.authService.usuario.userId,
           };
@@ -464,8 +467,16 @@ export class NuevoPagoComponent implements OnInit {
           this.ordenesPagoService.nuevaOrdenPago(data).subscribe({
             next: () => {
               window.open(`${base_url}/pdf/orden_pago.pdf`, '_blank');
+
+              // Si se paga con cheques filtrar de la lista de cheques disponibles
+              this.cheques.map(cheque => {
+                this.listaCheques = this.listaCheques.filter(elemento => elemento._id !== cheque._id);
+              });
+
+              this.calcularTotalEnCheques()
               this.reiniciarSeccion();
               this.alertService.close();
+
             }, error: ({ error }) => this.alertService.errorApi(error.message)
           });
 

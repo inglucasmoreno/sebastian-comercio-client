@@ -39,10 +39,11 @@ export class PagosComponent implements OnInit {
   public showModalDetallesCompra = false;
   public showModalReportesOrdenes = false;
 
-  // Estado formulario 
+  // Estado formulario
   public estadoFormulario = 'crear';
 
   // Orden de pago
+  public observacion: string = '';
   public idOrdenPago: string = '';
   public ordenes_pago: any = [];
   public ordenPagoSeleccionada: any;
@@ -99,8 +100,8 @@ export class PagosComponent implements OnInit {
   ngOnInit(): void {
     this.dataService.ubicacionActual = 'Dashboard - Ordenes de pago';
     this.alertService.loading();
-    this.activatedRoute.params.subscribe(({codigo}) => {
-      if(codigo) this.filtro.parametro = codigo;
+    this.activatedRoute.params.subscribe(({ codigo }) => {
+      if (codigo) this.filtro.parametro = codigo;
       this.permisos.all = this.permisosUsuarioLogin();
       this.listarOrdenesPago();
     });
@@ -215,6 +216,22 @@ export class PagosComponent implements OnInit {
 
   }
 
+  // Actualizar observacion
+  actualizarObservacion(): void {
+
+    this.alertService.loading();
+
+    this.ordenesPagoService.actualizarOrdenPago(this.ordenPagoSeleccionada._id, { observacion: this.observacion }).subscribe(() => {
+      this.ordenPagoSeleccionada.observacion = this.observacion.toUpperCase();
+      this.observacion = this.observacion.toUpperCase();
+      this.alertService.close();
+      this.alertService.success('Observación actualizada correctamente');
+    }, ({ error }) => {
+      this.alertService.errorApi(error.message);
+    });
+
+  }
+
   // Abrir detalles de orden de pago
   abrirDetallesOrdenPago(orden_pago: any): void {
 
@@ -232,7 +249,8 @@ export class PagosComponent implements OnInit {
           next: ({ relaciones }) => {
             this.relaciones_compras = relaciones;
             this.ordenPagoSeleccionada = orden_pago;
-            relaciones.map( relacion => this.totalEnCompras += relacion.monto_pagado );
+            this.observacion = orden_pago.observacion ? orden_pago.observacion : '';
+            relaciones.map(relacion => this.totalEnCompras += relacion.monto_pagado);
             this.alertService.close();
             this.showModalOrdenPago = true;
           }, error: ({ error }) => this.alertService.errorApi(error.message)
@@ -292,7 +310,7 @@ export class PagosComponent implements OnInit {
                 // Se obtienen las ordenes de pago
                 this.ordenesPagoCompraService.listarRelaciones({ compra: compra._id }).subscribe({
                   next: ({ relaciones }) => {
-                    
+
                     this.ordenesPago = relaciones;
                     this.showModalOrdenPago = false;
                     this.showModalDetallesCompra = true;
@@ -341,10 +359,10 @@ export class PagosComponent implements OnInit {
           }).subscribe({
             next: (buffer) => {
               const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-              saveAs(blob, `Reporte - Ordenes de pago - ${format(new Date(),'dd-MM-yyyy')}`);
+              saveAs(blob, `Reporte - Ordenes de pago - ${format(new Date(), 'dd-MM-yyyy')}`);
               this.alertService.close();
               this.showModalReportesOrdenes = false;
-            }, error: ({error}) => this.alertService.errorApi(error.message)
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
           })
         }
       });

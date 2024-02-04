@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
+import { OperacionesService } from 'src/app/services/operaciones.service';
 import { PresupuestoProductosService } from 'src/app/services/presupuesto-productos.service';
 import { PresupuestosService } from 'src/app/services/presupuestos.service';
 import { ProductosService } from 'src/app/services/productos.service';
@@ -38,6 +39,11 @@ export class PresupuestosComponent implements OnInit {
   public showModalPresupuesto = false;
   public showModalVenta = false;
   public showModalEditarPresupuesto = false;
+  public showModalListadoOperaciones = false;
+
+  // Operaciones
+  public operaciones: any[] = [];
+  public operacionSeleccionada: any;
 
   // Presupuesto
   public idPresupuesto: string = '';
@@ -91,9 +97,15 @@ export class PresupuestosComponent implements OnInit {
   public paginaActualProductos: number = 1;
   public cantidadItemsProductos: number = 10;
 
+  // Paginacion - Listado de operaciones
+  public totalItemsOperaciones: number;
+  public desdeOperaciones: number = 0;
+  public paginaActualOperaciones: number = 1;
+  public cantidadItemsOperaciones: number = 10;
+
   constructor(private presupuestosService: PresupuestosService,
     private productosService: ProductosService,
-    private ventasService: VentasService,
+    private operacionesService: OperacionesService,
     private proveedoresService: ProveedoresService,
     private presupuestoProductosService: PresupuestoProductosService,
     private authService: AuthService,
@@ -275,6 +287,81 @@ export class PresupuestosComponent implements OnInit {
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
     })
+  }
+
+  // Listado de operaciones
+  listarOperaciones(): void {
+    this.operacionesService.listarOperaciones({
+      desde: 0,
+      cantidadItems: this.cantidadItemsOperaciones,
+      estado: 'Abierta',
+      activo: true
+    }).subscribe({
+      next: ({ operaciones }) => {
+        this.operaciones = operaciones;
+        this.alertService.close();
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+  }
+
+  // Abrir listado de operaciones
+  abrirListadoOperaciones(): void {
+
+    this.alertService.loading();
+
+    this.paginaActualOperaciones = 1;
+
+    this.operacionesService.listarOperaciones({
+      desde: 0,
+      cantidadItems: this.cantidadItemsOperaciones,
+      estado: 'Abierta',
+      activo: true
+    }).subscribe({
+      next: ({ operaciones }) => {
+        this.operaciones = operaciones;
+        this.showModalVenta = false;
+        this.showModalListadoOperaciones = true;
+        this.alertService.close();
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+
+  }
+
+  // Nueva operacion
+  nuevaOperacion(): void {
+    this.alertService.question({ msg: 'Creando nueva operacion', buttonText: 'Crear' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.alertService.loading();
+          this.operacionesService.nuevaOperacion({
+            creatorUser: this.authService.usuario.userId,
+            updatorUser: this.authService.usuario.userId
+          }).subscribe({
+            next: ({ operacion }) => {
+              this.operacionSeleccionada = operacion;
+              this.alertService.close();
+            }, error: ({ error }) => this.alertService.errorApi(error.message)
+          });
+        }
+      });
+  }
+
+  // Cerrar listado de operaciones
+  cerrarListadoOperaciones(): void {
+    this.showModalListadoOperaciones = false;
+    this.showModalVenta = true;
+  }
+
+  // Seleccionar operacion
+  seleccionarOperacion(operacion: any): void {
+    this.operacionSeleccionada = operacion;
+    this.showModalListadoOperaciones = false;
+    this.showModalVenta = true;
+  }
+
+  // deseleccionar operacion
+  deseleccionarOperacion(): void {
+    this.operacionSeleccionada = null;
   }
 
   // Abrir editar presupuesto
@@ -547,6 +634,7 @@ export class PresupuestosComponent implements OnInit {
 
   // Abrir generar venta
   abrirGenerarVenta(presupuesto: any): void {
+    this.operacionSeleccionada = null;
     this.venta_tipo = 'Propia';
     this.presupuestoSeleccionado = presupuesto;
     this.showModalVenta = true;
@@ -555,13 +643,19 @@ export class PresupuestosComponent implements OnInit {
 
   generarVenta(): void {
 
-    this.alertService.loading();
-
     const parametros = {
       direccion: this.ordenar.direccion,
       columna: this.ordenar.columna,
       presupuesto: this.presupuestoSeleccionado._id
     }
+
+    // Si es una venta propia debe seleccionar una operacion
+    if (this.venta_tipo === 'Propia' && !this.operacionSeleccionada) {
+      this.alertService.info('Debe seleccionar una operación');
+      return;
+    }
+
+    this.alertService.loading();
 
     this.presupuestoProductosService.listarProductos(parametros).subscribe({
       next: ({ productos }) => {
@@ -569,7 +663,7 @@ export class PresupuestosComponent implements OnInit {
         let productosVenta = [];
         let precioTotal = 0;
 
-        productos.map( producto => {
+        productos.map(producto => {
           productosVenta.push({
             cantidad: producto.cantidad,
             creatorUser: this.authService.usuario.userId,
@@ -587,24 +681,29 @@ export class PresupuestosComponent implements OnInit {
 
         // Adaptacion de localstorage
 
+        if (this.venta_tipo === 'Propia') {
+          localStorage.setItem('operacion_nro', JSON.stringify(this.operacionSeleccionada.numero));
+          localStorage.setItem('operacion_id', JSON.stringify(this.operacionSeleccionada._id));
+        }
+
         localStorage.setItem('venta_productosVenta', JSON.stringify(productosVenta));
         localStorage.setItem('venta_tipo_venta', JSON.stringify(this.venta_tipo));
         localStorage.setItem('venta_clienteSeleccionado', JSON.stringify(this.presupuestoSeleccionado.cliente));
         localStorage.setItem('venta_porcentajesTotal', "");
         localStorage.setItem('venta_porcentajeAplicadoTotal', JSON.stringify(false));
         localStorage.setItem('venta_precio_total', JSON.stringify(precioTotal));
-        
-        if(this.presupuestoSeleccionado.cliente._id === '000000000000000000000000'){
-          if(this.venta_tipo === 'Directa'){
+
+        if (this.presupuestoSeleccionado.cliente._id === '000000000000000000000000') {
+          if (this.venta_tipo === 'Directa') {
             localStorage.setItem('venta_etapa', JSON.stringify("productos"));
             localStorage.setItem('venta_tipo_cliente', JSON.stringify("consumidor_final"));
             localStorage.setItem('venta_clienteSeleccionado', JSON.stringify("consumidor_final"));
-          }else{
+          } else {
             localStorage.setItem('venta_etapa', JSON.stringify("cliente"));
             localStorage.setItem('venta_tipo_cliente', JSON.stringify("cliente"));
             localStorage.setItem('venta_clienteSeleccionado', JSON.stringify(null));
           }
-        }else{
+        } else {
           localStorage.setItem('venta_etapa', JSON.stringify("cliente"));
           localStorage.setItem('venta_tipo_cliente', JSON.stringify("cliente"));
         }
@@ -612,7 +711,7 @@ export class PresupuestosComponent implements OnInit {
         this.router.navigateByUrl('/dashboard/nueva-venta');
 
         this.alertService.close();
-      
+
       },
       error: ({ error }) => this.alertService.errorApi(error.message)
     })
@@ -849,6 +948,13 @@ export class PresupuestosComponent implements OnInit {
     this.desde = (this.paginaActual - 1) * this.cantidadItems;
     this.alertService.loading();
     this.listarPresupuestos();
+  }
+
+  cambiarPaginaOperaciones(nroPagina): void {
+    this.paginaActualOperaciones = nroPagina;
+    this.desdeOperaciones = (this.paginaActualOperaciones - 1) * this.cantidadItemsOperaciones;
+    this.alertService.loading();
+    this.listarOperaciones();
   }
 
   // Paginacion - Cambiar pagina - Productos

@@ -26,7 +26,7 @@ export class RecibosCobroService {
 
   // Recibo cobro por ID
   getRecibo(id: string): Observable<any> {
-    return this.http.get(`${base_url}/recibos-cobro/${ id }`,{ 
+    return this.http.get(`${base_url}/recibos-cobro/${ id }`,{
       headers: this.getToken
     });
   };
@@ -58,6 +58,6 @@ export class RecibosCobroService {
     return this.http.put(`${base_url}/recibos-cobro/${id}`, data, {
       headers: this.getToken
     });
-  }  
-  
+  }
+
 }

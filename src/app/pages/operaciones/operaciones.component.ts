@@ -43,6 +43,7 @@ export class OperacionesComponent implements OnInit {
 
   public formOperacion = {
     fecha_operacion: format(new Date(), 'yyyy-MM-dd'),
+    observacion: '',
     creatorUser: this.authService.usuario.userId,
     updatorUser: this.authService.usuario.userId,
   }
@@ -147,6 +148,7 @@ export class OperacionesComponent implements OnInit {
 
     const data = {
       fecha_operacion: this.formOperacion.fecha_operacion,
+      observacion: this.formOperacion.observacion,
       creatorUser: this.authService.usuario.userId,
       updatorUser: this.authService.usuario.userId,
     }

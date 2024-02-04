@@ -24,6 +24,7 @@ const base_url = environment.base_url;
 export class NuevoCobroComponent implements OnInit {
 
   public fecha_cobro: string = format(new Date(),'yyyy-MM-dd');
+  public observacion: string = '';
 
   // CUENTA CORRIENTE
   public flagCC = false;
@@ -117,7 +118,7 @@ export class NuevoCobroComponent implements OnInit {
     this.alertService.loading();
     this.clientesService.listarClientes().subscribe({
       next: ({ clientes }) => {
-        
+
         this.clientes = clientes.filter(cliente => cliente.activo);
 
         // Listado de cajas
@@ -209,6 +210,7 @@ export class NuevoCobroComponent implements OnInit {
   // ** ABRIR MODAL -> COMPLETANDO COBRO
   abrirModalCobro(): void {
     this.fecha_cobro = format(new Date(),'yyyy-MM-dd');
+    this.observacion = '';
     this.formas_pago = [];
     this.cheques = [];
     this.forma_pago = '';
@@ -406,7 +408,7 @@ export class NuevoCobroComponent implements OnInit {
 
   //** GENERANDO COBRO
   generarCobro(): void {
-    
+
     // Verificacion: No hay formas de pago agregada
     if (this.formas_pago.length === 0 && this.cheques.length === 0) {
       this.alertService.info('Se debe agregar al menos una forma de pago');
@@ -431,6 +433,7 @@ export class NuevoCobroComponent implements OnInit {
             fecha_cobro: this.fecha_cobro,
             formas_pago: this.formas_pago,
             cobro_total: this.montoTotalCobrado,
+            observacion: this.observacion,
             carro_pago: this.carro_pago,
             cheques: this.cheques,
             creatorUser: this.authService.usuario.userId,
@@ -593,13 +596,13 @@ export class NuevoCobroComponent implements OnInit {
     // Cuenta corriente
     this.ccClientesService.getCuentaCorrientePorCliente(this.clienteSeleccionado._id).subscribe({
       next: ({cuenta_corriente}) => {
-    
+
         if(cuenta_corriente){
           this.flagCC = true;
           this.cuentaCorriente = cuenta_corriente;
         }
 
-        // Listado de ventas 
+        // Listado de ventas
         this.ventasPropiasService.listarVentas({ cliente: this.clienteSeleccionado._id, cancelada: 'false', activo: true }).subscribe({
           next: ({ ventas }) => {
             this.ventas = ventas;

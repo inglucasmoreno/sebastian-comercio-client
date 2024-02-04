@@ -54,8 +54,17 @@
         <input [(ngModel)]="formOperacion.fecha_operacion" type="date"
           class="border focus:outline-none border-gray-400 p-2 w-full">
       </div>
+      <div class="mt-2">
+        <p class="font-semibold mb-2"> Observacion </p>
+        <input
+        (keyup.enter)="nuevaOperacion()"
+        type="text"
+        [(ngModel)]="formOperacion.observacion"
+        class="w-full p-2 border border-gray-400"
+        placeholder="Observacion no obligatoria">
+      </div>
     </div>
-    <div class="px-2 pb-2">
+    <div class="px-4 pb-3">
       <button (click)="nuevaOperacion()"
         class="bg-gray-100 text-sm focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-400 font-semibold p-2 rounded mt-4">
         Crear operacion </button>

@@ -152,7 +152,7 @@
 
 <!-- Detalles de recibo de cobro -->
 <app-modal [showModal]="showModalRecibo">
-    <div class="text-sm"t>
+    <div *ngIf="reciboSeleccionado" class="text-sm"t>
 
       <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
         <h1 class=" text-white px-2 py-1 rounded-t md:text-lg"> Detalles de cobro </h1>
@@ -160,13 +160,28 @@
       </div>
 
       <div class="p-2 max-h-96 overflow-y-auto">
+
         <div class="md:flex md:items-center md:justify-between">
           <p> <span class="font-semibold"> Código de recibo: </span> {{ reciboSeleccionado?.nro | codigoReciboCobro }} </p>
           <p class="mt-2 md:mt-0"> <span class="font-semibold"> Fecha: </span> {{ reciboSeleccionado?.fecha_cobro ? (reciboSeleccionado?.fecha_cobro | fecha) : (reciboSeleccionado?.createdAt | fecha) }} </p>
         </div>
+
         <div class="mt-2">
           <p> <span class="font-semibold"> Cliente: </span> {{ reciboSeleccionado?.cliente.descripcion }} </p>
         </div>
+
+        <div class="mt-1">
+          <p class="font-semibold"> Observación </p>
+          <div class="flex items-center">
+            <input (keyup.enter)="actualizarObservacion()" [(ngModel)]="observacion" type="text" placeholder="Observación no obligatoria" class="p-2 border mt-1 w-full border-gray-400 rounded">
+            <button (click)="actualizarObservacion()" title="Actualizar observación" class="p-2 ml-2 bg-gray-100 mt-1 border hover:text-secondaryColor border-gray-400 rounded">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
         <div *ngIf="relaciones_ventas && relaciones_ventas.length > 0" class="mt-2">
           <h2 class="p-1 bg-gray-100 font-semibold rounded w-full border border-gray-300"> Facturas pagadas </h2>
           <div (click)="abrirDetallesVenta(venta.venta_propia._id)" title="Detalles de venta" class="flex cursor-pointer hover:bg-secondaryColor hover:text-white p-2 items-center justify-between border-b border-gray-300 pb-2" *ngFor="let venta of relaciones_ventas">

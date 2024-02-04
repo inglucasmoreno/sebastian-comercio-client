@@ -39,14 +39,15 @@ export class CobrosComponent implements OnInit {
   public showModalDetallesVenta = false;
   public showModalReportesRecibos = false;
 
-  // Estado formulario 
+  // Estado formulario
   public estadoFormulario = 'crear';
 
   // Recibo
   public idRecibo: string = '';
   public recibos: any = [];
-  public reciboSeleccionado: any;
+  public reciboSeleccionado: any = null;
   public descripcion: string = '';
+  public observacion: string = '';
   public chequeSeleccionado: any;
   public totalEnVentas: number = 0;
 
@@ -214,6 +215,18 @@ export class CobrosComponent implements OnInit {
 
   }
 
+  // Actualizar observacion
+  actualizarObservacion(): void {
+    this.alertService.loading();
+    this.recibosService.actualizarRecibo(this.reciboSeleccionado._id, { observacion: this.observacion }).subscribe(() => {
+      this.observacion = this.observacion.toUpperCase();
+      this.reciboSeleccionado.observacion = this.observacion.toUpperCase();
+      this.alertService.success('Observación actualizada correctamente');
+    }, ({ error }) => {
+      this.alertService.errorApi(error.message);
+    });
+  }
+
   // Abrir detalles de recibo
   abrirDetallesRecibo(recibo: any): void {
 
@@ -231,6 +244,7 @@ export class CobrosComponent implements OnInit {
           next: ({ relaciones }) => {
             this.relaciones_ventas = relaciones;
             this.reciboSeleccionado = recibo;
+            this.observacion = recibo.observacion ? recibo.observacion : '';
             relaciones.map( relacion => this.totalEnVentas += relacion.monto_cobrado );
             this.alertService.close();
             this.showModalRecibo = true;

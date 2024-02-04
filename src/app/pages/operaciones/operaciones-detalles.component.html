@@ -292,10 +292,10 @@
       <div class="mt-2 pb-2">
         <p class="font-semibold"> Observacion personalizada </p>
         <div class="flex items-center">
-          <input [disabled]="!this.permisos.all" (keyup.enter)="actualizarObservacion()" [(ngModel)]="observacion"
+          <input [disabled]="!this.permisos.all" (keyup.enter)="actualizarObservacionVenta()" [(ngModel)]="observacion"
             type="text" class="border mt-1 focus:outline-none border-gray-400 p-2 rounded w-full"
             placeholder="Colocar aquí la observación">
-          <button *ngIf="this.permisos.all" (click)="actualizarObservacion()" title="Actualizar observación"
+          <button *ngIf="this.permisos.all" (click)="actualizarObservacionVenta()" title="Actualizar observación"
             class="border focus:outline-none bg-gray-100 border-gray-400 rounded p-2 ml-1 mt-1 hover:text-secondaryColor">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="w-5 h-5">
@@ -565,6 +565,18 @@
       <input [disabled]="!this.permisos.all" (change)="actualizarFechaOperacion()" onkeydown="return false"
         [(ngModel)]="fecha_operacion" type="date"
         class="border mt-2 focus:outline-none text-center w-full border-gray-400 p-2">
+    </div>
+  </div>
+
+  <div class="p-2">
+    <p class="font-semibold mb-2"> Observación </p>
+    <div class="flex items-center">
+      <input (keyup.enter)="actualizarObservacionOperacion()" [(ngModel)]="operacion.observacion" type="text" placeholder="Observacion no obligatoria" class="p-2 border border-gray-400 w-full">
+      <button (click)="actualizarObservacionOperacion()" title="Actualizar observacion" class="p-2 border border-gray-400 ml-2 rounded bg-gray-50 hover:text-secondaryColor">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+        </svg>
+      </button>
     </div>
   </div>
 

@@ -64,7 +64,8 @@ export class OperacionesDetallesComponent implements OnInit {
 
   // Operacion
   public operacion: any = {
-    numero: 1
+    numero: 1,
+    observacion: ''
   };
 
   public fecha_operacion: string = '';
@@ -120,6 +121,7 @@ export class OperacionesDetallesComponent implements OnInit {
         this.operacionesService.getOperacion(id).subscribe({
           next: ({ operacion, operacionVentasPropias, operacionCompras }) => {
             this.operacion = operacion;
+            this.operacion.observacion = operacion.observacion ? operacion.observacion : '';
             this.operacionVentasPropias = operacionVentasPropias;
             this.operacionCompras = operacionCompras;
             this.fecha_operacion = format(new Date(operacion.fecha_operacion), 'yyyy-MM-dd');
@@ -159,6 +161,8 @@ export class OperacionesDetallesComponent implements OnInit {
       }, error: ({ error }) => this.alertService.errorApi(error.message)
     })
   }
+
+
 
   // Abrir modal - Vincular venta
   public openModalVincularVenta(): void {
@@ -519,8 +523,19 @@ export class OperacionesDetallesComponent implements OnInit {
 
   }
 
+  // Actualizar observacion - Operacion
+  actualizarObservacionOperacion(): void {
+    this.alertService.loading();
+    this.operacionesService.actualizarOperacion(this.operacion._id, { observacion: this.operacion.observacion }).subscribe({
+      next: () => {
+        this.operacion.observacion = this.operacion.observacion.toUpperCase();
+        this.alertService.success('Observación actualizada correctamente');
+      }, error: ({ error }) => this.alertService.errorApi(error.message)
+    })
+  }
+
   // Actualizar observacion - Venta
-  actualizarObservacion(): void {
+  actualizarObservacionVenta(): void {
     this.alertService.loading();
     const data = {
       observacion: this.observacion,

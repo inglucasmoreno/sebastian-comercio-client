@@ -45,8 +45,8 @@ export class OperacionesService {
   listarOperaciones(parametros?: any): Observable<any> {
     return this.http.get(`${base_url}/operaciones`, {
       params: {
-        columna: parametros?.columna || 'descripcion',
-        direccion: parametros?.direccion || 1,
+        columna: parametros?.columna || 'createdAt',
+        direccion: parametros?.direccion || -1,
         desde: parametros?.desde || 0,
         estado: parametros?.estado || '',
         registerpp: parametros?.cantidadItems || 100000,
