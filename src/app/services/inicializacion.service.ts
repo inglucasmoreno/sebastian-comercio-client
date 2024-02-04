@@ -31,16 +31,26 @@ export class InicializacionService {
 
   // Inicializacion de cajas
   inicializarCajas(usuario: string): Observable<any> {
-    return this.http.post(`${base_url}/inicializacion/cajas`,{},{
+    return this.http.post(`${base_url}/inicializacion/cajas`, {}, {
       params: { usuario }
     });
   }
 
   // Inicializacion de tipo de movimientos
   inicializarTiposMovimientos(usuario: string): Observable<any> {
-    return this.http.post(`${base_url}/inicializacion/tipos-movimientos`,{},{
+    return this.http.post(`${base_url}/inicializacion/tipos-movimientos`, {}, {
       params: { usuario }
     });
+  }
+
+  // Ajuste de Ventas - Operaciones
+  ajusteVentasOperaciones(): Observable<any> {
+    return this.http.get(`${base_url}/inicializacion/ventasOperaciones`);
+  }
+
+  // Ajuste de Compras - Operaciones
+  ajusteComprasOperaciones(): Observable<any> {
+    return this.http.get(`${base_url}/inicializacion/comprasOperaciones`);
   }
 
 }

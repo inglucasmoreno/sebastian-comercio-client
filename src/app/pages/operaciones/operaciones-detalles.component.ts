@@ -162,17 +162,17 @@ export class OperacionesDetallesComponent implements OnInit {
     })
   }
 
-
-
   // Abrir modal - Vincular venta
   public openModalVincularVenta(): void {
     this.parametroVentasPropias = '';
     this.alertService.loading();
     this.ventasPropiasService.listarVentas({
       columna: 'createdAt',
+      fechaDesde: '2023-12-01',
       direccion: -1,
       activo: true,
-      parametro: this.parametroVentasPropias
+      parametro: this.parametroVentasPropias,
+      conOperacion: 'false'
     }).subscribe({
       next: ({ ventas }) => {
         this.ventasPropias = ventas;
@@ -187,9 +187,11 @@ export class OperacionesDetallesComponent implements OnInit {
     this.alertService.loading();
     this.ventasPropiasService.listarVentas({
       columna: 'createdAt',
+      fechaDesde: '2023-12-01',
       direccion: -1,
       activo: true,
-      parametro: this.parametroVentasPropias
+      parametro: this.parametroVentasPropias,
+      conOperacion: 'false'
     }).subscribe({
       next: ({ ventas }) => {
         this.ventasPropias = ventas;
@@ -206,7 +208,9 @@ export class OperacionesDetallesComponent implements OnInit {
       columna: 'createdAt',
       direccion: -1,
       activo: true,
-      parametro: this.parametroCompras
+      parametro: this.parametroCompras,
+      fechaDesde: '2023-12-01',
+      conOperacion: 'false'
     }).subscribe({
       next: ({ compras }) => {
         this.compras = compras;
@@ -223,7 +227,9 @@ export class OperacionesDetallesComponent implements OnInit {
       columna: 'createdAt',
       direccion: -1,
       activo: true,
-      parametro: this.parametroCompras
+      parametro: this.parametroCompras,
+      fechaDesde: '2023-12-01',
+      conOperacion: 'false'
     }).subscribe({
       next: ({ compras }) => {
         this.compras = compras;

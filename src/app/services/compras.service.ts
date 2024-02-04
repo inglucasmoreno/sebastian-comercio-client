@@ -44,6 +44,9 @@ export class ComprasService {
         parametro: parametros?.parametro || '',
         proveedor: parametros?.proveedor || '',
         cancelada: parametros?.cancelada || '',
+        fechaDesde: parametros?.fechaDesde || '',
+        fechaHasta: parametros?.fechaHasta || '',
+        conOperacion: parametros?.conOperacion || '',
       },
       headers: this.getToken
     });

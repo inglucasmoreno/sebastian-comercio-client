@@ -11,18 +11,44 @@ import { InicializacionService } from '../services/inicializacion.service';
 export class InicializacionComponent implements OnInit {
 
   constructor(private inicializacionService: InicializacionService,
-              private cajasService: CajasService,
-              private alertService: AlertService) { }
+    private cajasService: CajasService,
+    private alertService: AlertService) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   // Inicializacion de usuarios
   inicializarUsuarios(): void {
     this.alertService.loading();
-    this.inicializacionService.inicializarUsuarios().subscribe(({message}) => {
+    this.inicializacionService.inicializarUsuarios().subscribe(({ message }) => {
       this.alertService.success(message);
-    },({error})=>{
+    }, ({ error }) => {
       this.alertService.errorApi(error.message);
+    });
+  }
+
+  // Ajuste de Ventas - Operaciones
+  ajusteVentasOperaciones(): void {
+    this.alertService.loading();
+    this.inicializacionService.ajusteVentasOperaciones().subscribe({
+      next: () => {
+        this.alertService.success('Ajuste finalizado correctamente');
+      },
+      error: ({ error }) => {
+        this.alertService.errorApi(error.message);
+      }
+    });
+  }
+
+  // Ajuste de Compras - Operaciones
+  ajusteComprasOperaciones(): void {
+    this.alertService.loading();
+    this.inicializacionService.ajusteComprasOperaciones().subscribe({
+      next: () => {
+        this.alertService.success('Ajuste finalizado correctamente');
+      },
+      error: ({ error }) => {
+        this.alertService.errorApi(error.message);
+      }
     });
   }
 

@@ -41,7 +41,7 @@ export class VentasPropiasService {
 
   // Venta por ID
   getVenta(id: string): Observable<any> {
-    return this.http.get(`${base_url}/ventas-propias/${ id }`,{ 
+    return this.http.get(`${base_url}/ventas-propias/${ id }`,{
       headers: this.getToken
     });
   };
@@ -58,6 +58,9 @@ export class VentasPropiasService {
         parametro: parametros?.parametro || '',
         cliente: parametros?.cliente || '',
         cancelada: parametros?.cancelada || '',
+        fechaDesde: parametros?.fechaDesde || '',
+        fechaHasta: parametros?.fechaHasta || '',
+        conOperacion: parametros?.conOperacion || '',
       },
       headers: this.getToken
     });
@@ -68,13 +71,13 @@ export class VentasPropiasService {
     return this.http.put(`${base_url}/ventas-propias/${id}`, data, {
       headers: this.getToken
     });
-  }   
-  
+  }
+
   // Alta/Baja de venta propia
   altaBajaVenta(id:string, data: any): Observable<any> {
     return this.http.put(`${base_url}/ventas-propias/alta-baja/${id}`, data, {
       headers: this.getToken
     });
-  }   
+  }
 
 }

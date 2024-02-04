@@ -1,5 +1,9 @@
 <div class="h-screen bg-gray-800 text-center">
     <img class="md:w-1/3 mr-auto ml-auto pt-40" src="assets/img/Equinoccio.png" alt="Logo de Equinoccio Technology">
     <h1 class="text-white text-2xl my-8"> Inicialización de sistema </h1>
-    <button (click)="inicializarUsuarios()" class="w-max bg-gray-100 p-2 rounded mr-auto ml-auto hover:bg-yellow-100 focus:outline-none"> Inicializar sistema </button>
+    <div class="flex flex-col items-center justify-center">
+      <button (click)="inicializarUsuarios()" class="w-max bg-gray-100 p-2 rounded hover:bg-yellow-100 focus:outline-none"> Inicializar sistema </button>
+      <button (click)="ajusteVentasOperaciones()" class="w-max mt-4 bg-gray-100 p-2 rounded hover:bg-yellow-100 focus:outline-none"> Ventas - Operaciones </button>
+      <button (click)="ajusteComprasOperaciones()" class="w-max mt-4 bg-gray-100 p-2 rounded hover:bg-yellow-100 focus:outline-none"> Compras - Operaciones </button>
+    </div>
 </div>
