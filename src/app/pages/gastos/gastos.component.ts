@@ -5,7 +5,9 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CajasService } from 'src/app/services/cajas.service';
 import { DataService } from 'src/app/services/data.service';
 import { GastosService } from 'src/app/services/gastos.service';
+import { ReportesService } from 'src/app/services/reportes.service';
 import { TiposGastosService } from 'src/app/services/tipos-gastos.service';
+import { saveAs } from 'file-saver-es';
 
 @Component({
   selector: 'app-gastos',
@@ -23,8 +25,16 @@ export class GastosComponent implements OnInit {
 
   // Modal
   public showModalGasto = false;
+  public showModalReportesGastos = false;
 
-  // Estado formulario 
+  // Reportes
+  public reportes = {
+    fechaDesde: '',
+    fechaHasta: '',
+    activas: 'true'
+  };
+
+  // Estado formulario
   public estadoFormulario = 'crear';
 
   // Gastos
@@ -60,9 +70,10 @@ export class GastosComponent implements OnInit {
 
   constructor(
     private gastosService: GastosService,
+    private reportesService: ReportesService,
     private tiposGastosService: TiposGastosService,
     private cajasService: CajasService,
-    private authService: AuthService,
+    public authService: AuthService,
     private alertService: AlertService,
     private dataService: DataService) { }
 
@@ -261,6 +272,32 @@ export class GastosComponent implements OnInit {
         }
       });
 
+  }
+
+  // Abrir reportes - Excel
+  abrirReportes(): void {
+    this.reportes.fechaDesde = '';
+    this.reportes.fechaHasta = '';
+    this.reportes.activas = 'true';
+    this.showModalReportesGastos = true;
+  }
+
+  // Reporte - Excel
+  reporteExcel(): void{
+    this.alertService.question({ msg: 'Generando reporte', buttonText: 'Generar' })
+    .then(({isConfirmed}) => {
+      if (isConfirmed) {
+        this.alertService.loading();
+        this.reportesService.gastosExcel(this.reportes).subscribe({
+          next: (buffer) => {
+            const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            saveAs(blob, `Reporte - Gastos - ${format(new Date(),'dd-MM-yyyy')}`);
+            this.showModalReportesGastos = false;
+            this.alertService.close();
+          }, error: ({error}) => this.alertService.errorApi(error.message)
+        });
+      }
+    });
   }
 
   // Reiniciando formulario

@@ -55,6 +55,13 @@ export class GastosService {
     });
   }
 
+  // Generar Excel
+  generarExcel(data: any): Observable<any> {
+    return this.http.post(`${base_url}/gastos/reporte/excel`, data, {
+      headers: this.getToken
+    });
+  };
+
   // Alta/Baja gasto
   altaBajaGasto(id: string, data: any): Observable<any> {
     return this.http.put(`${base_url}/gastos/alta-baja/${id}`, data, {
