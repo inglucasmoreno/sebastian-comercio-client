@@ -100,7 +100,6 @@ export class OperacionesDetallesComponent implements OnInit {
     private alertService: AlertService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private location: Location,
     private ventasPropiasService: VentasPropiasService,
     private comprasService: ComprasService,
     private comprasChequesService: ComprasChequesService,

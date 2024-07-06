@@ -38,7 +38,7 @@
 
 <!-- Modal: Crear / Editar opearcion -->
 <app-modal-small [showModal]="showModalOperacion">
-  <div (keyup.enter)="nuevaOperacion()">
+  <div>
     <div class="flex items-center justify-between bg-primary-800 rounded-t p-2">
       <h1 class=" text-white px-2 py-1 rounded-t text-lg"> Creando operación </h1>
       <svg (click)="showModalOperacion = false" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -51,21 +51,22 @@
     <div class="px-4 pt-2 max-h-96 overflow-y-auto text-sm">
       <div>
         <p class="font-semibold mb-2"> Fecha de operacion </p>
-        <input [(ngModel)]="formOperacion.fecha_operacion" type="date"
+        <input [disabled]="loadingNuevaOperacion" [(ngModel)]="formOperacion.fecha_operacion" type="date"
           class="border focus:outline-none border-gray-400 p-2 w-full">
       </div>
       <div class="mt-2">
         <p class="font-semibold mb-2"> Observacion </p>
         <input
-        (keyup.enter)="nuevaOperacion()"
+        (keyup.enter)="!loadingNuevaOperacion ? nuevaOperacion() : null"
         type="text"
+        [disabled]="loadingNuevaOperacion"
         [(ngModel)]="formOperacion.observacion"
         class="w-full p-2 border border-gray-400"
         placeholder="Observacion no obligatoria">
       </div>
     </div>
     <div class="px-4 pb-3">
-      <button (click)="nuevaOperacion()"
+      <button [disabled]="loadingNuevaOperacion" (click)="!loadingNuevaOperacion ? nuevaOperacion() : null"
         class="bg-gray-100 text-sm focus:outline-none hover:text-secondaryColor shadow text-gray-800 w-full border border-gray-400 font-semibold p-2 rounded mt-4">
         Crear operacion </button>
     </div>

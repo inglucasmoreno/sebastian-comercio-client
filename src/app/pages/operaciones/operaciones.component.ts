@@ -25,6 +25,8 @@ export class OperacionesComponent implements OnInit {
 
   public showModalReportesOperaciones = false;
 
+  // Loadings
+  public loadingNuevaOperacion = false;
 
   // Permisos de usuarios login
   public permisos = { all: false };
@@ -144,8 +146,6 @@ export class OperacionesComponent implements OnInit {
       return;
     }
 
-    this.alertService.loading();
-
     const data = {
       fecha_operacion: this.formOperacion.fecha_operacion,
       observacion: this.formOperacion.observacion,
@@ -153,12 +153,21 @@ export class OperacionesComponent implements OnInit {
       updatorUser: this.authService.usuario.userId,
     }
 
-    this.operacionesService.nuevaOperacion(data).subscribe(({ operacion }) => {
-      this.router.navigateByUrl('/dashboard/operaciones/detalles/' + operacion._id);
-      this.alertService.close();
-    }, ({ error }) => {
-      this.alertService.errorApi(error.message);
-    });
+    this.alertService.question({ msg: 'Creando operacion', buttonText: 'Crear' })
+      .then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          this.loadingNuevaOperacion = true;
+          this.alertService.loading();
+          this.operacionesService.nuevaOperacion(data).subscribe(({ operacion }) => {
+            this.router.navigateByUrl('/dashboard/operaciones/detalles/' + operacion._id);
+            this.loadingNuevaOperacion = false;
+            this.alertService.close();
+          }, ({ error }) => {
+            this.alertService.errorApi(error.message);
+            this.loadingNuevaOperacion = false;
+          });
+        }
+      });
 
   }
 
