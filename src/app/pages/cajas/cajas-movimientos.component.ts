@@ -667,7 +667,7 @@ export class CajasMovimientosComponent implements OnInit {
           this.reportesService.movimientosCajasExcel(this.reportes).subscribe({
             next: (buffer) => {
               const blob = new Blob([buffer.body], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-              saveAs(blob, `Reporte - Movimientos - ${this.caja.cliente.descripcion} - ${format(new Date(), 'dd-MM-yyyy')}`);
+              saveAs(blob, `Reporte - Movimientos - ${this.caja.descripcion} - ${format(new Date(), 'dd-MM-yyyy')}`);
               this.alertService.close();
               this.showModalReportesMovimientos = false;
             }, error: ({ error }) => this.alertService.errorApi(error.message)
